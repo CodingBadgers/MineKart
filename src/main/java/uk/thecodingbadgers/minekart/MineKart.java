@@ -1,5 +1,8 @@
 package uk.thecodingbadgers.minekart;
 
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -7,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 import uk.thecodingbadgers.minekart.command.CreateCommand;
 import uk.thecodingbadgers.minekart.listener.CourseCreationListener;
@@ -22,14 +27,26 @@ import uk.thecodingbadgers.minekart.racecourse.RacecourseLap;
  *
  */
 public final class MineKart extends JavaPlugin {
-	 
+	
+	/** The instance of the MineKart plugin */
 	private static MineKart instance = null;
+	
+	/** Access to the world edit plugin */
+	private WorldEditPlugin worldEdit = null;
 	
 	/**
 	 * Called when the plugin is enabled
 	 */
 	public void onEnable() {
 		MineKart.instance = this;
+		
+		PluginManager pluginManager = this.getServer().getPluginManager();
+		
+		// Get the world edit plugin instance
+		worldEdit = (WorldEditPlugin)pluginManager.getPlugin("WorldEdit");
+		if (worldEdit == null) {
+			Bukkit.getLogger().log(Level.SEVERE, "Could not find the WorldEdit plugin.");
+		}
 		
 		registerListeners();
 	}
@@ -46,7 +63,15 @@ public final class MineKart extends JavaPlugin {
 	 * @return The instance of the MineKart plugin.
 	 */
 	public static MineKart getInstance() {
-		return instance;
+		return MineKart.instance;
+	}
+	
+	/**
+	 * Gets the WorldEdit plugin instance.
+	 * @return The instance of the WorldEdit plugin.
+	 */
+	public WorldEditPlugin getWorldEditPlugin() {
+		return this.worldEdit;
 	}
 	
 	/**
@@ -139,7 +164,7 @@ public final class MineKart extends JavaPlugin {
 			}
 		}
 		
-		if (!newCourse.setup(player)) {
+		if (!newCourse.setup(player, name)) {
 			MineKart.output(player, "Failed to setup new arena.");
 			MineKart.output(player, "Creation of '" + name + "' failed.");
 			return;

@@ -1,6 +1,12 @@
 package uk.thecodingbadgers.minekart.racecourse;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+
+import com.sk89q.worldedit.regions.Region;
 
 /**
  * @author TheCodingBadgers
@@ -11,11 +17,57 @@ import org.bukkit.entity.Player;
  *
  */
 public class RacecourseCheckpoint extends Racecourse {
+	
+	/** The checkpoints a jockey must pass through to complete the race */
+	protected List<Region> checkPoints = null;
 
+	/**
+	 * Setup the racecourse.
+	 * @param player The player who is setting up the course
+	 * @return True if the location is within the course bounds, false otherwise.
+	 */
 	@Override
-	public boolean setup(Player player) {
+	public boolean setup(Player player, String name) {
 		
-		return false;
+		if (!super.setup(player, name))
+			return false;
+		
+		this.checkPoints = new ArrayList<Region>();
+		
+		return true;
+	}
+	
+	/**
+	 * Load the racecourse from file.
+	 */	
+	public void load(FileConfiguration file) {
+		
+		super.load(file);
+		
+		// Checkpoints
+		this.checkPoints = new ArrayList<Region>();
+		int noofCheckpoints = file.getInt("racecourse.checkpoint.count");
+		for (int checkpointIndex = 0; checkpointIndex < noofCheckpoints; ++checkpointIndex) {
+			this.checkPoints.add(loadRegion(file, "racecourse.checkpoint." + checkpointIndex));
+		}
+		
+	}
+	
+	/**
+	 * Save the racecourse to file.
+	 */	
+	public void save(FileConfiguration file) {
+		
+		super.save(file);
+		
+		// Checkpoints
+		file.set("racecourse.checkpoint.count", this.checkPoints.size());
+		int checkpointIndex = 0;
+		for (Region checkpoint : this.checkPoints) {
+			saveRegion(file, "racecourse.checkpoint." + checkpointIndex, checkpoint);
+			checkpointIndex++;
+		}
+		
 	}
 
 }
