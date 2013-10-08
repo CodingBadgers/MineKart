@@ -1,5 +1,7 @@
 package uk.thecodingbadgers.minekart.racecourse;
 
+import org.bukkit.entity.Player;
+
 /**
  * @author TheCodingBadgers
  *
@@ -9,5 +11,11 @@ package uk.thecodingbadgers.minekart.racecourse;
  *
  */
 public class RacecourseCheckpoint extends Racecourse {
+
+	@Override
+	public boolean setup(Player player) {
+		
+		return false;
+	}
 
 }

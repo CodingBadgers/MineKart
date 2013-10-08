@@ -8,5 +8,5 @@ commands:
     minekart:
         description: MineKart Command
         usage: /mk <command> <args>
-        aliases: [mk, kart]
+        aliases: [mk]
 
