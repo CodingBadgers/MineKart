@@ -22,6 +22,8 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.race.Race;
+import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
 
 /**
  * @author TheCodingBadgers
@@ -51,6 +53,9 @@ public abstract class Racecourse {
 	
 	/** The file configuration used by this racecourse */
 	protected File fileConfiguration = null;
+	
+	/** The race which uses this course */
+	protected Race race = null;
 	
 	/**
 	 * Setup the racecourse. Setting up the bounds of the arena based on player world edit seleciton.
@@ -97,6 +102,9 @@ public abstract class Racecourse {
 				return false;
 			}
 		}
+		
+		this.race = new RaceSinglePlayer();
+		this.race.setCourse(this);
 		
 		return true;
 	}
@@ -162,6 +170,8 @@ public abstract class Racecourse {
 			this.multiPoints.put(name, locations);
 		}
 		
+		this.race = new RaceSinglePlayer();
+		this.race.setCourse(this);		
 	}
 	
 	/**
@@ -408,6 +418,28 @@ public abstract class Racecourse {
 	 */
 	public String getName() {
 		return this.name;
+	}
+	
+	/**
+	 * Get the race which uses the racecourse
+	 * @return The race instance
+	 */
+	public Race getRace() {
+		return this.race;
+	}
+
+	/**
+	 * Get a warp by its name
+	 * @param string The name of the warp to find
+	 * @return The location of the given warp, or null if a warp wasn't found
+	 */
+	public Location getWarp(String warpname) {
+		
+		if (this.singlePoints.containsKey(warpname)) {
+			return this.singlePoints.get(warpname);
+		}
+		
+		return null;
 	}
 
 }

@@ -7,6 +7,6 @@ package uk.thecodingbadgers.minekart.race;
  * one and other.
  *
  */
-public class RaceSinglePlayer implements Race {
+public class RaceSinglePlayer extends Race {
 
 }

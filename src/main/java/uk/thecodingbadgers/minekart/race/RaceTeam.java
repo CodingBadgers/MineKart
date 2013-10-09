@@ -7,6 +7,6 @@ package uk.thecodingbadgers.minekart.race;
  * other to try win the race.
  *
  */
-public class RaceTeam implements Race {
+public class RaceTeam extends Race {
 
 }

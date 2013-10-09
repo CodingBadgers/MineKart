@@ -18,6 +18,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 import uk.thecodingbadgers.minekart.command.CreateCommand;
 import uk.thecodingbadgers.minekart.command.HelperCommand;
+import uk.thecodingbadgers.minekart.command.RaceCommand;
 import uk.thecodingbadgers.minekart.listener.CourseCreationListener;
 import uk.thecodingbadgers.minekart.racecourse.RacecourceType;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
@@ -190,6 +191,14 @@ public final class MineKart extends JavaPlugin {
 			return true;
 		}
 		
+		// if the control argument is join, let the race command handler take care of it
+		if (controlArgument.startsWith("join")) {
+			RaceCommand.handleJoinCommand(sender, args);
+			return true;
+		}
+		
+		// Unknown command
+		showPluginHelp(sender);
 		return true;
 	}
 
