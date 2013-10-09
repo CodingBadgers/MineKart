@@ -121,12 +121,13 @@ public abstract class Racecourse {
 			return false;
 		
 		// Create a world edit vector and test against the course bounds
-		com.sk89q.worldedit.Vector vec = new com.sk89q.worldedit.Vector();
-		vec.setX(location.getX());
-		vec.setY(location.getY());
-		vec.setZ(location.getZ());
+		com.sk89q.worldedit.Vector vec = new com.sk89q.worldedit.Vector(
+				location.getX(),
+				location.getY(),
+				location.getZ()
+			);
 		
-		return bounds.contains(vec);
+		return this.bounds.contains(vec);
 	}
 	
 	/**
@@ -454,6 +455,14 @@ public abstract class Racecourse {
 		}
 		
 		return null;
+	}
+
+	/**
+	 * Get the bounds of the racecourse
+	 * @return The bounds of the racecourse
+	 */
+	public Object getBounds() {
+		return this.bounds;
 	}
 
 }

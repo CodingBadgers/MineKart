@@ -19,7 +19,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import uk.thecodingbadgers.minekart.command.CreateCommand;
 import uk.thecodingbadgers.minekart.command.HelperCommand;
 import uk.thecodingbadgers.minekart.command.RaceCommand;
-import uk.thecodingbadgers.minekart.listener.CourseCreationListener;
+import uk.thecodingbadgers.minekart.listener.BlockListener;
 import uk.thecodingbadgers.minekart.racecourse.RacecourceType;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseCheckpoint;
@@ -110,7 +110,7 @@ public final class MineKart extends JavaPlugin {
 	 */
 	private void registerListeners() {
 		PluginManager manager = this.getServer().getPluginManager();
-		manager.registerEvents(new CourseCreationListener(), this);
+		manager.registerEvents(new BlockListener(), this);
 	}
 	
 	/**
