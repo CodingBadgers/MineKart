@@ -1,10 +1,12 @@
 package uk.thecodingbadgers.minekart.racecourse;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
@@ -43,6 +45,7 @@ public class RacecourseLap extends Racecourse {
 		
 		this.checkPoints = new ArrayList<Region>();
 	
+		save();
 		return true;
 	}
 	
@@ -50,9 +53,11 @@ public class RacecourseLap extends Racecourse {
 	 * Load the racecourse from file.
 	 */	
 	@Override
-	public void load(FileConfiguration file) {
+	public void load(File configfile) {
 		
-		super.load(file);
+		super.load(configfile);
+		
+		FileConfiguration file = YamlConfiguration.loadConfiguration(configfile);
 		
 		// Number of laps
 		this.noofLaps = file.getInt("racecourse.noofLaps");
@@ -70,9 +75,11 @@ public class RacecourseLap extends Racecourse {
 	 * Save the racecourse to file.
 	 */	
 	@Override
-	public void save(FileConfiguration file) {
+	public void save() {
 		
-		super.save(file);
+		super.save();
+		
+		FileConfiguration file = YamlConfiguration.loadConfiguration(this.fileConfiguration);
 		
 		// Number of laps
 		file.set("racecourse.noofLaps", this.noofLaps);

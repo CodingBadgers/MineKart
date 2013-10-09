@@ -1,5 +1,6 @@
 package uk.thecodingbadgers.minekart.racecourse;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.IncompleteRegionException;
@@ -44,6 +46,9 @@ public abstract class Racecourse {
 	/** A map of all registered single point locations */
 	protected Map<String, Location> singlePoints = null;
 	
+	/** The file configuration used by this racecourse */
+	protected File fileConfiguration = null;
+	
 	/**
 	 * Setup the racecourse. Setting up the bounds of the arena based on player world edit seleciton.
 	 * @param player The player who is setting up the course
@@ -75,6 +80,21 @@ public abstract class Racecourse {
 		registerWarp(player, "lobby", "set");
 		registerWarp(player, "spectate", "set");
 		
+		this.fileConfiguration = new File(MineKart.getRacecourseFolder() + File.separator + name + ".yml");
+		if (!this.fileConfiguration.exists()) {
+			try {
+				if (!this.fileConfiguration.createNewFile()) {
+					MineKart.output(player, "Failed to create config file for racecourse '" + name + "' at the following location");
+					MineKart.output(player, this.fileConfiguration.getAbsolutePath());
+					return false;
+				}
+			} catch(Exception ex) {
+				MineKart.output(player, "Failed to create config file for racecourse '" + name + "' at the following location");
+				MineKart.output(player, this.fileConfiguration.getAbsolutePath());
+				return false;
+			}
+		}
+		
 		return true;
 	}
 	
@@ -101,7 +121,10 @@ public abstract class Racecourse {
 	/**
 	 * Load the racecourse from file.
 	 */	
-	public void load(FileConfiguration file) {
+	public void load(File configfile) {
+		
+		FileConfiguration file = YamlConfiguration.loadConfiguration(configfile);
+		this.fileConfiguration = configfile;
 		
 		// Course name
 		this.name = file.getString("racecourse.name");
@@ -111,6 +134,7 @@ public abstract class Racecourse {
 		this.bounds = loadRegion(file, "racecourse.bounds");
 		
 		// Single point locations
+		this.singlePoints = new HashMap<String, Location>();
 		int noofSinglePoints = file.getInt("racecourse.singlepoint.count");
 		for (int pointIndex = 0; pointIndex < noofSinglePoints; ++pointIndex) {
 			final String path = "racecourse.singlepoint." + pointIndex;
@@ -120,6 +144,7 @@ public abstract class Racecourse {
 		}
 		
 		// Multi-point locations
+		this.multiPoints = new HashMap<String, List<Location>>();
 		int noofMultiPoints = file.getInt("racecourse.multipoint.count");
 		for (int pointIndex = 0; pointIndex < noofMultiPoints; ++pointIndex) {
 			final String path = "racecourse.multipoint." + pointIndex;
@@ -139,7 +164,9 @@ public abstract class Racecourse {
 	/**
 	 * Save the racecourse to file.
 	 */	
-	public void save(FileConfiguration file) {
+	public void save() {
+		
+		FileConfiguration file = YamlConfiguration.loadConfiguration(this.fileConfiguration);
 		
 		// Course name
 		file.set("racecourse.name", this.name);

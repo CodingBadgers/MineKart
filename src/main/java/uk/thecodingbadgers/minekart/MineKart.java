@@ -1,5 +1,6 @@
 package uk.thecodingbadgers.minekart;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -39,11 +40,22 @@ public final class MineKart extends JavaPlugin {
 	/** Map of all known racecourses where the key is the course name */
 	private Map<String, Racecourse> course = null;
 	
+	/** The path to the folder where all racecourses reside */
+	private static File racecourseFolderPath = null;
+	
 	/**
 	 * Called when the plugin is enabled
 	 */
 	public void onEnable() {
+		
+		// Store the instance of the plugin
 		MineKart.instance = this;
+		
+		// Setup the folder which will hold all the racecourse configs
+		MineKart.racecourseFolderPath = new File(this.getDataFolder() + File.separator + "courses");
+		if (!MineKart.racecourseFolderPath.exists()) {
+			MineKart.racecourseFolderPath.mkdirs();
+		}
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		
@@ -79,6 +91,14 @@ public final class MineKart extends JavaPlugin {
 	 */
 	public WorldEditPlugin getWorldEditPlugin() {
 		return this.worldEdit;
+	}
+	
+	/**
+	 * Get the folder of which all racecourse configs reside
+	 * @return The folder where the racecourse configs should be
+	 */
+	public static File getRacecourseFolder() {
+		return MineKart.racecourseFolderPath;
 	}
 	
 	/**
