@@ -131,11 +131,13 @@ public class RacecourseCheckpoint extends Racecourse {
 			}
 			
 			MineKart.output(player, "Succesfully add a new checkpoint to the arena!");
+			save();
 			return;
 		}
 		
 		// if it's not a checkpoint pass it on
 		super.addWarp(player, warpname);
+		save();
 		
 	}
 
