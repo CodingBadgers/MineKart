@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 import uk.thecodingbadgers.minekart.command.CreateCommand;
+import uk.thecodingbadgers.minekart.command.HelperCommand;
 import uk.thecodingbadgers.minekart.listener.CourseCreationListener;
 import uk.thecodingbadgers.minekart.racecourse.RacecourceType;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
@@ -139,6 +140,12 @@ public final class MineKart extends JavaPlugin {
 			return true;
 		}
 		
+		// if the control argument is set or add, let the setwarp command handler take care of it
+		if (controlArgument.startsWith("list")) {
+			HelperCommand.handleListCommand(sender, args);
+			return true;
+		}
+		
 		return true;
 	}
 
@@ -224,5 +231,13 @@ public final class MineKart extends JavaPlugin {
 	 */
 	public Racecourse getRacecourse(String courseName) {
 		return this.course.get(courseName.toLowerCase());
+	}
+	
+	/**
+	 * Get the racecourse map
+	 * @return The map of all known racecourses.
+	 */
+	public Map<String, Racecourse> getAllRacecourses() {
+		return this.course;
 	}
 }

@@ -369,4 +369,12 @@ public abstract class Racecourse {
 		MineKart.output(player, "A new point has been added to " + warpname + "!");
 	}
 
+	/**
+	 * Get the name of the racecourse
+	 * @return The name of the racecourse
+	 */
+	public String getName() {
+		return this.name;
+	}
+
 }
