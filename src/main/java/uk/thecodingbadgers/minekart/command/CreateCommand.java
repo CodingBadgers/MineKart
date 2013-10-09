@@ -19,8 +19,7 @@ public class CreateCommand {
 			MineKart.output(player, "You do not have the required permission 'minekart.create'");
 			return;
 		}
-		
-		
+
 		// mk create arena <name> <type>
 		if (args.length == 5) {
 			
@@ -43,23 +42,8 @@ public class CreateCommand {
 			return;
 		}
 		
-		// mk create game <name>
-		if (args.length == 4) {
-		
-			if (!args[1].equalsIgnoreCase("game")) {
-				MineKart.output(player, "Invalid command usage...");
-				MineKart.output(player, " - /mk create game <name>");
-				return;
-			}
-			
-			
-			
-			return;
-		}
-		
 		MineKart.output(player, "Invalid command usage...");
 		MineKart.output(player, " - /mk create arena <name> <type>");
-		MineKart.output(player, " - /mk create game <name>");
 	}
 
 }
