@@ -430,13 +430,27 @@ public abstract class Racecourse {
 
 	/**
 	 * Get a warp by its name
-	 * @param string The name of the warp to find
+	 * @param warpname The name of the warp to find
 	 * @return The location of the given warp, or null if a warp wasn't found
 	 */
 	public Location getWarp(String warpname) {
 		
 		if (this.singlePoints.containsKey(warpname)) {
 			return this.singlePoints.get(warpname);
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Get a multi warp by its name
+	 * @param warpname The name of the warp to find
+	 * @return The list of locations of the given warp, or null if a warp wasn't found
+	 */
+	public List<Location> getMultiWarp(String warpname) {
+		
+		if (this.multiPoints.containsKey(warpname)) {
+			return this.multiPoints.get(warpname);
 		}
 		
 		return null;
