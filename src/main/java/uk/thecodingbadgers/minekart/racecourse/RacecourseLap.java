@@ -92,6 +92,10 @@ public class RacecourseLap extends Racecourse {
 			checkpointIndex++;
 		}
 		
+		try {
+			file.save(this.fileConfiguration);
+		} catch (Exception ex) {}
+		
 	}
 	
 	/**

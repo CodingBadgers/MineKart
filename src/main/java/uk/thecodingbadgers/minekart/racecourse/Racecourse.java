@@ -179,6 +179,11 @@ public abstract class Racecourse {
 		file.set("racecourse.singlepoint.count", this.singlePoints.size());
 		int pointIndex = 0;
 		for (Entry<String, Location> point : this.singlePoints.entrySet()) {
+			
+			if (point.getValue() == null) {
+				continue;
+			}
+			
 			final String path = "racecourse.singlepoint." + pointIndex;
 			file.set(path + ".name", point.getKey());
 			saveLocation(file, path + ".location", point.getValue());
@@ -192,6 +197,10 @@ public abstract class Racecourse {
 			final String path = "racecourse.multipoint." + pointIndex;
 			List<Location> locations = point.getValue();
 			
+			if (locations == null || locations.isEmpty()) {
+				continue;
+			}
+			
 			file.set(path + ".name", point.getKey());
 			file.set(path + ".count", locations.size());
 			int locationIndex = 0;
@@ -201,6 +210,10 @@ public abstract class Racecourse {
 			}
 			pointIndex++;
 		}
+		
+		try {
+			file.save(this.fileConfiguration);
+		} catch (Exception ex) {}
 	}
 	
 	/**

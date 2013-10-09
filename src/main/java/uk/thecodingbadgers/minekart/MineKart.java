@@ -150,7 +150,7 @@ public final class MineKart extends JavaPlugin {
 		PluginDescriptionFile pluginDescription = this.getDescription();
 		
 		MineKart.output(sender, "===================");
-		MineKart.output(sender, ("MineKart by " + pluginDescription.getAuthors()).replaceAll("[", "").replaceAll("]", ""));
+		MineKart.output(sender, "MineKart by " + pluginDescription.getAuthors());
 		MineKart.output(sender, "Version " + pluginDescription.getVersion());
 		MineKart.output(sender, "===================");
 		MineKart.output(sender, "/mk setup help");

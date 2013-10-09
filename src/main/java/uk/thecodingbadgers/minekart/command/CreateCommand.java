@@ -31,9 +31,16 @@ public class CreateCommand {
 			}
 			
 			final String name = args[2];
-			final RacecourceType type = RacecourceType.valueOf(args[3]);
+			RacecourceType type = RacecourceType.Unknown;
 			
-			if (type == null) {
+			if (args[3].equalsIgnoreCase("lap")) {
+				type = RacecourceType.Lap;
+			}
+			else if (args[3].equalsIgnoreCase("checkpoint")) {
+				type = RacecourceType.CheckPoint;
+			}
+			
+			if (type == RacecourceType.Unknown) {
 				MineKart.output(player, "Unknown racecourse type '" + args[3] + "'");
 				return;
 			}
