@@ -27,6 +27,13 @@ public class RacecourseCheckpoint extends Racecourse {
 	
 	/** The checkpoints a jockey must pass through to complete the race */
 	protected List<Region> checkPoints = null;
+	
+	/**
+	 * Class constructor
+	 */
+	public RacecourseCheckpoint() {
+		this.type = "checkpoint";
+	}
 
 	/**
 	 * Setup the racecourse.
@@ -35,7 +42,7 @@ public class RacecourseCheckpoint extends Racecourse {
 	 */
 	@Override
 	public boolean setup(Player player, String name) {
-		
+				
 		if (!super.setup(player, name))
 			return false;
 		

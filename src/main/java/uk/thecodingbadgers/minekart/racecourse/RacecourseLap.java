@@ -33,6 +33,13 @@ public class RacecourseLap extends Racecourse {
 	protected List<Region> checkPoints = null;
 
 	/**
+	 * Class constructor
+	 */
+	public RacecourseLap() {
+		this.type = "lap";
+	}
+	
+	/**
 	 * Setup the racecourse.
 	 * @param player The player who is setting up the course
 	 * @return True if the location is within the course bounds, false otherwise.

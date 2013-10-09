@@ -40,6 +40,9 @@ public abstract class Racecourse {
 	/** The name of the racecourse */
 	protected String name = null;
 	
+	/** The string representation of this course type */
+	protected String type = null;
+	
 	/** A map of all registered multi point location sets */
 	protected Map<String, List<Location>> multiPoints = null;
 	
@@ -80,16 +83,16 @@ public abstract class Racecourse {
 		registerWarp(player, "lobby", "set");
 		registerWarp(player, "spectate", "set");
 		
-		this.fileConfiguration = new File(MineKart.getRacecourseFolder() + File.separator + name + ".yml");
+		this.fileConfiguration = new File(MineKart.getRacecourseFolder() + File.separator + this.name + "." + this.type + ".yml");
 		if (!this.fileConfiguration.exists()) {
 			try {
 				if (!this.fileConfiguration.createNewFile()) {
-					MineKart.output(player, "Failed to create config file for racecourse '" + name + "' at the following location");
+					MineKart.output(player, "Failed to create config file for racecourse '" + this.name + "' at the following location");
 					MineKart.output(player, this.fileConfiguration.getAbsolutePath());
 					return false;
 				}
 			} catch(Exception ex) {
-				MineKart.output(player, "Failed to create config file for racecourse '" + name + "' at the following location");
+				MineKart.output(player, "Failed to create config file for racecourse '" + this.name + "' at the following location");
 				MineKart.output(player, this.fileConfiguration.getAbsolutePath());
 				return false;
 			}

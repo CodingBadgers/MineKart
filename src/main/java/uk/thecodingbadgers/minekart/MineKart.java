@@ -39,7 +39,7 @@ public final class MineKart extends JavaPlugin {
 	private WorldEditPlugin worldEdit = null;
 	
 	/** Map of all known racecourses where the key is the course name */
-	private Map<String, Racecourse> course = null;
+	private Map<String, Racecourse> courses = null;
 	
 	/** The path to the folder where all racecourses reside */
 	private static File racecourseFolderPath = null;
@@ -68,7 +68,9 @@ public final class MineKart extends JavaPlugin {
 		
 		registerListeners();
 		
-		this.course = new HashMap<String, Racecourse>();
+		this.courses = new HashMap<String, Racecourse>();
+		
+		loadRacecourses();
 	}
 
 	/**
@@ -108,6 +110,42 @@ public final class MineKart extends JavaPlugin {
 	private void registerListeners() {
 		PluginManager manager = this.getServer().getPluginManager();
 		manager.registerEvents(new CourseCreationListener(), this);
+	}
+	
+	/**
+	 * Load all racecourses
+	 */
+	private void loadRacecourses() {
+		File[] coursefiles = MineKart.racecourseFolderPath.listFiles();
+		
+		for (File file : coursefiles) {
+			final String filename = file.getName();
+			
+			if (!filename.endsWith(".yml"))
+				continue;
+			
+			final String[] nameparts = filename.split("\\.");
+			
+			final String coursename = nameparts[0];
+			final String coursetype = nameparts[1];
+			
+			Racecourse course = null;
+			if (coursetype.equalsIgnoreCase("lap")) {
+				course = new RacecourseLap();
+			}
+			else if (coursetype.equalsIgnoreCase("checkpoint")) {
+				course = new RacecourseCheckpoint();
+			}
+			
+			if (course == null) {
+				Bukkit.getLogger().log(Level.SEVERE, "Unknown course type '" + coursetype + "' for course '" + coursename + "'.");
+				continue;
+			}
+			
+			course.load(file);
+			this.courses.put(coursename.toLowerCase(), course);
+			Bukkit.getLogger().log(Level.INFO, "Loaded racecourse: " + coursename);
+		}
 	}
 	
 	/**
@@ -181,7 +219,7 @@ public final class MineKart extends JavaPlugin {
 	 */
 	public void createArena(Player player, String name, RacecourceType type) {
 		
-		if (this.course.containsKey(name.toLowerCase())) {
+		if (this.courses.containsKey(name.toLowerCase())) {
 			MineKart.output(player, "A racecourse with this name already exists.");
 			MineKart.output(player, "Creation of '" + name + "' failed.");
 			return;
@@ -216,7 +254,7 @@ public final class MineKart extends JavaPlugin {
 			return;
 		}
 		
-		this.course.put(name.toLowerCase(), newCourse);
+		this.courses.put(name.toLowerCase(), newCourse);
 		
 		MineKart.output(player, "Created the new " + type + " arena '" + name + "' sucessfully!");
 		MineKart.output(player, "Next you need to...");
@@ -230,7 +268,7 @@ public final class MineKart extends JavaPlugin {
 	 * @return The course represented by the given name, or null if a course was not found.
 	 */
 	public Racecourse getRacecourse(String courseName) {
-		return this.course.get(courseName.toLowerCase());
+		return this.courses.get(courseName.toLowerCase());
 	}
 	
 	/**
@@ -238,6 +276,6 @@ public final class MineKart extends JavaPlugin {
 	 * @return The map of all known racecourses.
 	 */
 	public Map<String, Racecourse> getAllRacecourses() {
-		return this.course;
+		return this.courses;
 	}
 }
