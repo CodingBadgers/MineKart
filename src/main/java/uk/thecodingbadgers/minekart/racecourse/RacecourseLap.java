@@ -120,11 +120,26 @@ public class RacecourseLap extends Racecourse {
 			fullySetup = false;
 		}
 		
-		if (fullySetup) {
-			MineKart.output(sender, "The course '" + this.name + "' is fully setup!");
-		}
-		
 		return fullySetup;
+	}
+	
+	/**
+	 * Output all information about this racecourse
+	 * @param sender The thing to tell the information
+	 */
+	@Override
+	public void outputInformation(CommandSender sender) {
+		
+		super.outputInformation(sender);
+
+		MineKart.output(sender, "Checkpoints:");
+		int checkpointIndex = 0;
+		for (Region point : this.checkPoints) {
+			MineKart.output(sender, "[" + checkpointIndex + "] " + point.toString());
+			checkpointIndex++;
+		}
+		MineKart.output(sender, "-------------");
+		
 	}
 	
 	/**
@@ -160,12 +175,14 @@ public class RacecourseLap extends Racecourse {
 			}
 			
 			MineKart.output(player, "Succesfully add a new checkpoint to the arena!");
+			outputRequirements(player);
 			save();
 			return;
 		}
 		
 		// if it's not a checkpoint pass it on
 		super.addWarp(player, warpname);
+		outputRequirements(player);
 		save();
 		
 	}

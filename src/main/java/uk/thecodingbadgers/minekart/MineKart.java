@@ -178,9 +178,15 @@ public final class MineKart extends JavaPlugin {
 			return true;
 		}
 		
-		// if the control argument is set or add, let the setwarp command handler take care of it
+		// if the control argument is list, let the helper command handler take care of it
 		if (controlArgument.startsWith("list")) {
 			HelperCommand.handleListCommand(sender, args);
+			return true;
+		}
+		
+		// if the control argument is info, let the helper command handler take care of it
+		if (controlArgument.startsWith("info")) {
+			HelperCommand.handleInfoCommand(sender, args);
 			return true;
 		}
 		

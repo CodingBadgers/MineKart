@@ -313,6 +313,36 @@ public abstract class Racecourse {
 	}
 	
 	/**
+	 * Output all information about this racecourse
+	 * @param sender The thing to tell the information
+	 */
+	public void outputInformation(CommandSender sender) {
+		
+		MineKart.output(sender, "Course Name: " + this.name);
+		MineKart.output(sender, "World: " + this.world.getName());
+		MineKart.output(sender, "Bounds: " + this.bounds.toString());
+		MineKart.output(sender, "-------------");
+
+		for (Entry<String, Location> point : this.singlePoints.entrySet()) {
+			if (point.getValue() != null) {
+				MineKart.output(sender, point.getKey() + ": " + point.getValue().toString());
+			}
+		}
+		MineKart.output(sender, "-------------");
+		
+		for (Entry<String, List<Location>> point : this.multiPoints.entrySet()) {
+			if (point.getValue() != null && !point.getValue().isEmpty()) {
+				MineKart.output(sender, point.getKey());
+				for (Location location : point.getValue()) {
+					MineKart.output(sender, " - " + location.toString());
+				}
+			}
+		}
+		MineKart.output(sender, "-------------");
+		
+	}
+	
+	/**
 	 * Register a warp type
 	 * @param player The player registering the warp
 	 * @param name The name of the warp to register
