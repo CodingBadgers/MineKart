@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -207,6 +208,33 @@ public abstract class Racecourse {
 				new com.sk89q.worldedit.Vector(minX, minY, minZ),
 				new com.sk89q.worldedit.Vector(maxX, maxY, maxZ)
 				);	
+	}
+	
+	/**
+	 * Output the remaining requirements to complete this arena
+	 * @param sender The sender to receive the output information
+	 * @return True if all requirements have been met
+	 */
+	public boolean outputRequirements(CommandSender sender) {
+		
+		boolean fullySetup = true;
+		
+		if (this.spawnPoints.size() < 2) {
+			MineKart.output(sender, " - Add spawn points (minimum of 2 required) [/mk addspawn <coursename>]");
+			fullySetup = false;
+		}
+		
+		if (this.lobbySpawn == null) {
+			MineKart.output(sender, " - Add a lobby spawn point [/mk setlobby <coursename>]");
+			fullySetup = false;
+		}
+		
+		if (this.spectateSpawn == null) {
+			MineKart.output(sender, " - Add a spectator spawn point [/mk setspectate <coursename>]");
+			fullySetup = false;
+		}
+		
+		return fullySetup;
 	}
 
 }

@@ -3,8 +3,11 @@ package uk.thecodingbadgers.minekart.racecourse;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+
+import uk.thecodingbadgers.minekart.MineKart;
 
 import com.sk89q.worldedit.regions.Region;
 
@@ -40,6 +43,7 @@ public class RacecourseCheckpoint extends Racecourse {
 	/**
 	 * Load the racecourse from file.
 	 */	
+	@Override
 	public void load(FileConfiguration file) {
 		
 		super.load(file);
@@ -56,6 +60,7 @@ public class RacecourseCheckpoint extends Racecourse {
 	/**
 	 * Save the racecourse to file.
 	 */	
+	@Override
 	public void save(FileConfiguration file) {
 		
 		super.save(file);
@@ -68,6 +73,28 @@ public class RacecourseCheckpoint extends Racecourse {
 			checkpointIndex++;
 		}
 		
+	}
+	
+	/**
+	 * Output the remaining requirements to complete this arena
+	 * @param sender The sender to receive the output information
+	 * @return True if all requirements have been met
+	 */
+	@Override
+	public boolean outputRequirements(CommandSender sender) {
+		
+		boolean fullySetup = super.outputRequirements(sender);
+		
+		if (this.checkPoints.isEmpty()) {
+			MineKart.output(sender, " - Add checkpoints (minimum of 1 required) [/mk addcheckpoint <coursename>]");
+			fullySetup = false;
+		}
+		
+		if (fullySetup) {
+			MineKart.output(sender, "The course '" + this.name + "' is fully setup!");
+		}
+		
+		return fullySetup;
 	}
 
 }

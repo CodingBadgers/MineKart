@@ -171,10 +171,8 @@ public final class MineKart extends JavaPlugin {
 		}
 		
 		MineKart.output(player, "Created the new " + type + " arena '" + name + "' sucessfully!");
-		MineKart.output(player, "Next you need too...");
-		MineKart.output(player, " - Add spawn points");
-		MineKart.output(player, " - Add checkpoints points");
-		MineKart.output(player, " - Add a lobby spawn point");
-		MineKart.output(player, " - Add a spectator spawn point");
+		MineKart.output(player, "Next you need to...");
+		newCourse.outputRequirements(player);
+				
 	}
 }
