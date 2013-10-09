@@ -1,7 +1,10 @@
 package uk.thecodingbadgers.minekart.racecourse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -35,15 +38,12 @@ public abstract class Racecourse {
 	/** The name of the racecourse */
 	protected String name = null;
 	
-	/** The spawn points for the jockeys on race start */
-	protected List<Location> spawnPoints = null;
+	/** A map of all registered multi point location sets */
+	protected Map<String, List<Location>> multiPoints = null;
 	
-	/** The lobby spawn location */
-	protected Location lobbySpawn = null;
+	/** A map of all registered single point locations */
+	protected Map<String, Location> singlePoints = null;
 	
-	/** The spectator spawn location */
-	protected Location spectateSpawn = null;
-
 	/**
 	 * Setup the racecourse. Setting up the bounds of the arena based on player world edit seleciton.
 	 * @param player The player who is setting up the course
@@ -63,13 +63,18 @@ public abstract class Racecourse {
 		try {
 			bounds = seleciton.getRegionSelector().getRegion();
 		} catch (IncompleteRegionException e) {
-			MineKart.output(player, "");
+			MineKart.output(player, "An invalid selection was made using world edit. Please make a complete cuboid selection and try again.");
 			return false;
 		}
 		
 		this.name = name;
-		this.spawnPoints = new ArrayList<Location>();
-
+		this.multiPoints = new HashMap<String, List<Location>>();
+		this.singlePoints = new HashMap<String, Location>();
+		
+		registerWarp(player, "spawn", "add");
+		registerWarp(player, "lobby", "set");
+		registerWarp(player, "spectate", "set");
+		
 		return true;
 	}
 	
@@ -105,17 +110,29 @@ public abstract class Racecourse {
 		this.world = Bukkit.getWorld(file.getString("racecourse.world"));
 		this.bounds = loadRegion(file, "racecourse.bounds");
 		
-		// Course spawns
-		this.spawnPoints = new ArrayList<Location>();
-		int noofSpawnPoints = file.getInt("racecourse.spawn.count");
-		
-		for (int spawnIndex = 0; spawnIndex < noofSpawnPoints; ++spawnIndex) {			
-			this.spawnPoints.add(loadLocation(file, "racecourse.spawn." + spawnIndex));
+		// Single point locations
+		int noofSinglePoints = file.getInt("racecourse.singlepoint.count");
+		for (int pointIndex = 0; pointIndex < noofSinglePoints; ++pointIndex) {
+			final String path = "racecourse.singlepoint." + pointIndex;
+			final String name = file.getString(path + ".name");
+			final Location location = loadLocation(file, path + ".location");
+			this.singlePoints.put(name, location);
 		}
 		
-		// Spawn points
-		this.lobbySpawn = loadLocation(file, "racecourse.lobbyspawn");
-		this.spectateSpawn = loadLocation(file, "racecourse.spectatespawn");
+		// Multi-point locations
+		int noofMultiPoints = file.getInt("racecourse.multipoint.count");
+		for (int pointIndex = 0; pointIndex < noofMultiPoints; ++pointIndex) {
+			final String path = "racecourse.multipoint." + pointIndex;
+			List<Location> locations = new ArrayList<Location>();
+			
+			final String name = file.getString(path + ".name");
+			final int noofLocations = file.getInt(path + ".count");
+			for (int locationIndex = 0; locationIndex < noofLocations; ++locationIndex) {
+				locations.add(loadLocation(file, path + ".location." + locationIndex));
+			}
+			
+			this.multiPoints.put(name, locations);
+		}
 		
 	}
 	
@@ -131,18 +148,32 @@ public abstract class Racecourse {
 		file.set("racecourse.world", this.world.getName());
 		saveRegion(file, "racecourse.bounds", this.bounds);
 
-		// Course spawns
-		file.set("racecourse.spawn.count", this.spawnPoints.size());
-		int spawnIndex = 0;
-		for (Location spawn : this.spawnPoints) {
-			saveLocation(file, "racecourse.spawn." + spawnIndex, spawn);
-			spawnIndex++;
+		// Single point locations
+		file.set("racecourse.singlepoint.count", this.singlePoints.size());
+		int pointIndex = 0;
+		for (Entry<String, Location> point : this.singlePoints.entrySet()) {
+			final String path = "racecourse.singlepoint." + pointIndex;
+			file.set(path + ".name", point.getKey());
+			saveLocation(file, path + ".location", point.getValue());
+			pointIndex++;
 		}
 		
-		// Spawn points
-		saveLocation(file, "racecourse.lobbyspawn", this.lobbySpawn);
-		saveLocation(file, "racecourse.spectatespawn", this.spectateSpawn);
-		
+		// Multi-point locations
+		file.set("racecourse.multipoint.count", this.multiPoints.size());
+		pointIndex = 0;
+		for (Entry<String, List<Location>> point : this.multiPoints.entrySet()) {
+			final String path = "racecourse.multipoint." + pointIndex;
+			List<Location> locations = point.getValue();
+			
+			file.set(path + ".name", point.getKey());
+			file.set(path + ".count", locations.size());
+			int locationIndex = 0;
+			for (Location location : locations) {
+				saveLocation(file, path + ".location." + locationIndex, location);
+				locationIndex++;
+			}
+			pointIndex++;
+		}
 	}
 	
 	/**
@@ -219,22 +250,83 @@ public abstract class Racecourse {
 		
 		boolean fullySetup = true;
 		
-		if (this.spawnPoints.size() < 2) {
-			MineKart.output(sender, " - Add spawn points (minimum of 2 required) [/mk addspawn <coursename>]");
-			fullySetup = false;
+		// single points
+		for (Entry<String, Location> point : this.singlePoints.entrySet()) {
+			if (point.getValue() == null) {
+				MineKart.output(sender, " - Add a " + point.getKey() + " spawn point [/mk set" + point.getKey() + " <coursename>]");
+				fullySetup = false;
+			}
 		}
 		
-		if (this.lobbySpawn == null) {
-			MineKart.output(sender, " - Add a lobby spawn point [/mk setlobby <coursename>]");
-			fullySetup = false;
-		}
-		
-		if (this.spectateSpawn == null) {
-			MineKart.output(sender, " - Add a spectator spawn point [/mk setspectate <coursename>]");
-			fullySetup = false;
+		// multi-points
+		for (Entry<String, List<Location>> point : this.multiPoints.entrySet()) {
+			if (point.getValue() == null || point.getValue().size() < 2) {
+				MineKart.output(sender, " - Add " + point.getKey() + "s (minimum of 2 required) [/mk add" + point.getKey() + " <coursename>]");
+				fullySetup = false;
+			}
 		}
 		
 		return fullySetup;
+	}
+	
+	/**
+	 * Register a warp type
+	 * @param player The player registering the warp
+	 * @param name The name of the warp to register
+	 * @param type The type of warp to register, set or add.
+	 */
+	public void registerWarp(Player player, String name, String type) {
+		
+		if (type.equalsIgnoreCase("set")) {
+			if (this.singlePoints.containsKey(name))
+				return;
+			
+			this.singlePoints.put(name, null);
+		} else if (type.equalsIgnoreCase("add")) {
+			if (this.multiPoints.containsKey(name))
+				return;
+			
+			this.multiPoints.put(name, new ArrayList<Location>());
+		} else {
+			MineKart.output(player, "Unknown warp type '" + type + "', please use 'set' or 'add'");
+		}
+		
+	}
+
+	/**
+	 * Set a single point warp
+	 * @param player The player setting the warp
+	 * @param warpname The name of the warp to set
+	 */
+	public void setWarp(Player player, String warpname) {
+		
+		if (!this.singlePoints.containsKey(warpname)) {
+			MineKart.output(player, "There is no single point warp with the name '" + warpname + "'.");
+			return;
+		}
+		
+		this.singlePoints.remove(warpname);
+		this.singlePoints.put(warpname, player.getLocation());
+		MineKart.output(player, "The point " + warpname + " has been set!");
+	}
+
+	/**
+	 * Add a multi-point warp
+	 * @param player The player adding the warp
+	 * @param warpname The name of the warp to add to
+	 */
+	public void addWarp(Player player, String warpname) {
+		
+		if (!this.multiPoints.containsKey(warpname)) {
+			MineKart.output(player, "There is no multi-point warp with the name '" + warpname + "'.");
+			return;
+		}
+		
+		List<Location> locations = this.multiPoints.get(warpname);
+		this.multiPoints.remove(warpname);
+		locations.add(player.getLocation());
+		this.multiPoints.put(warpname, locations);
+		MineKart.output(player, "A new point has been added to " + warpname + "!");
 	}
 
 }

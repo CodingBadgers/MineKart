@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
 
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldedit.regions.Region;
 
 /**
@@ -40,7 +42,7 @@ public class RacecourseLap extends Racecourse {
 			return false;
 		
 		this.checkPoints = new ArrayList<Region>();
-
+	
 		return true;
 	}
 	
@@ -113,6 +115,39 @@ public class RacecourseLap extends Racecourse {
 	 */
 	public int getNumberOfLaps() {
 		return this.noofLaps;
+	}
+	
+	/**
+	 * Add a multi-point warp
+	 * @param player The player adding the warp
+	 * @param warpname The name of the warp to add to
+	 */
+	@Override
+	public void addWarp(Player player, String warpname) {
+		
+		if (warpname.equalsIgnoreCase("checkpoint")) {
+			
+			WorldEditPlugin worldEdit = MineKart.getInstance().getWorldEditPlugin();
+			Selection selection = worldEdit.getSelection(player);
+			if (selection == null) {
+				MineKart.output(player, "Please make a world edit selection of the region you wish to be a checkpoint...");
+				return;
+			}
+			
+			try {
+				this.checkPoints.add(selection.getRegionSelector().getRegion());
+			} catch(Exception ex) {
+				MineKart.output(player, "An invalid selection was made using world edit. Please make a complete cuboid selection and try again.");
+				return;
+			}
+			
+			MineKart.output(player, "Succesfully add a new checkpoint to the arena!");
+			return;
+		}
+		
+		// if it's not a checkpoint pass it on
+		super.addWarp(player, warpname);
+		
 	}
 
 }

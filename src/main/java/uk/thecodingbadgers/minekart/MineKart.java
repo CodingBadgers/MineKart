@@ -1,5 +1,7 @@
 package uk.thecodingbadgers.minekart;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -34,6 +36,9 @@ public final class MineKart extends JavaPlugin {
 	/** Access to the world edit plugin */
 	private WorldEditPlugin worldEdit = null;
 	
+	/** Map of all known racecourses where the key is the course name */
+	private Map<String, Racecourse> course = null;
+	
 	/**
 	 * Called when the plugin is enabled
 	 */
@@ -43,12 +48,14 @@ public final class MineKart extends JavaPlugin {
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		
 		// Get the world edit plugin instance
-		worldEdit = (WorldEditPlugin)pluginManager.getPlugin("WorldEdit");
-		if (worldEdit == null) {
+		this.worldEdit = (WorldEditPlugin)pluginManager.getPlugin("WorldEdit");
+		if (this.worldEdit == null) {
 			Bukkit.getLogger().log(Level.SEVERE, "Could not find the WorldEdit plugin.");
 		}
 		
 		registerListeners();
+		
+		this.course = new HashMap<String, Racecourse>();
 	}
 
 	/**
@@ -98,11 +105,17 @@ public final class MineKart extends JavaPlugin {
 			return true;
 		}
 		
-		final String controlArgument = args[0];
+		final String controlArgument = args[0].toLowerCase();
 		
 		// if the control argument is create, let the create command handler take care of it
 		if (controlArgument.equalsIgnoreCase("create") || controlArgument.equalsIgnoreCase("c")) {
-			CreateCommand.handleCommand(sender, args);
+			CreateCommand.handleCreateCommand(sender, args);
+			return true;
+		}
+		
+		// if the control argument is set or add, let the setwarp command handler take care of it
+		if (controlArgument.startsWith("set") || controlArgument.startsWith("add")) {
+			CreateCommand.handleSetWarpCommand(sender, args);
 			return true;
 		}
 		
@@ -141,6 +154,12 @@ public final class MineKart extends JavaPlugin {
 	 */
 	public void createArena(Player player, String name, RacecourceType type) {
 		
+		if (this.course.containsKey(name.toLowerCase())) {
+			MineKart.output(player, "A racecourse with this name already exists.");
+			MineKart.output(player, "Creation of '" + name + "' failed.");
+			return;
+		}
+		
 		Racecourse newCourse = null;
 		switch(type) {
 		case CheckPoint:
@@ -170,9 +189,20 @@ public final class MineKart extends JavaPlugin {
 			return;
 		}
 		
+		this.course.put(name.toLowerCase(), newCourse);
+		
 		MineKart.output(player, "Created the new " + type + " arena '" + name + "' sucessfully!");
 		MineKart.output(player, "Next you need to...");
 		newCourse.outputRequirements(player);
 				
+	}
+	
+	/**
+	 * Get a course from a given name
+	 * @param courseName The name of the course to get
+	 * @return The course represented by the given name, or null if a course was not found.
+	 */
+	public Racecourse getRacecourse(String courseName) {
+		return this.course.get(courseName.toLowerCase());
 	}
 }
