@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.race.Jockey;
 import uk.thecodingbadgers.minekart.race.Race;
+import uk.thecodingbadgers.minekart.race.RaceState;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -186,6 +187,9 @@ public class RacecourseCheckpoint extends Racecourse {
 	 */
 	@Override
 	public void onJockeyMove(Jockey jockey, Race race) {
+		
+		if (race.getState() != RaceState.InRace)
+			return;
 
 		int targetCheckpointIndex = this.targetCheckpoints.get(jockey);
 		Region targetCheckpoint = this.checkPoints.get(targetCheckpointIndex);
@@ -203,7 +207,7 @@ public class RacecourseCheckpoint extends Racecourse {
 				MineKart.output(jockey.getPlayer(), "Checkpoint Reached!");
 			}
 			else {
-				MineKart.output(jockey.getPlayer(), "Winner!");
+				race.setWinner(jockey);
 			}
 		}
 		

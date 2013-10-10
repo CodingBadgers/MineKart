@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -111,7 +112,7 @@ public abstract class Race {
 	 * Called when the race starts
 	 */
 	private void onRaceStart() {
-		outputToRace("and their off!");
+		outputToRace("and they're off!");
 		
 		this.course.onRaceStart(this);
 		
@@ -175,7 +176,7 @@ public abstract class Race {
 	 * End the race
 	 */
 	public void end() {
-		Map<String, Jockey> tempJockeys = this.jockeys;
+		Map<String, Jockey> tempJockeys = new HashMap<String, Jockey>(this.jockeys);
 		for (Jockey jockey : tempJockeys.values()) {
 			removeJockey(jockey);
 		}
@@ -212,5 +213,25 @@ public abstract class Race {
 	 */
 	public Collection<Jockey> getJockeys() {
 		return this.jockeys.values();
+	}
+
+	/**
+	 * Set the winner of the race
+	 * @param jockey The jockey who is the winner
+	 */
+	public void setWinner(Jockey jockey) {
+		
+		if (this.state != RaceState.InRace)
+			return;
+		this.state = RaceState.Waiting;
+		
+		this.outputToRace(
+				ChatColor.YELLOW + jockey.getPlayer().getName() + 
+				ChatColor.WHITE + " and their mount " + 
+				ChatColor.YELLOW + jockey.getMount().getName() +
+				ChatColor.WHITE +" is the Winner!"
+			);
+		
+		end();
 	}
 }

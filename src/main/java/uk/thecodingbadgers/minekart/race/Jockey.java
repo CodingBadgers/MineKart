@@ -198,9 +198,9 @@ public class Jockey {
 		String[] allNames = {"Mental Boy", "Nervous Sparxx", "OAP Money", "Clean Smoke",
 				"Gnashing Panic", "Near Pride", "Bringing Action", "Nefarious Dusty",
 				"Tornado Fall", "Jim's Depression", "Caramel Comedy", "Wally's Maiden",
-				"Dirty Underwater", "Romantic Apple", "Wisby's Revenge", "Rabid Ruler",
+				"Dirty Underwear", "Romantic Apple", "Wisby's Revenge", "Rabid Ruler",
 				"Scared Sally", "Prancers Dream", "Tidy's Teen", "Losing Hope", "Adios Alex",
-				"Whisky Galore", "Who's Dr"};
+				"Whisky Galore", "Who's Dr", "Nintendon't"};
 		
 		Random random = new Random();
 		return allNames[random.nextInt(allNames.length)];
@@ -253,6 +253,14 @@ public class Jockey {
 		this.player.addPotionEffect(effect, true);
 		this.mount.getBukkitEntity().addPotionEffect(effect, true);
 		
+	}
+
+	/**
+	 * Get the jockeys mount
+	 * @return The NPC mount
+	 */
+	public NPC getMount() {
+		return this.mount;
 	}
 	
 }

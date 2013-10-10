@@ -197,8 +197,6 @@ public class RacecourseLap extends Racecourse {
 	@Override
 	public void onJockeyMove(Jockey jockey, Race race) {
 		
-		MineKart.output(jockey.getPlayer(), "Test - 131");
-		
 	}
 
 	/**
