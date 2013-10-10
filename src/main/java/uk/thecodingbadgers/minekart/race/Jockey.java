@@ -1,9 +1,12 @@
 package uk.thecodingbadgers.minekart.race;
 
+import java.util.Random;
+
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.Controllable;
 
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -11,6 +14,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -28,6 +32,9 @@ public class Jockey {
 	
 	/** The type of mount the jockey will use */
 	private EntityType mountType = EntityType.UNKNOWN;
+	
+	/** The color which represents this jockey */
+	private Color jockeyColor = Color.RED;
 	
 	/** The jockeys mount */
 	private NPC mount = null;
@@ -49,6 +56,45 @@ public class Jockey {
 		this.mountType = mountType;
 		this.race = race;
 		this.exitLocaiton = player.getLocation();
+		this.jockeyColor = getRandomColor();
+		
+		// Give the player a coloured jersey
+		ItemStack jersey = new ItemStack(Material.LEATHER_CHESTPLATE);
+		LeatherArmorMeta jerseyMeta = (LeatherArmorMeta) jersey.getItemMeta();
+		jerseyMeta.setColor(this.jockeyColor);
+		jersey.setItemMeta(jerseyMeta);
+		
+		// Give the player a coloured hat
+		ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
+		LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
+		helmetMeta.setColor(this.jockeyColor);
+		helmet.setItemMeta(helmetMeta);
+		
+		// Give the jockey white leggings
+		ItemStack leggings = new ItemStack(Material.LEATHER_HELMET);
+		LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
+		leggingsMeta.setColor(Color.WHITE);
+		leggings.setItemMeta(leggingsMeta);
+		
+		// Give the jockey black boots
+		ItemStack boots = new ItemStack(Material.LEATHER_HELMET);
+		LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
+		bootsMeta.setColor(Color.BLACK);
+		boots.setItemMeta(bootsMeta);
+		
+		player.getInventory().setHelmet(helmet);
+		player.getInventory().setChestplate(jersey);
+		player.getInventory().setLeggings(leggings);
+		player.getInventory().setBoots(boots);
+	}
+
+	/**
+	 * Get a random color
+	 * @return A color
+	 */
+	private Color getRandomColor() {
+		Random random = new Random();
+		return Color.fromRGB(random.nextInt(256), random.nextInt(256), random.nextInt(256));
 	}
 
 	/**
@@ -66,7 +112,7 @@ public class Jockey {
 	public void teleportToSpawn(Location spawn) {
 		
 		// make their mounts
-		this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, "Horse");
+		this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, getRadomMountName());
 		this.mount.setProtected(true);
 		this.mount.addTrait(new Controllable(false));
 		this.mount.spawn(spawn);
@@ -75,18 +121,35 @@ public class Jockey {
 		Controllable trait = this.mount.getTrait(Controllable.class);
 		trait.setEnabled(true);
 		trait.mount(this.player);	
-		trait.setEnabled(false);
+		trait.setEnabled(false); // disable it until the race has started
 		
 		// Give the player a whip
 		ItemStack whip = new ItemStack(Material.STICK);
-		ItemMeta meta = whip.getItemMeta();
-		meta.setDisplayName("Whip");
-		whip.setItemMeta(meta);
+		ItemMeta whipMeta = whip.getItemMeta();
+		whipMeta.setDisplayName("Whip");
+		whip.setItemMeta(whipMeta);
 		whip.setAmount(4);
 		whip.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
 		player.getInventory().setItem(0, whip);
 	}
-	
+
+	/**
+	 * Get a random name to be used by a mount
+	 * @return A string to be used as the mount name
+	 */
+	private String getRadomMountName() {
+		
+		String[] allNames = {"Mental Boy", "Nervous Sparxx", "OAP Money", "Clean Smoke",
+				"Gnashing Panic", "Near Pride", "Bringing Action", "Nefarious Dusty",
+				"Tornado Fall", "Jim's Depression", "Caramel Comedy", "Wally's Maiden",
+				"Dirty Underwater", "Romantic Apple", "Wisby's Revenge", "Rabid Ruler",
+				"Scared Sally", "Prancers Dream", "Tidy's Teen", "Losing Hope", "Adios Alex",
+				"Whisky Galore", "Who's Dr"};
+		
+		Random random = new Random();
+		return allNames[random.nextInt(allNames.length)];
+	}
+
 	/**
 	 * Called when a race starts
 	 */

@@ -29,6 +29,8 @@ public abstract class Race {
 	/** The jockeys in this race */
 	protected Map<String, Jockey> jockeys = new HashMap<String, Jockey>();
 	
+	
+	
 	/**
 	 * Set the course used by this race
 	 * @param course The course to use
