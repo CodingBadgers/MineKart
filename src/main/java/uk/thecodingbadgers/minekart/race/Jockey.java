@@ -48,6 +48,9 @@ public class Jockey {
 	
 	/** The race that this jockey is in */
 	private Race race = null;
+	
+	/**  */
+	private long startTime = 0L;
 
 	/**
 	 * 
@@ -213,6 +216,7 @@ public class Jockey {
 		
 		Controllable trait = this.mount.getTrait(Controllable.class);
 		trait.setEnabled(true);
+		this.startTime = System.currentTimeMillis();
 		
 	}
 
@@ -261,6 +265,14 @@ public class Jockey {
 	 */
 	public NPC getMount() {
 		return this.mount;
+	}
+
+	/**
+	 * Get the time the player has been in the race
+	 * @return The time in milliseconds
+	 */
+	public long getRaceTime() {
+		return System.currentTimeMillis() - this.startTime;
 	}
 	
 }

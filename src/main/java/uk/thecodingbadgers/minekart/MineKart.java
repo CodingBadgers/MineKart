@@ -1,6 +1,9 @@
 package uk.thecodingbadgers.minekart;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -334,5 +337,16 @@ public final class MineKart extends JavaPlugin {
 		}
 		
 		return null;
+	}
+
+	/**
+	 * 
+	 * @param raceTime
+	 * @return
+	 */
+	public static String formatTime(long raceTime) {
+		Date date = new Date(raceTime);
+		DateFormat formatter = new SimpleDateFormat("mm:ss:SS");
+		return formatter.format(date);
 	}
 }

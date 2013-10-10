@@ -229,7 +229,7 @@ public abstract class Race {
 				ChatColor.YELLOW + jockey.getPlayer().getName() + 
 				ChatColor.WHITE + " and their mount " + 
 				ChatColor.YELLOW + jockey.getMount().getName() +
-				ChatColor.WHITE +" is the Winner!"
+				ChatColor.WHITE +" are the Winners!"
 			);
 		
 		end();

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -204,7 +205,11 @@ public class RacecourseCheckpoint extends Racecourse {
 			if (targetCheckpointIndex < this.checkPoints.size() - 1) {
 				this.targetCheckpoints.remove(jockey);
 				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);
-				MineKart.output(jockey.getPlayer(), "Checkpoint Reached!");
+				MineKart.output(jockey.getPlayer(), 
+						"Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " 
+						+ ChatColor.GREEN +
+						MineKart.formatTime(jockey.getRaceTime())
+						);
 			}
 			else {
 				race.setWinner(jockey);
