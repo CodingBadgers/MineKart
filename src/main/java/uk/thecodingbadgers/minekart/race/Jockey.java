@@ -7,12 +7,14 @@ import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.Controllable;
 
 import org.bukkit.Color;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
@@ -25,6 +27,7 @@ import org.bukkit.potion.PotionEffectType;
  * Jockeys also hold any powerups attained during a race. 
  *
  */
+@SuppressWarnings("deprecation")
 public class Jockey {
 	
 	/** The player which represents this jockey */
@@ -58,6 +61,8 @@ public class Jockey {
 		this.exitLocaiton = player.getLocation();
 		this.jockeyColor = getRandomColor();
 		
+		backupInventory(this.player);
+		
 		// Give the player a coloured jersey
 		ItemStack jersey = new ItemStack(Material.LEATHER_CHESTPLATE);
 		LeatherArmorMeta jerseyMeta = (LeatherArmorMeta) jersey.getItemMeta();
@@ -86,6 +91,49 @@ public class Jockey {
 		player.getInventory().setChestplate(jersey);
 		player.getInventory().setLeggings(leggings);
 		player.getInventory().setBoots(boots);
+	}
+
+	/**
+	 * Backup a players inventory and other information
+	 */
+	private void backupInventory(Player player) {
+		
+		// store data
+		// TODO
+		
+		// clear invent
+		player.setGameMode(GameMode.ADVENTURE);
+		player.setFlying(false);
+		clearInventory(player.getInventory());
+		player.updateInventory();
+		player.getActivePotionEffects().clear();
+	}
+	
+	/**
+	 * Restore a players inventory and other information
+	 */
+	private void restoreInventory(Player player) {
+
+		// clear invent
+		clearInventory(player.getInventory());
+		player.updateInventory();
+		player.getActivePotionEffects().clear();
+		
+		// restore data
+		// TODO
+
+	}
+	
+	/**
+	 * Clear a player inventory
+	 * @param invent The inventory to clear
+	 */
+	private void clearInventory(PlayerInventory invent) {
+		invent.clear();
+		invent.setHelmet(null);
+		invent.setChestplate(null);
+		invent.setLeggings(null);
+		invent.setBoots(null);
 	}
 
 	/**
@@ -164,10 +212,17 @@ public class Jockey {
 	 * Call when a race has ended
 	 */
 	public void onRaceEnd() {
+		
+		// Unmount and remove the mount
 		if (this.mount != null) {
 			this.mount.getBukkitEntity().eject();
 			this.mount.destroy();
 		}
+		
+		// Restore the jockeys items
+		restoreInventory(this.player);
+		
+		// Teleport the player to their exit location
 		this.player.teleport(this.exitLocaiton);
 	}
 
