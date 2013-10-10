@@ -28,15 +28,24 @@ public class Jockey {
 	
 	/** The jockeys mount */
 	private NPC mount = null;
+	
+	/** The location where the jockey should be taken too on race exit */
+	private Location exitLocaiton = null;
+	
+	/** The race that this jockey is in */
+	private Race race = null;
 
 	/**
 	 * 
 	 * @param player
 	 * @param mountType
+	 * @param race 
 	 */
-	public Jockey(Player player, EntityType mountType) {
+	public Jockey(Player player, EntityType mountType, Race race) {
 		this.player = player;
 		this.mountType = mountType;
+		this.race = race;
+		this.exitLocaiton = player.getLocation();
 	}
 
 	/**
@@ -88,6 +97,14 @@ public class Jockey {
 	 */
 	public void onRaceEnd() {
 		this.mount.destroy();
+		this.player.teleport(this.exitLocaiton);
 	}
 
+	/**
+	 * Get the race this jockey is in
+	 * @return The race instance
+	 */
+	public Race getRace() {
+		return this.race;
+	}
 }

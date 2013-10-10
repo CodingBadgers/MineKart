@@ -49,8 +49,9 @@ public abstract class Race {
 			return;
 		}
 		
-		Jockey newJockey = new Jockey(player, EntityType.HORSE);
+		Jockey newJockey = new Jockey(player, EntityType.HORSE, this);
 		this.jockeys.put(player.getName(), newJockey);
+		
 		player.teleport(this.course.getWarp("lobby"));
 		MineKart.output(player, "You have joined the lobby for the racecourse '" + this.course.getName() + "'.");		
 		
@@ -128,14 +129,25 @@ public abstract class Race {
 	public Jockey getJockey(Player player) {
 		return this.jockeys.get(player.getName());
 	}
+	
+	/**
+	 * Remove a jockey from the race
+	 * @param jockey The jockey to remove
+	 */
+	public void removeJockey(Jockey jockey) {
+		
+		this.jockeys.remove(jockey.getPlayer().getName());
+		jockey.onRaceEnd();
+		
+	}
 
 	/**
 	 * End the race
 	 */
 	public void end() {
-		for (Jockey jockey : this.jockeys.values()) {
-			jockey.onRaceEnd();
+		Map<String, Jockey> tempJockeys = this.jockeys;
+		for (Jockey jockey : tempJockeys.values()) {
+			removeJockey(jockey);
 		}
 	}
-
 }

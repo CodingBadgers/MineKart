@@ -199,8 +199,14 @@ public final class MineKart extends JavaPlugin {
 		}
 		
 		// if the control argument is join, let the race command handler take care of it
-		if (controlArgument.startsWith("join")) {
+		if (controlArgument.startsWith("join") || controlArgument.startsWith("j")) {
 			RaceCommand.handleJoinCommand(sender, args);
+			return true;
+		}
+		
+		// if the control argument is leave, let the race command handler take care of it
+		if (controlArgument.startsWith("leave") || controlArgument.startsWith("l")) {
+			RaceCommand.handleLeaveCommand(sender, args);
 			return true;
 		}
 		
