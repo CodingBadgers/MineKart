@@ -4,6 +4,7 @@ import java.util.Random;
 
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.trait.trait.Owner;
 import net.citizensnpcs.trait.Controllable;
 
 import org.bukkit.Color;
@@ -76,13 +77,13 @@ public class Jockey {
 		helmet.setItemMeta(helmetMeta);
 		
 		// Give the jockey white leggings
-		ItemStack leggings = new ItemStack(Material.LEATHER_HELMET);
+		ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS);
 		LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
 		leggingsMeta.setColor(Color.WHITE);
 		leggings.setItemMeta(leggingsMeta);
 		
 		// Give the jockey black boots
-		ItemStack boots = new ItemStack(Material.LEATHER_HELMET);
+		ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
 		LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
 		bootsMeta.setColor(Color.BLACK);
 		boots.setItemMeta(bootsMeta);
@@ -159,13 +160,20 @@ public class Jockey {
 	 */
 	public void teleportToSpawn(Location spawn) {
 		
-		// make their mounts
+		// Teleport the jockey to their mount
+		this.player.teleport(spawn);
+		
+		// Make their mounts
 		this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, getRadomMountName());
 		this.mount.setProtected(true);
 		this.mount.addTrait(new Controllable(false));
 		this.mount.spawn(spawn);
 		
-		// Make the npc controllable and mount the player
+		// Set the owner of the mount to the jockey
+		Owner owner = this.mount.getTrait(Owner.class);
+		owner.setOwner(this.player.getName());
+		
+		// Make the NPC controllable and mount the player
 		Controllable trait = this.mount.getTrait(Controllable.class);
 		trait.setEnabled(true);
 		trait.mount(this.player);	

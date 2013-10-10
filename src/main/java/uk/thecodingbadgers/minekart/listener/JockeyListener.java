@@ -5,11 +5,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.race.Jockey;
+import uk.thecodingbadgers.minekart.race.Race;
+import uk.thecodingbadgers.minekart.race.RaceState;
 
 public class JockeyListener implements Listener {
 
@@ -45,12 +48,19 @@ public class JockeyListener implements Listener {
 		if (jockey == null)
 			return;
 		
+		if (jockey.getRace().getState() != RaceState.InRace)
+			return;
+		
 		ItemStack item = player.getItemInHand();
-		if (item.getItemMeta().getDisplayName().equalsIgnoreCase("whip")) {	
-			int amount = item.getAmount() - 1;
-			item.setAmount(amount);
-			if (amount <= 0) {
+		if (item != null && item.getItemMeta() != null && item.getItemMeta().getDisplayName() != null
+				&& item.getItemMeta().getDisplayName().equalsIgnoreCase("whip")) {	
+			
+			int amount = item.getAmount();
+			if (amount <= 1) {
 				player.getInventory().removeItem(item);
+			}
+			else {
+				item.setAmount(amount - 1);
 			}
 			player.updateInventory();
 			
@@ -60,4 +70,22 @@ public class JockeyListener implements Listener {
 		
 	}
 	
+	/**
+	 * Called when a player moves.
+	 * @param event The player move event containing information on this event
+	 */
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent event) {
+		
+		Player player = event.getPlayer();
+		Jockey jockey = MineKart.getInstance().getJockey(player);
+		if (jockey == null)
+			return;
+		
+		Race race = jockey.getRace();
+		if (race.getState() != RaceState.InRace)
+			return;
+		
+		race.onJockeyMove(jockey);
+	}
 }

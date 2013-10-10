@@ -59,7 +59,6 @@ public abstract class Race {
 		
 		List<Location> spawns = this.course.getMultiWarp("spawn");
 		if (spawns.size() == this.jockeys.size()) {
-			this.state = RaceState.InRace;
 			teleportToSpawns();
 			return;
 		}
@@ -70,6 +69,8 @@ public abstract class Race {
 	 * Teleport all jockeys to the starting spawns and put them on their mounts
 	 */
 	public void teleportToSpawns() {
+		
+		this.state = RaceState.Starting;	
 		
 		List<Location> spawns = this.course.getMultiWarp("spawn");
 		int spawnIndex = spawns.size() - 1;
@@ -95,7 +96,8 @@ public abstract class Race {
 			for (Jockey jockey : this.jockeys.values()) {
 				jockey.onRaceStart();
 			}
-						
+			
+			this.state = RaceState.InRace;						
 			return;
 		}
 		
@@ -154,6 +156,10 @@ public abstract class Race {
 		this.jockeys.remove(jockey.getPlayer().getName());
 		jockey.onRaceEnd();
 		
+		if (this.jockeys.isEmpty()) {
+			end();
+		}
+		
 	}
 
 	/**
@@ -164,5 +170,31 @@ public abstract class Race {
 		for (Jockey jockey : tempJockeys.values()) {
 			removeJockey(jockey);
 		}
+		this.state = RaceState.Waiting;
+	}
+
+	/**
+	 * Get the current state of the race
+	 * @return The state of the race
+	 */
+	public RaceState getState() {
+		return this.state;
+	}
+
+	/**
+	 * Get the course that this race is using
+	 * @return The course instance
+	 */
+	public Racecourse getCourse() {
+		return this.course;
+	}
+	
+	/**
+	 * Called when a jockey moves
+	 * @param jockey
+	 */
+	public void onJockeyMove(Jockey jockey) {
+		// TODO Auto-generated method stub
+		
 	}
 }
