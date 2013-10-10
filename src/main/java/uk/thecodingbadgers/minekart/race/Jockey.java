@@ -164,8 +164,10 @@ public class Jockey {
 	 * Call when a race has ended
 	 */
 	public void onRaceEnd() {
-		this.mount.getBukkitEntity().eject();
-		this.mount.destroy();
+		if (this.mount != null) {
+			this.mount.getBukkitEntity().eject();
+			this.mount.destroy();
+		}
 		this.player.teleport(this.exitLocaiton);
 	}
 
