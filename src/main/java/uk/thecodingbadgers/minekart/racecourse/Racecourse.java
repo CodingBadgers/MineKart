@@ -22,6 +22,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.race.Jockey;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
 
@@ -464,5 +465,18 @@ public abstract class Racecourse {
 	public Object getBounds() {
 		return this.bounds;
 	}
+
+	/**
+	 * Called when a jockey moves
+	 * @param jockey The jockey who moved
+	 * @param race The race the jockeys are in
+	 */
+	public abstract void onJockeyMove(Jockey jockey, Race race);
+	
+	/**
+	 * Called when a race starts
+	 * @param race The race which is starting
+	 */
+	public abstract void onRaceStart(Race race);
 
 }

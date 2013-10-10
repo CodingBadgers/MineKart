@@ -2,7 +2,9 @@ package uk.thecodingbadgers.minekart.racecourse;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,6 +12,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.race.Jockey;
+import uk.thecodingbadgers.minekart.race.Race;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -27,6 +31,9 @@ public class RacecourseCheckpoint extends Racecourse {
 	
 	/** The checkpoints a jockey must pass through to complete the race */
 	protected List<Region> checkPoints = null;
+	
+	/**  */
+	protected Map<Jockey, Integer> targetCheckpoints = null;
 	
 	/**
 	 * Class constructor
@@ -47,6 +54,7 @@ public class RacecourseCheckpoint extends Racecourse {
 			return false;
 		
 		this.checkPoints = new ArrayList<Region>();
+		this.targetCheckpoints = new HashMap<Jockey, Integer>();
 		
 		save();		
 		return true;
@@ -64,6 +72,8 @@ public class RacecourseCheckpoint extends Racecourse {
 		
 		// Checkpoints
 		this.checkPoints = new ArrayList<Region>();
+		this.targetCheckpoints = new HashMap<Jockey, Integer>();
+		
 		int noofCheckpoints = file.getInt("racecourse.checkpoint.count");
 		for (int checkpointIndex = 0; checkpointIndex < noofCheckpoints; ++checkpointIndex) {
 			this.checkPoints.add(loadRegion(file, "racecourse.checkpoint." + checkpointIndex));
@@ -167,6 +177,48 @@ public class RacecourseCheckpoint extends Racecourse {
 		outputRequirements(player);
 		save();
 		
+	}
+
+	/**
+	 * Called when a jockey moves
+	 * @param jockey The jockey who moved
+	 * @param race The race the jockeys are in
+	 */
+	@Override
+	public void onJockeyMove(Jockey jockey, Race race) {
+
+		int targetCheckpointIndex = this.targetCheckpoints.get(jockey);
+		Region targetCheckpoint = this.checkPoints.get(targetCheckpointIndex);
+		
+		com.sk89q.worldedit.Vector position = new com.sk89q.worldedit.Vector(
+				jockey.getPlayer().getLocation().getBlockX(),
+				jockey.getPlayer().getLocation().getBlockY(),
+				jockey.getPlayer().getLocation().getBlockZ()
+				);	
+		
+		if (targetCheckpoint.contains(position)) {
+			if (targetCheckpointIndex < this.checkPoints.size() - 1) {
+				this.targetCheckpoints.remove(jockey);
+				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);
+				MineKart.output(jockey.getPlayer(), "Checkpoint Reached!");
+			}
+			else {
+				MineKart.output(jockey.getPlayer(), "Winner!");
+			}
+		}
+		
+	}
+
+	/**
+	 * Called on race start
+	 * @param race The race which started
+	 */
+	@Override
+	public void onRaceStart(Race race) {
+		this.targetCheckpoints.clear();
+		for (Jockey jockey : race.getJockeys()) {
+			this.targetCheckpoints.put(jockey, 0);
+		}
 	}
 
 }

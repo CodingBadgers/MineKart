@@ -10,6 +10,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.race.Jockey;
+import uk.thecodingbadgers.minekart.race.Race;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -185,6 +187,27 @@ public class RacecourseLap extends Racecourse {
 		outputRequirements(player);
 		save();
 		
+	}
+
+	/**
+	 * Called when a jockey moves
+	 * @param jockey The jockey who moved
+	 * @param race The race the jockeys are in
+	 */
+	@Override
+	public void onJockeyMove(Jockey jockey, Race race) {
+		
+		MineKart.output(jockey.getPlayer(), "Test - 131");
+		
+	}
+
+	/**
+	 * Called on race start
+	 * @param race The race which started
+	 */
+	@Override
+	public void onRaceStart(Race race) {
+
 	}
 
 }

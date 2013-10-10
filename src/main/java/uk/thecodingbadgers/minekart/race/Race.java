@@ -1,5 +1,6 @@
 package uk.thecodingbadgers.minekart.race;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,6 @@ public abstract class Race {
 	
 	/** The jockeys in this race */
 	protected Map<String, Jockey> jockeys = new HashMap<String, Jockey>();
-	
 	
 	
 	/**
@@ -91,13 +91,7 @@ public abstract class Race {
 	protected void startRace(final int countdown) {
 		
 		if (countdown <= 0) {
-			outputToRace("and their off!");
-			
-			for (Jockey jockey : this.jockeys.values()) {
-				jockey.onRaceStart();
-			}
-			
-			this.state = RaceState.InRace;						
+			onRaceStart();					
 			return;
 		}
 		
@@ -113,6 +107,21 @@ public abstract class Race {
 		
 	}
 	
+	/**
+	 * Called when the race starts
+	 */
+	private void onRaceStart() {
+		outputToRace("and their off!");
+		
+		this.course.onRaceStart(this);
+		
+		for (Jockey jockey : this.jockeys.values()) {
+			jockey.onRaceStart();
+		}
+		
+		this.state = RaceState.InRace;	
+	}
+
 	/**
 	 * Output a message to all players in this race
 	 * @param message The message to output
@@ -191,10 +200,17 @@ public abstract class Race {
 	
 	/**
 	 * Called when a jockey moves
-	 * @param jockey
+	 * @param jockey The jockey who moved
 	 */
 	public void onJockeyMove(Jockey jockey) {
-		// TODO Auto-generated method stub
-		
+		this.course.onJockeyMove(jockey, this);
+	}
+
+	/**
+	 * Gets all jockeys in this race
+	 * @return A collection of jockeys
+	 */
+	public Collection<Jockey> getJockeys() {
+		return this.jockeys.values();
 	}
 }
