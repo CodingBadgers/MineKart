@@ -120,6 +120,19 @@ public abstract class Race {
 		}
 		
 	}
+	
+	/**
+	 * Output a message to all players in this race, from a given player
+	 * @param player The player saying the message
+	 * @param message The message to output
+	 */
+	public void outputToRace(Player player, String message) {
+		
+		for (Jockey jockey : this.jockeys.values()) {
+			MineKart.output(jockey.getPlayer(), player, message);
+		}
+		
+	}
 
 	/**
 	 * Get the jockey which represents a given player

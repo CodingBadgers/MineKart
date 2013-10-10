@@ -6,10 +6,13 @@ import net.citizensnpcs.trait.Controllable;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 /**
  * @author TheCodingBadgers
@@ -79,6 +82,8 @@ public class Jockey {
 		ItemMeta meta = whip.getItemMeta();
 		meta.setDisplayName("Whip");
 		whip.setItemMeta(meta);
+		whip.setAmount(4);
+		whip.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
 		player.getInventory().setItem(0, whip);
 	}
 	
@@ -96,6 +101,7 @@ public class Jockey {
 	 * Call when a race has ended
 	 */
 	public void onRaceEnd() {
+		this.mount.getBukkitEntity().eject();
 		this.mount.destroy();
 		this.player.teleport(this.exitLocaiton);
 	}
@@ -107,4 +113,18 @@ public class Jockey {
 	public Race getRace() {
 		return this.race;
 	}
+
+	/**
+	 * Increase the speed of the mount for a given amount of time
+	 * @param speed The new speed of the mount
+	 * @param length The amount of time the speed boost should be applied
+	 */
+	public void increaseSpeed(int speed, int length) {
+		
+		PotionEffect effect = new PotionEffect(PotionEffectType.SPEED, length * 20, speed, false);
+		this.player.addPotionEffect(effect, true);
+		this.mount.getBukkitEntity().addPotionEffect(effect, true);
+		
+	}
+	
 }

@@ -244,6 +244,13 @@ public final class MineKart extends JavaPlugin {
 	public static void output(CommandSender sender, String message) {
 		sender.sendMessage(ChatColor.DARK_GREEN + "[MineKart] " + ChatColor.WHITE + message);
 	}
+	
+	/**
+	 * Output a message to a given command sender from a given player
+	 */
+	public static void output(CommandSender to, CommandSender from, String message) {
+		to.sendMessage(ChatColor.DARK_GREEN + "[MineKart] " + ChatColor.YELLOW + "[" + from.getName() + "] " + ChatColor.WHITE + message);
+	}
 
 	/**
 	 * create a new arena
