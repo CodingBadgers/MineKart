@@ -83,4 +83,11 @@ public class Jockey {
 		
 	}
 
+	/**
+	 * Call when a race has ended
+	 */
+	public void onRaceEnd() {
+		this.mount.destroy();
+	}
+
 }

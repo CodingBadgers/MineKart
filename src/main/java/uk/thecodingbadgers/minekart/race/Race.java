@@ -58,7 +58,6 @@ public abstract class Race {
 		if (spawns.size() == this.jockeys.size()) {
 			this.state = RaceState.InRace;
 			teleportToSpawns();
-			startRace(5);
 			return;
 		}
 		
@@ -67,7 +66,7 @@ public abstract class Race {
 	/**
 	 * Teleport all jockeys to the starting spawns and put them on their mounts
 	 */
-	protected void teleportToSpawns() {
+	public void teleportToSpawns() {
 		
 		List<Location> spawns = this.course.getMultiWarp("spawn");
 		int spawnIndex = spawns.size() - 1;
@@ -78,13 +77,14 @@ public abstract class Race {
 			spawnIndex--;
 		}
 		
+		startRace(5);		
 	}
 
 	/**
 	 * Start the race
 	 * @param countdown The amount of time until the race starts
 	 */
-	public void startRace(final int countdown) {
+	protected void startRace(final int countdown) {
 		
 		if (countdown <= 0) {
 			outputToRace("and their off!");
@@ -118,6 +118,24 @@ public abstract class Race {
 			MineKart.output(jockey.getPlayer(), message);
 		}
 		
+	}
+
+	/**
+	 * Get the jockey which represents a given player
+	 * @param player The player to get the jockey of
+	 * @return The jockey, or null if the given player isn't a jockey in this race
+	 */
+	public Jockey getJockey(Player player) {
+		return this.jockeys.get(player.getName());
+	}
+
+	/**
+	 * End the race
+	 */
+	public void end() {
+		for (Jockey jockey : this.jockeys.values()) {
+			jockey.onRaceEnd();
+		}
 	}
 
 }

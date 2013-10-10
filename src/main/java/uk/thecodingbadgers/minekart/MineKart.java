@@ -20,6 +20,8 @@ import uk.thecodingbadgers.minekart.command.CreateCommand;
 import uk.thecodingbadgers.minekart.command.HelperCommand;
 import uk.thecodingbadgers.minekart.command.RaceCommand;
 import uk.thecodingbadgers.minekart.listener.BlockListener;
+import uk.thecodingbadgers.minekart.listener.JockeyListener;
+import uk.thecodingbadgers.minekart.race.Jockey;
 import uk.thecodingbadgers.minekart.racecourse.RacecourceType;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseCheckpoint;
@@ -79,6 +81,10 @@ public final class MineKart extends JavaPlugin {
 	 */
 	public void onDisable() {
 		MineKart.instance = null;
+		
+		for (Racecourse course : this.courses.values()) {
+			course.getRace().end();
+		}
 	}
 	
 	/**
@@ -111,6 +117,7 @@ public final class MineKart extends JavaPlugin {
 	private void registerListeners() {
 		PluginManager manager = this.getServer().getPluginManager();
 		manager.registerEvents(new BlockListener(), this);
+		manager.registerEvents(new JockeyListener(), this);
 	}
 	
 	/**
@@ -194,6 +201,12 @@ public final class MineKart extends JavaPlugin {
 		// if the control argument is join, let the race command handler take care of it
 		if (controlArgument.startsWith("join")) {
 			RaceCommand.handleJoinCommand(sender, args);
+			return true;
+		}
+		
+		// if the control argument is forcestart, let the race command handler take care of it
+		if (controlArgument.startsWith("forcestart")) {
+			RaceCommand.handleForceStartCommand(sender, args);
 			return true;
 		}
 		
@@ -292,5 +305,21 @@ public final class MineKart extends JavaPlugin {
 	 */
 	public Map<String, Racecourse> getAllRacecourses() {
 		return this.courses;
+	}
+
+	/**
+	 * Get the jockey that represents a given player
+	 * @param player The player to get the jockey of
+	 * @return The jockey instance, or null if the given player isn't a jockey in any race
+	 */
+	public Jockey getJockey(Player player) {
+		
+		for (Racecourse course : this.courses.values()) {
+			Jockey jockey = course.getRace().getJockey(player);
+			if (jockey != null)
+				return jockey;
+		}
+		
+		return null;
 	}
 }
