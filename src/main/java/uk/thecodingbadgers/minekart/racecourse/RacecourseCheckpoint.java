@@ -212,6 +212,12 @@ public class RacecourseCheckpoint extends Racecourse {
 						);
 			}
 			else {
+				MineKart.output(jockey.getPlayer(), 
+						"Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " 
+						+ ChatColor.GREEN +
+						MineKart.formatTime(jockey.getRaceTime())
+						);
+				
 				race.setWinner(jockey);
 			}
 		}
