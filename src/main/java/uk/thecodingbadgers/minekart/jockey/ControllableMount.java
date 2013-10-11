@@ -213,7 +213,12 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
     	
     	MobEffect speedEffect = handle.getEffect(MobEffectList.FASTER_MOVEMENT);
     	if (speedEffect != null && speedEffect.getAmplifier() != 0) {
-    		maxSpeed *= speedEffect.getAmplifier();
+    		maxSpeed *= (speedEffect.getAmplifier() * 0.75f);
+    	}
+    	
+    	MobEffect slownessEffect = handle.getEffect(MobEffectList.SLOWER_MOVEMENT);
+    	if (slownessEffect != null && slownessEffect.getAmplifier() != 0) {
+    		maxSpeed /= (slownessEffect.getAmplifier() * 0.75f);
     	}
     	
         double oldSpeed = Math.sqrt(handle.motX * handle.motX + handle.motZ * handle.motZ);
