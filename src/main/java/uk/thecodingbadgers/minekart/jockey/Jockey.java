@@ -5,7 +5,6 @@ import java.util.Random;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Owner;
-import net.citizensnpcs.trait.Controllable;
 
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -175,7 +174,7 @@ public class Jockey {
 		// Make their mounts
 		this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, getRadomMountName());
 		this.mount.setProtected(true);
-		this.mount.addTrait(new Controllable(false));
+		this.mount.addTrait(new ControllableMount(true));
 		this.mount.spawn(spawn);
 		
 		// Set the owner of the mount to the jockey
@@ -183,8 +182,7 @@ public class Jockey {
 		owner.setOwner(this.player.getName());
 		
 		// Make the NPC controllable and mount the player
-		Controllable trait = this.mount.getTrait(Controllable.class);
-		trait.setEnabled(true);
+		ControllableMount trait = this.mount.getTrait(ControllableMount.class);
 		trait.mount(this.player);	
 		trait.setEnabled(false); // disable it until the race has started
 		
@@ -220,7 +218,7 @@ public class Jockey {
 	 */
 	public void onRaceStart() {
 		
-		Controllable trait = this.mount.getTrait(Controllable.class);
+		ControllableMount trait = this.mount.getTrait(ControllableMount.class);
 		trait.setEnabled(true);
 		this.startTime = System.currentTimeMillis();
 		
