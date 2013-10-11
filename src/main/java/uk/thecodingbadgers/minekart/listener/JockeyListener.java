@@ -64,7 +64,7 @@ public class JockeyListener implements Listener {
 			}
 			player.updateInventory();
 			
-			jockey.increaseSpeed(4, 5); // strength, time
+			jockey.increaseSpeed(2, 4); // strength, time
 			jockey.getRace().outputToRace(jockey.getPlayer(), "hYah!");
 		}
 		

@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 
 import net.citizensnpcs.Settings.Setting;
+import net.citizensnpcs.api.ai.NavigatorParameters;
 import net.citizensnpcs.api.command.CommandConfigurable;
 import net.citizensnpcs.api.command.CommandContext;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -18,6 +19,8 @@ import net.citizensnpcs.util.Util;
 import net.minecraft.server.v1_6_R3.EntityEnderDragon;
 import net.minecraft.server.v1_6_R3.EntityLiving;
 import net.minecraft.server.v1_6_R3.EntityPlayer;
+import net.minecraft.server.v1_6_R3.MobEffect;
+import net.minecraft.server.v1_6_R3.MobEffectList;
 
 import org.bukkit.craftbukkit.v1_6_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
@@ -205,6 +208,14 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
     }
 
     private double updateHorizontralSpeed(EntityLiving handle, double speed, float speedMod) {
+    	
+    	Double maxSpeed = 0.35D;
+    	
+    	MobEffect speedEffect = handle.getEffect(MobEffectList.FASTER_MOVEMENT);
+    	if (speedEffect != null && speedEffect.getAmplifier() != 0) {
+    		maxSpeed *= speedEffect.getAmplifier();
+    	}
+    	
         double oldSpeed = Math.sqrt(handle.motX * handle.motX + handle.motZ * handle.motZ);
         double horizontal = ((EntityLiving) handle.passenger).bf;
         if (horizontal > 0.0D) {
@@ -217,17 +228,17 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
         handle.motZ += handle.passenger.motZ * speedMod;
 
         double newSpeed = Math.sqrt(handle.motX * handle.motX + handle.motZ * handle.motZ);
-        if (newSpeed > 0.35D) {
-            double movementFactor = 0.35D / newSpeed;
+        if (newSpeed > maxSpeed) {
+            double movementFactor = maxSpeed / newSpeed;
             handle.motX *= movementFactor;
             handle.motZ *= movementFactor;
-            newSpeed = 0.35D;
+            newSpeed = maxSpeed;
         }
 
-        if (newSpeed > oldSpeed && speed < 0.35D) {
-            return (float) Math.min(0.35D, (speed + ((0.35D - speed) / 35.0D)));
+        if (newSpeed > oldSpeed && speed < maxSpeed) {
+            return (float) Math.min(maxSpeed, (speed + ((maxSpeed - speed) / maxSpeed)));
         } else {
-            return (float) Math.max(0.07D, (speed - ((speed - 0.07D) / 35.0D)));
+            return (float) Math.max(0.07D, (speed - ((speed - 0.07D) / maxSpeed)));
         }
     }
 
@@ -250,15 +261,17 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 
         @Override
         public void run(Player rider) {
+
             EntityLiving handle = getHandle();
             boolean onGround = handle.onGround;
-            float speedMod = npc.getNavigator().getDefaultParameters()
-                    .modifiedSpeed((onGround ? GROUND_SPEED : AIR_SPEED));
-            this.speed = updateHorizontralSpeed(handle, speed, speedMod);
+            
+            NavigatorParameters param = npc.getNavigator().getDefaultParameters();
+            float speedMod = param.modifiedSpeed((onGround ? GROUND_SPEED : AIR_SPEED));
+            this.speed = updateHorizontralSpeed(handle, this.speed, speedMod);
 
             boolean shouldJump = NMS.shouldJump(handle.passenger);
             if (shouldJump) {
-                if (handle.onGround && jumpTicks == 0) {
+                if (onGround && jumpTicks == 0) {
                     getHandle().motY = JUMP_VELOCITY;
                     jumpTicks = 10;
                 }
