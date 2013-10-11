@@ -49,9 +49,12 @@ public class Jockey {
 	/** The race that this jockey is in */
 	private Race race = null;
 	
-	/**  */
+	/** The time the jockey started the race */
 	private long startTime = 0L;
 
+	/** The player backup of this jockey, storing invent, gamemode ect... */
+	private PlayerBackup backup = null;
+	
 	/**
 	 * 
 	 * @param player
@@ -65,6 +68,7 @@ public class Jockey {
 		this.exitLocaiton = player.getLocation();
 		this.jockeyColor = getRandomColor();
 		
+		this.backup = new PlayerBackup();
 		backupInventory(this.player);
 		
 		// Give the player a coloured jersey
@@ -103,7 +107,7 @@ public class Jockey {
 	private void backupInventory(Player player) {
 		
 		// store data
-		// TODO
+		this.backup.backup(player);
 		
 		// clear invent
 		player.setGameMode(GameMode.ADVENTURE);
@@ -124,7 +128,7 @@ public class Jockey {
 		player.getActivePotionEffects().clear();
 		
 		// restore data
-		// TODO
+		this.backup.restore(player);
 
 	}
 	
