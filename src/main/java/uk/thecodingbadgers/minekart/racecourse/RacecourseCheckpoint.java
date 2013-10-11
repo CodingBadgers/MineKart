@@ -34,7 +34,7 @@ public class RacecourseCheckpoint extends Racecourse {
 	/** The checkpoints a jockey must pass through to complete the race */
 	protected List<Region> checkPoints = null;
 	
-	/**  */
+	/** A map of a jockey and their next checkpoint id */
 	protected Map<Jockey, Integer> targetCheckpoints = null;
 	
 	/**
