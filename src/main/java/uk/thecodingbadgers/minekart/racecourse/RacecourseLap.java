@@ -170,7 +170,7 @@ public class RacecourseLap extends Racecourse {
 			}
 			
 			try {
-				this.checkPoints.add(selection.getRegionSelector().getRegion());
+				this.checkPoints.add(selection.getRegionSelector().getRegion().clone());
 			} catch(Exception ex) {
 				MineKart.output(player, "An invalid selection was made using world edit. Please make a complete cuboid selection and try again.");
 				return;

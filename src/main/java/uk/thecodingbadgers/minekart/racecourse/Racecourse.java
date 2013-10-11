@@ -75,7 +75,7 @@ public abstract class Racecourse {
 		// Set the arena bounds from the selection
 		world = seleciton.getWorld();
 		try {
-			bounds = seleciton.getRegionSelector().getRegion();
+			bounds = seleciton.getRegionSelector().getRegion().clone();
 		} catch (IncompleteRegionException e) {
 			MineKart.output(player, "An invalid selection was made using world edit. Please make a complete cuboid selection and try again.");
 			return false;
