@@ -14,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.IncompleteRegionException;
@@ -59,6 +60,9 @@ public abstract class Racecourse {
 	
 	/** The race which uses this course */
 	protected Race race = null;
+	
+	/** The entity type to use as a mount */
+	protected EntityType mountType = EntityType.HORSE;
 	
 	/**
 	 * Setup the racecourse. Setting up the bounds of the arena based on player world edit seleciton.
@@ -499,5 +503,21 @@ public abstract class Racecourse {
 	 * @param race The race which is starting
 	 */
 	public abstract void onRaceStart(Race race);
+
+	/**
+	 * Get the mount type this race course uses
+	 * @return The EntityType that this course uses as a mount
+	 */
+	public EntityType getMountType() {
+		return this.mountType;
+	}
+	
+	/**
+	 * Set the mount type this race course uses
+	 * @param mountType The EntityType that this course should use as a mount
+	 */
+	public void setMountType(EntityType mountType) {
+		this.mountType = mountType;
+	}
 
 }

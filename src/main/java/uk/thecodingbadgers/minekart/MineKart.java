@@ -189,6 +189,12 @@ public final class MineKart extends JavaPlugin {
 			return true;
 		}
 		
+		// if the control argument is mount, let the setwarp command handler take care of it
+		if (controlArgument.startsWith("mount")) {
+			CreateCommand.handleMountCommand(sender, args);
+			return true;
+		}
+		
 		// if the control argument is list, let the helper command handler take care of it
 		if (controlArgument.startsWith("list")) {
 			HelperCommand.handleListCommand(sender, args);

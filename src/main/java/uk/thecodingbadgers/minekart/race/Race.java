@@ -8,7 +8,6 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
@@ -32,7 +31,6 @@ public abstract class Race {
 	/** The jockeys in this race */
 	protected Map<String, Jockey> jockeys = new HashMap<String, Jockey>();
 	
-	
 	/**
 	 * Set the course used by this race
 	 * @param course The course to use
@@ -53,7 +51,7 @@ public abstract class Race {
 			return;
 		}
 		
-		Jockey newJockey = new Jockey(player, EntityType.HORSE, this);
+		Jockey newJockey = new Jockey(player, this.course.getMountType(), this);
 		this.jockeys.put(player.getName(), newJockey);
 		
 		player.teleport(this.course.getWarp("lobby"));
