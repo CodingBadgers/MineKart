@@ -202,12 +202,27 @@ public class Jockey {
 	 */
 	private String getRadomMountName() {
 		
-		String[] allNames = {"Mental Boy", "Nervous Sparxx", "OAP Money", "Clean Smoke",
-				"Gnashing Panic", "Near Pride", "Bringing Action", "Nefarious Dusty",
-				"Tornado Fall", "Jim's Depression", "Caramel Comedy", "Wally's Maiden",
-				"Dirty Underwear", "Romantic Apple", "Wisby's Revenge", "Rabid Ruler",
-				"Scared Sally", "Prancers Dream", "Tidy's Teen", "Losing Hope", "Adios Alex",
-				"Whisky Galore", "Who's Dr", "Nintendon't"};
+		String[] allNames = {
+			"Mental Boy", "Nervous Sparxx", "OAP Money", "Clean Smoke",
+			"Gnashing Panic", "Near Pride", "Bringing Action", "Nefarious Dusty",
+			"Tornado Fall", "Jim's Depression", "Caramel Comedy", "Wally's Maiden",
+			"Dirty Underwear", "Romantic Apple", "Wisby's Revenge", "Rabid Ruler",
+			"Scared Sally", "Prancers Dream", "Tidy's Teen", "Losing Hope", "Adios Alex",
+			"Whisky Galore", "Who's Dr", "Nintendon't", "Glue Factory", "Hooves McCoy", 
+			"Red Lightning", "Lazy Susan", "Woolly Toque", "Granola Bar", "Bloody Harvest", 
+			"Wet Blanket", "Actually Fast", "Horse IV", "See Spot Fly", "Fox in Socks", 
+			"One Way", "Beans", "To The Moon", "Bitter Blue", "Black Cadillac", "Landing Gear", 
+			"Not American", "Ringo Star", "Mystery Man", "Spits-A-Lot", "Hungry Hippo", 
+			"Chapter 13", "Itstohorse", "Almost Pearls", "The Lady", "Graceling", 
+			"Lockpick", "Pants", "Gold Pilot", "Fire�s Star", "Simply Food", "Scrap Paper",
+			"Scrap Paper X", "Doomsday Kettle", "Vygotsky�s Plan", "German Tank", 
+			"Horse-Bear", "Steroids Galore", "Blindsight", "The Scientist", "Robo Horse", 
+			"Lightning Hoof", "Robo Horse II", "Robo Horse III", "Added Calcium", "Gnasty Gnorc", 
+			"Dream Weaver", "French Toast", "Lately�s Folly", "Sun Seeker", "El Horso", 
+			"Guy in a Suit", "Almost Dead", "Big Mac", "Gravity�s Foe", 
+			"Applesauce", "Iron Knight", "In the Morning", "Cleverfoot",
+			"Canada Smells", "TDC Pizza", "Princess Tilly", "Emmerica"
+		};
 		
 		Random random = new Random();
 		return allNames[random.nextInt(allNames.length)];
