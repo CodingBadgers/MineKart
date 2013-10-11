@@ -140,6 +140,7 @@ public abstract class Racecourse {
 	/**
 	 * Load the racecourse from file.
 	 */	
+	@SuppressWarnings("deprecation")
 	public void load(File configfile) {
 		
 		FileConfiguration file = YamlConfiguration.loadConfiguration(configfile);
@@ -151,6 +152,9 @@ public abstract class Racecourse {
 		// Course bounds
 		this.world = Bukkit.getWorld(file.getString("racecourse.world"));
 		this.bounds = loadRegion(file, "racecourse.bounds");
+		
+		// Mount settings
+		this.mountType = EntityType.fromName(file.getString("mount.type"));
 		
 		// Single point locations
 		this.singlePoints = new HashMap<String, Location>();
@@ -195,6 +199,9 @@ public abstract class Racecourse {
 		// Course bounds
 		file.set("racecourse.world", this.world.getName());
 		saveRegion(file, "racecourse.bounds", this.bounds);
+		
+		// Mount settings
+		file.set("mount.type", this.mountType.name());
 
 		// Single point locations
 		file.set("racecourse.singlepoint.count", this.singlePoints.size());
