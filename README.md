@@ -8,9 +8,9 @@ The plugin aims to create a ['Mario Kart'](http://en.wikipedia.org/wiki/Mario_Ka
 
 #### Features
 
-- [ ] Multiple course types
+- [x] Multiple course types [Checkpoint and Lap]
 - [ ] Multiple game modes
-- [ ] Multiple game running concurrently
+- [x] Multiple game running concurrently
 - [ ] Customizable pickups and powerup
 - [ ] Use any living entity as a mount
 - [ ] Live update signs on race progress
