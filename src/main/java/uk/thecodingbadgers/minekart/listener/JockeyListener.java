@@ -10,7 +10,7 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import uk.thecodingbadgers.minekart.MineKart;
-import uk.thecodingbadgers.minekart.race.Jockey;
+import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
 

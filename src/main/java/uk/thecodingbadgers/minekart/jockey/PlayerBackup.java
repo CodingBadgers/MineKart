@@ -1,4 +1,4 @@
-package uk.thecodingbadgers.minekart.race;
+package uk.thecodingbadgers.minekart.jockey;
 
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;

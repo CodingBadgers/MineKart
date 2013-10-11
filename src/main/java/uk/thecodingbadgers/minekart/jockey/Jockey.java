@@ -1,4 +1,4 @@
-package uk.thecodingbadgers.minekart.race;
+package uk.thecodingbadgers.minekart.jockey;
 
 import java.util.Random;
 
@@ -20,6 +20,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import uk.thecodingbadgers.minekart.race.Race;
 
 /**
  * @author TheCodingBadgers
