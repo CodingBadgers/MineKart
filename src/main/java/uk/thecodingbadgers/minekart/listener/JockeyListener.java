@@ -86,6 +86,9 @@ public class JockeyListener implements Listener {
 		if (race.getState() != RaceState.InRace)
 			return;
 
+		if (!jockey.hasMoved(player.getLocation()))
+			return;
+		
 		race.onJockeyMove(jockey);
 	}
 }

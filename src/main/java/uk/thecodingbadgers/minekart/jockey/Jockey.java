@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import uk.thecodingbadgers.minekart.race.Race;
 
@@ -55,6 +56,9 @@ public class Jockey {
 
 	/** The player backup of this jockey, storing invent, gamemode ect... */
 	private PlayerBackup backup = null;
+	
+	/** The last known location */
+	private Vector cachedLocation = null;
 	
 	/**
 	 * 
@@ -214,12 +218,12 @@ public class Jockey {
 			"One Way", "Beans", "To The Moon", "Bitter Blue", "Black Cadillac", "Landing Gear", 
 			"Not American", "Ringo Star", "Mystery Man", "Spits-A-Lot", "Hungry Hippo", 
 			"Chapter 13", "Itstohorse", "Almost Pearls", "The Lady", "Graceling", 
-			"Lockpick", "Pants", "Gold Pilot", "Fireï¿½s Star", "Simply Food", "Scrap Paper",
-			"Scrap Paper X", "Doomsday Kettle", "Vygotskyï¿½s Plan", "German Tank", 
+			"Lockpick", "Pants", "Gold Pilot", "Fire’s Star", "Simply Food", "Scrap Paper",
+			"Scrap Paper X", "Doomsday Kettle", "Vygotsky’s Plan", "German Tank", 
 			"Horse-Bear", "Steroids Galore", "Blindsight", "The Scientist", "Robo Horse", 
 			"Lightning Hoof", "Robo Horse II", "Robo Horse III", "Added Calcium", "Gnasty Gnorc", 
-			"Dream Weaver", "French Toast", "Latelyï¿½s Folly", "Sun Seeker", "El Horso", 
-			"Guy in a Suit", "Almost Dead", "Big Mac", "Gravityï¿½s Foe", 
+			"Dream Weaver", "French Toast", "Lately’s Folly", "Sun Seeker", "El Horso", 
+			"Guy in a Suit", "Almost Dead", "Big Mac", "Gravity’s Foe", 
 			"Applesauce", "Iron Knight", "In the Morning", "Cleverfoot",
 			"Canada Smells", "TDC Pizza", "Princess Tilly", "Emmerica"
 		};
@@ -292,6 +296,26 @@ public class Jockey {
 	 */
 	public long getRaceTime() {
 		return System.currentTimeMillis() - this.startTime;
+	}
+
+	/**
+	 * Returns if a players has moved between blocks
+	 * @param location The location to test against
+	 * @return True if they have moved, false otherwise
+	 */
+	public boolean hasMoved(Location location) {
+		
+		if (cachedLocation == null) {
+			cachedLocation = location.toVector();
+			return true;
+		}
+		
+		if (cachedLocation.equals(location.toVector())) {
+			return false;
+		}
+		
+		cachedLocation = location.toVector();
+		return true;
 	}
 	
 }
