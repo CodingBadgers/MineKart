@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -25,6 +26,7 @@ import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
+import uk.thecodingbadgers.minekart.race.RaceState;
 
 /**
  * @author TheCodingBadgers
@@ -471,7 +473,26 @@ public abstract class Racecourse {
 	 * @param jockey The jockey who moved
 	 * @param race The race the jockeys are in
 	 */
-	public abstract void onJockeyMove(Jockey jockey, Race race);
+	public boolean onJockeyMove(Jockey jockey, Race race) {
+		
+		if (race.getState() != RaceState.InRace)
+			return false;
+		
+		Location location = jockey.getPlayer().getLocation();
+		com.sk89q.worldedit.Vector position = new com.sk89q.worldedit.Vector(
+				location.getBlockX(),
+				location.getBlockY(),
+				location.getBlockZ()
+				);	
+		
+		if (!this.bounds.contains(position)) {
+			race.outputToRace("The jockey " + ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " has left the race course.");
+			race.removeJockey(jockey);
+			return false;
+		}
+		
+		return true;		
+	}
 	
 	/**
 	 * Called when a race starts

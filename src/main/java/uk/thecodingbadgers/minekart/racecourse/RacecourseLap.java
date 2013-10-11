@@ -210,10 +210,13 @@ public class RacecourseLap extends Racecourse {
 	 * @param race The race the jockeys are in
 	 */
 	@Override
-	public void onJockeyMove(Jockey jockey, Race race) {
+	public boolean onJockeyMove(Jockey jockey, Race race) {
+		
+		if (!super.onJockeyMove(jockey, race))
+			return false;
 		
 		if (race.getState() != RaceState.InRace)
-			return;
+			return false;
 
 		int targetCheckpointIndex = this.targetCheckpoints.get(jockey);
 		Region targetCheckpoint = this.checkPoints.get(targetCheckpointIndex);
@@ -254,6 +257,8 @@ public class RacecourseLap extends Racecourse {
 				}
 			}
 		}
+		
+		return true;
 		
 	}
 
