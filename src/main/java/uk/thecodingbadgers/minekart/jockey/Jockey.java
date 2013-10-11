@@ -176,7 +176,7 @@ public class Jockey {
 		this.player.teleport(spawn);
 		
 		// Make their mounts
-		this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, getRadomMountName());
+		this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, getRadomMountName(this.player.getName()));
 		this.mount.setProtected(true);
 		this.mount.addTrait(new ControllableMount(true));
 		this.mount.spawn(spawn);
@@ -204,31 +204,40 @@ public class Jockey {
 	 * Get a random name to be used by a mount
 	 * @return A string to be used as the mount name
 	 */
-	private String getRadomMountName() {
+	private String getRadomMountName(String jockeyName) {
 		
 		String[] allNames = {
 			"Mental Boy", "Nervous Sparxx", "OAP Money", "Clean Smoke",
 			"Gnashing Panic", "Near Pride", "Bringing Action", "Nefarious Dusty",
 			"Tornado Fall", "Jim's Depression", "Caramel Comedy", "Wally's Maiden",
 			"Dirty Underwear", "Romantic Apple", "Wisby's Revenge", "Rabid Ruler",
-			"Scared Sally", "Prancers Dream", "Tidy's Teen", "Losing Hope", "Adios Alex",
+			"Scared Sally", "Prancers Dream", "Tidy's Teen", "Losing Hope",
 			"Whisky Galore", "Who's Dr", "Nintendon't", "Glue Factory", "Hooves McCoy", 
 			"Red Lightning", "Lazy Susan", "Woolly Toque", "Granola Bar", "Bloody Harvest", 
 			"Wet Blanket", "Actually Fast", "Horse IV", "See Spot Fly", "Fox in Socks", 
 			"One Way", "Beans", "To The Moon", "Bitter Blue", "Black Cadillac", "Landing Gear", 
 			"Not American", "Ringo Star", "Mystery Man", "Spits-A-Lot", "Hungry Hippo", 
-			"Chapter 13", "Itstohorse", "Almost Pearls", "The Lady", "Graceling", 
+			"Chapter 13", "Almost Pearls", "The Lady", "Graceling", 
 			"Lockpick", "Pants", "Gold Pilot", "Fire’s Star", "Simply Food", "Scrap Paper",
 			"Scrap Paper X", "Doomsday Kettle", "Vygotsky’s Plan", "German Tank", 
 			"Horse-Bear", "Steroids Galore", "Blindsight", "The Scientist", "Robo Horse", 
 			"Lightning Hoof", "Robo Horse II", "Robo Horse III", "Added Calcium", "Gnasty Gnorc", 
-			"Dream Weaver", "French Toast", "Lately’s Folly", "Sun Seeker", "El Horso", 
-			"Guy in a Suit", "Almost Dead", "Big Mac", "Gravity’s Foe", 
-			"Applesauce", "Iron Knight", "In the Morning", "Cleverfoot",
-			"Canada Smells", "TDC Pizza", "Princess Tilly", "Emmerica"
+			"Dream Weaver", "French Toast", "Sun Seeker", "El Horso", "My Little Pony",
+			"Guy in a Suit", "Almost Dead", "Big Mac", "Gravity’s Foe", "George",
+			"Applesauce", "Iron Knight", "In the Morning", "Cleverfoot", "Peggy",
+			"TDC Pizza", "Princess Tilly", "Emmerica"
 		};
 		
 		Random random = new Random();
+		
+		if (jockeyName.equalsIgnoreCase("itstolate") && random.nextBoolean()) {
+			return "Canada Smells";
+		}
+		
+		if (jockeyName.equalsIgnoreCase("tilly_lala")) {
+			return random.nextBoolean() ? "George" : "Peggy";
+		}
+		
 		return allNames[random.nextInt(allNames.length)];
 	}
 
