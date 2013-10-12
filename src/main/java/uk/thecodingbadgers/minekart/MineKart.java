@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
+import uk.thecodingbadgers.minekart.command.CourseCommand;
 import uk.thecodingbadgers.minekart.command.CreateCommand;
 import uk.thecodingbadgers.minekart.command.HelperCommand;
 import uk.thecodingbadgers.minekart.command.RaceCommand;
@@ -222,6 +223,12 @@ public final class MineKart extends JavaPlugin {
 		// if the control argument is forcestart, let the race command handler take care of it
 		if (controlArgument.startsWith("forcestart") || controlArgument.startsWith("fs")) {
 			RaceCommand.handleForceStartCommand(sender, args);
+			return true;
+		}
+		
+		// if the control argument is course, let the course command handler take care of it
+		if (controlArgument.startsWith("course")) {
+			CourseCommand.handleEnableCommand(sender, args);
 			return true;
 		}
 		
