@@ -82,7 +82,7 @@ public abstract class Race {
 			spawnIndex--;
 		}
 		
-		startRace(5);		
+		startRace(4);		
 	}
 
 	/**
@@ -98,7 +98,7 @@ public abstract class Race {
 		}
 		
 		outputToRace("Race starting in " + countdown);
-		playSoundToRace(Sound.ORB_PICKUP, 1.0f, countdown == 1 ? 2.0f : 1.0f);
+		playSoundToRace(Sound.ORB_PICKUP, 1.0f, 1.0f);
 		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(MineKart.getInstance(), new Runnable() {
 

@@ -325,7 +325,17 @@ public final class MineKart extends JavaPlugin {
 	 * @return The course represented by the given name, or null if a course was not found.
 	 */
 	public Racecourse getRacecourse(String courseName) {
-		return this.courses.get(courseName.toLowerCase());
+		
+		if (this.courses.containsKey(courseName))
+			return this.courses.get(courseName.toLowerCase());
+		
+		for (String name : this.courses.keySet()) {
+			if (name.startsWith(courseName.toLowerCase())) {
+				return this.courses.get(name.toLowerCase());
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
