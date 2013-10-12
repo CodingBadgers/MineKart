@@ -220,7 +220,7 @@ public final class MineKart extends JavaPlugin {
 		}
 		
 		// if the control argument is forcestart, let the race command handler take care of it
-		if (controlArgument.startsWith("forcestart")) {
+		if (controlArgument.startsWith("forcestart") || controlArgument.startsWith("fs")) {
 			RaceCommand.handleForceStartCommand(sender, args);
 			return true;
 		}
