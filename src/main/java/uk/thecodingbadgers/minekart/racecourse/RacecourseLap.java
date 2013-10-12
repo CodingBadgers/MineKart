@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -221,13 +223,16 @@ public class RacecourseLap extends Racecourse {
 		int targetCheckpointIndex = this.targetCheckpoints.get(jockey);
 		Region targetCheckpoint = this.checkPoints.get(targetCheckpointIndex);
 		
+		Location location = jockey.getPlayer().getLocation();
 		com.sk89q.worldedit.Vector position = new com.sk89q.worldedit.Vector(
-				jockey.getPlayer().getLocation().getBlockX(),
-				jockey.getPlayer().getLocation().getBlockY(),
-				jockey.getPlayer().getLocation().getBlockZ()
+				location.getBlockX(),
+				location.getBlockY(),
+				location.getBlockZ()
 				);	
 		
 		if (targetCheckpoint.contains(position)) {
+			jockey.updateRespawnLocation(jockey.getMount().getBukkitEntity().getLocation());
+			
 			if (targetCheckpointIndex < this.checkPoints.size() - 1) {
 				this.targetCheckpoints.remove(jockey);
 				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);
@@ -236,6 +241,11 @@ public class RacecourseLap extends Racecourse {
 						+ ChatColor.GREEN +
 						MineKart.formatTime(jockey.getRaceTime())
 						);
+				
+				jockey.getPlayer().playSound(location, Sound.ORB_PICKUP, 1.0f, 1.0f);
+				
+				float lapComplete = 1.0f / ((float)this.checkPoints.size() / (float)(targetCheckpointIndex + 1.0f));
+				jockey.getPlayer().setExp(lapComplete);				
 			}
 			else {
 				int jockeyLap = this.currentLap.get(jockey) + 1;
@@ -247,6 +257,10 @@ public class RacecourseLap extends Racecourse {
 						+ ChatColor.GREEN +
 						MineKart.formatTime(jockey.getRaceTime())
 						);
+				
+				jockey.getPlayer().setLevel(jockeyLap);
+				jockey.getPlayer().setExp(0.0f);	
+				jockey.getPlayer().playSound(location, Sound.LEVEL_UP, 1.0f, 1.0f);
 				
 				if (jockeyLap >= this.noofLaps) {
 					race.setWinner(jockey);
@@ -273,6 +287,7 @@ public class RacecourseLap extends Racecourse {
 		for (Jockey jockey : race.getJockeys()) {
 			this.targetCheckpoints.put(jockey, 0);
 			this.currentLap.put(jockey, 0);
+			jockey.getPlayer().setLevel(0);
 		}
 	}
 

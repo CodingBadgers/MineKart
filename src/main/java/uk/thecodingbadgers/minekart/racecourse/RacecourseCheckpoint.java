@@ -205,6 +205,8 @@ public class RacecourseCheckpoint extends Racecourse {
 				);	
 		
 		if (targetCheckpoint.contains(position)) {
+			jockey.updateRespawnLocation(jockey.getMount().getBukkitEntity().getLocation());
+			
 			if (targetCheckpointIndex < this.checkPoints.size() - 1) {
 				this.targetCheckpoints.remove(jockey);
 				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);

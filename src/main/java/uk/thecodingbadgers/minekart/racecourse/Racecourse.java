@@ -64,6 +64,9 @@ public abstract class Racecourse {
 	/** The entity type to use as a mount */
 	protected EntityType mountType = EntityType.HORSE;
 	
+	/** Is the course enabled */
+	protected boolean enabled = true;
+	
 	/**
 	 * Setup the racecourse. Setting up the bounds of the arena based on player world edit seleciton.
 	 * @param player The player who is setting up the course
@@ -154,7 +157,7 @@ public abstract class Racecourse {
 		this.bounds = loadRegion(file, "racecourse.bounds");
 		
 		// Mount settings
-		this.mountType = EntityType.fromName(file.getString("mount.type"));
+		this.mountType = EntityType.fromName(file.getString("mount.type", "EntityHorse"));
 		
 		// Single point locations
 		this.singlePoints = new HashMap<String, Location>();
@@ -525,6 +528,22 @@ public abstract class Racecourse {
 	 */
 	public void setMountType(EntityType mountType) {
 		this.mountType = mountType;
+		this.save();
 	}
-
+	
+	/**
+	 * Set the enabled state of the course
+	 * @param enabled True to enable the course, False to disable
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+	
+	/**
+	 * Get the enabled state of the race course
+	 * @return True if enabled, fale if disabled.
+	 */
+	public boolean isEnabled() {
+		return this.enabled;
+	}
 }

@@ -6,6 +6,7 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Owner;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -21,6 +22,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.race.Race;
 
 /**
@@ -59,6 +61,9 @@ public class Jockey {
 	
 	/** The last known location */
 	private Vector cachedLocation = null;
+	
+	/** The last checkpoint a jockey went through, or their spawn point */
+	private Location respawnLocation = null;
 	
 	/**
 	 * 
@@ -120,6 +125,8 @@ public class Jockey {
 		clearInventory(player.getInventory());
 		player.updateInventory();
 		player.getActivePotionEffects().clear();
+		player.setExp(0.0f);
+		player.setLevel(0);
 	}
 	
 	/**
@@ -131,6 +138,8 @@ public class Jockey {
 		clearInventory(player.getInventory());
 		player.updateInventory();
 		player.getActivePotionEffects().clear();
+		player.setExp(0.0f);
+		player.setLevel(0);
 		
 		// restore data
 		this.backup.restore(player);
@@ -174,6 +183,7 @@ public class Jockey {
 		
 		// Teleport the jockey to their mount
 		this.player.teleport(spawn);
+		this.respawnLocation = spawn;
 		
 		// Make their mounts
 		this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, getRadomMountName(this.player.getName()));
@@ -325,6 +335,55 @@ public class Jockey {
 		
 		cachedLocation = location.toVector();
 		return true;
+	}
+
+	/** 
+	 * Respawn a jockey to their last known respawn location.
+	 */
+	public void respawn() {
+				
+		final String mountName = this.mount.getName();
+		
+		ControllableMount trait = this.mount.getTrait(ControllableMount.class);
+		trait.mount(this.player);
+		this.mount.destroy();
+		
+		final Jockey jockey = this;
+		Bukkit.getScheduler().scheduleSyncDelayedTask(MineKart.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				
+				jockey.player.teleport(jockey.respawnLocation);
+				jockey.player.setHealth(jockey.player.getMaxHealth());
+				jockey.player.setFireTicks(0);
+				
+				// Make a new mount
+				jockey.mount = CitizensAPI.getNPCRegistry().createNPC(jockey.mountType, mountName);
+				jockey.mount.setProtected(true);
+				jockey.mount.addTrait(new ControllableMount(true));
+				jockey.mount.spawn(jockey.respawnLocation);
+				
+				// Set the owner of the mount to the jockey
+				Owner owner = jockey.mount.getTrait(Owner.class);
+				owner.setOwner(jockey.player.getName());
+				
+				// Make the NPC controllable and mount the player
+				ControllableMount trait = jockey.mount.getTrait(ControllableMount.class);
+				trait.mount(jockey.player);	
+				trait.setEnabled(true);
+				
+			}
+			
+		}, 2L);
+		
+	}
+
+	/**
+	 * Update a players respawn location to their current location
+	 */
+	public void updateRespawnLocation(Location location) {
+		this.respawnLocation = location;
 	}
 	
 }

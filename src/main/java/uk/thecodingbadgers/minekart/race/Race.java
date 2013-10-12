@@ -8,6 +8,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
@@ -91,11 +92,14 @@ public abstract class Race {
 	protected void startRace(final int countdown) {
 		
 		if (countdown <= 0) {
-			onRaceStart();					
+			playSoundToRace(Sound.LEVEL_UP, 1.0f, 1.0f);
+			onRaceStart();		
 			return;
 		}
 		
 		outputToRace("Race starting in " + countdown);
+		playSoundToRace(Sound.ORB_PICKUP, 1.0f, countdown == 1 ? 2.0f : 1.0f);
+		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(MineKart.getInstance(), new Runnable() {
 
 			@Override
@@ -107,6 +111,18 @@ public abstract class Race {
 		
 	}
 	
+	/**
+	 * Play a sound to all jockeys in the race
+	 * @param sound The sound to player
+	 * @param volume The volume of the sound
+	 * @param pitch The pitch of the sound
+	 */
+	private void playSoundToRace(Sound sound, float volume, float pitch) {
+		for (Jockey jockey : this.jockeys.values()) {
+			jockey.getPlayer().playSound(jockey.getPlayer().getLocation(), sound, volume, pitch);
+		}
+	}
+
 	/**
 	 * Called when the race starts
 	 */
