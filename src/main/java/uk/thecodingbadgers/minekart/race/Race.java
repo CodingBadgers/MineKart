@@ -82,7 +82,7 @@ public abstract class Race {
 			spawnIndex--;
 		}
 		
-		startRace(4);		
+		startRace(3);		
 	}
 
 	/**
