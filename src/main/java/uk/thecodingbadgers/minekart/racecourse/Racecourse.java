@@ -204,7 +204,7 @@ public abstract class Racecourse {
 		saveRegion(file, "racecourse.bounds", this.bounds);
 		
 		// Mount settings
-		file.set("mount.type", this.mountType.name());
+		file.set("mount.type", this.mountType.getName());
 
 		// Single point locations
 		file.set("racecourse.singlepoint.count", this.singlePoints.size());
