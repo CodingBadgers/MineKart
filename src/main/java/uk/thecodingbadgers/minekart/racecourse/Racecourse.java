@@ -428,7 +428,7 @@ public abstract class Racecourse {
 		locations.add(player.getLocation());
 		this.multiPoints.put(warpname, locations);
 		MineKart.output(player, "A new point has been added to " + warpname + "!");
-          MineKart.output(player, warpname + " now has " + locations.size() +" points.");
+        MineKart.output(player, warpname + " now has " + locations.size() + " points.");
 	}
 
 	/**
