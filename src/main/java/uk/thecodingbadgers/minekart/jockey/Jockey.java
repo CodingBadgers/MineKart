@@ -215,6 +215,8 @@ public class Jockey {
 		skullMeta.setDisplayName("Respawn");
 		respawnSkull.setItemMeta(skullMeta);
 		player.getInventory().setItem(8, respawnSkull);
+		
+		player.getInventory().setHeldItemSlot(0);
 	}
 
 	/**

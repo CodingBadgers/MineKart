@@ -84,6 +84,7 @@ public class JockeyListener implements Listener {
 		if (item.getItemMeta().getDisplayName().equalsIgnoreCase("respawn")) {	
 			jockey.respawn();
 			MineKart.output(jockey.getPlayer(), "You have been respawned...");
+			player.getInventory().setHeldItemSlot(0);
 			event.setCancelled(true);
 			return;
 		}
