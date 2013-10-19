@@ -208,6 +208,13 @@ public class Jockey {
 		whip.setAmount(4);
 		whip.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
 		player.getInventory().setItem(0, whip);
+		
+		// Give the player a respawn skull
+		ItemStack respawnSkull = new ItemStack(Material.SKULL);
+		ItemMeta skullMeta = respawnSkull.getItemMeta();
+		skullMeta.setDisplayName("Respawn");
+		respawnSkull.setItemMeta(skullMeta);
+		player.getInventory().setItem(8, respawnSkull);
 	}
 
 	/**
