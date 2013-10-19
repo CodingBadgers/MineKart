@@ -26,6 +26,7 @@ import org.bukkit.craftbukkit.v1_6_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -40,6 +41,7 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
     @Persist
     private boolean enabled = true;
     private EntityType explicitType;
+    private LivingEntity passenger = null;
 
     public ControllableMount() {
         super("controllablemount");
@@ -71,11 +73,13 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
         if (getHandle().passenger != null) {
             if (getHandle().passenger == handle) {
                 player.leaveVehicle();
+                this.passenger = null;
             }
             return;
         }
         if (npc.getTrait(Owner.class).isOwnedBy(handle.getBukkitEntity())) {
             handle.setPassengerOf(getHandle());
+            this.passenger = player;
         }
     }
 
@@ -166,8 +170,17 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 
     @Override
     public void run() {
-        if (!enabled || !npc.isSpawned() || getHandle().passenger == null)
+    	
+    	if (!enabled || !npc.isSpawned())
+    		return;
+    	
+    	if (getHandle().passenger == null && this.passenger != null) {
+    		((CraftPlayer) this.passenger).getHandle().setPassengerOf(getHandle());
+    	}
+    	
+        if(getHandle().passenger == null)
             return;
+        
         controller.run((Player) getHandle().passenger.getBukkitEntity());
     }
 
