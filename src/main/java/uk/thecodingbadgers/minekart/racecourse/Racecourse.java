@@ -192,6 +192,7 @@ public abstract class Racecourse {
 	/**
 	 * Save the racecourse to file.
 	 */	
+	@SuppressWarnings("deprecation")
 	public void save() {
 		
 		FileConfiguration file = YamlConfiguration.loadConfiguration(this.fileConfiguration);
