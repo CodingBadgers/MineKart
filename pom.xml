@@ -88,7 +88,14 @@
 				<directory>${basedir}/src/main/resources</directory>
 				<includes>
 					<include>*.yml</include>
-					<include>*.json</include>
+				</includes>
+			</resource>
+			<resource>
+				<targetPath>./powerups/</targetPath>
+				<filtering>true</filtering>
+				<directory>${basedir}/src/main/resources/powerups</directory>
+				<includes>
+					<include>*.yml</include>
 				</includes>
 			</resource>
 			<resource>

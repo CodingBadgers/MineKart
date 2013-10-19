@@ -10,12 +10,18 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -67,6 +73,24 @@ public abstract class Racecourse {
 	/** Is the course enabled */
 	protected boolean enabled = true;
 	
+	/** All spawned powerupItems */
+	private List<Item> powerupItems = null;
+	
+	/**
+	 * Class constructor
+	 */
+	public Racecourse() {
+		
+		this.multiPoints = new HashMap<String, List<Location>>();
+		this.singlePoints = new HashMap<String, Location>();
+		this.powerupItems = new ArrayList<Item>();
+		
+		registerWarp(Bukkit.getConsoleSender(), "spawn", "add");
+		registerWarp(Bukkit.getConsoleSender(), "powerup", "add");
+		registerWarp(Bukkit.getConsoleSender(), "lobby", "set");
+		registerWarp(Bukkit.getConsoleSender(), "spectate", "set");
+	}
+	
 	/**
 	 * Setup the racecourse. Setting up the bounds of the arena based on player world edit seleciton.
 	 * @param player The player who is setting up the course
@@ -91,12 +115,6 @@ public abstract class Racecourse {
 		}
 		
 		this.name = name;
-		this.multiPoints = new HashMap<String, List<Location>>();
-		this.singlePoints = new HashMap<String, Location>();
-		
-		registerWarp(player, "spawn", "add");
-		registerWarp(player, "lobby", "set");
-		registerWarp(player, "spectate", "set");
 		
 		this.fileConfiguration = new File(MineKart.getRacecourseFolder() + File.separator + this.name + "." + this.type + ".yml");
 		if (!this.fileConfiguration.exists()) {
@@ -160,7 +178,6 @@ public abstract class Racecourse {
 		this.mountType = EntityType.fromName(file.getString("mount.type", "EntityHorse"));
 		
 		// Single point locations
-		this.singlePoints = new HashMap<String, Location>();
 		int noofSinglePoints = file.getInt("racecourse.singlepoint.count");
 		for (int pointIndex = 0; pointIndex < noofSinglePoints; ++pointIndex) {
 			final String path = "racecourse.singlepoint." + pointIndex;
@@ -170,7 +187,6 @@ public abstract class Racecourse {
 		}
 		
 		// Multi-point locations
-		this.multiPoints = new HashMap<String, List<Location>>();
 		int noofMultiPoints = file.getInt("racecourse.multipoint.count");
 		for (int pointIndex = 0; pointIndex < noofMultiPoints; ++pointIndex) {
 			final String path = "racecourse.multipoint." + pointIndex;
@@ -377,7 +393,7 @@ public abstract class Racecourse {
 	 * @param name The name of the warp to register
 	 * @param type The type of warp to register, set or add.
 	 */
-	public void registerWarp(Player player, String name, String type) {
+	public void registerWarp(CommandSender player, String name, String type) {
 		
 		if (type.equalsIgnoreCase("set")) {
 			if (this.singlePoints.containsKey(name))
@@ -514,7 +530,37 @@ public abstract class Racecourse {
 	 * Called when a race starts
 	 * @param race The race which is starting
 	 */
-	public abstract void onRaceStart(Race race);
+	public void onRaceStart(Race race) {
+		int powerupIndex = 0;
+		List<Location> powerups = this.multiPoints.get("powerup");
+		for (Location location : powerups) {
+			Location spawnLocation = new Location(location.getWorld(), location.getX(), location.getY() + 1.0, location.getZ());
+			
+			ItemStack powerup = new ItemStack(Material.CHEST); // TODO: Make configrable
+			ItemMeta meta = powerup.getItemMeta();
+			meta.setDisplayName("Powerup " + powerupIndex);
+			powerup.setItemMeta(meta);
+			powerup.addUnsafeEnchantment(Enchantment.PROTECTION_FIRE, 0);
+			
+			Item item = location.getWorld().dropItem(spawnLocation, powerup);
+			item.setVelocity(new Vector(0, 0, 0));
+			this.powerupItems.add(item);			
+			
+			powerupIndex++;
+		}
+	}
+	
+	/**
+	 * Called when a race ends
+	 * @param race The race which is ending
+	 */
+	public void onRaceEnd(Race race) {
+		
+		for (Item powerup : this.powerupItems) {
+			powerup.remove();
+		}
+		
+	}
 
 	/**
 	 * Get the mount type this race course uses

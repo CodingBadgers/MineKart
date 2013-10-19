@@ -237,6 +237,7 @@ public class RacecourseCheckpoint extends Racecourse {
 	 */
 	@Override
 	public void onRaceStart(Race race) {
+		super.onRaceStart(race);
 		this.targetCheckpoints.clear();
 		for (Jockey jockey : race.getJockeys()) {
 			this.targetCheckpoints.put(jockey, 0);

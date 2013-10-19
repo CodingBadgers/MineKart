@@ -44,7 +44,7 @@ public class CourseCommand {
 			}
 			
 			course.setEnabled(enabled);
-			MineKart.output(sender, "The course '" + coursename + "' has been " + ChatColor.YELLOW + (enabled ? "Enabled" : "Disabled") + ChatColor.WHITE + ".");
+			MineKart.output(sender, "The course '" + course.getName() + "' has been " + ChatColor.YELLOW + (enabled ? "Enabled" : "Disabled") + ChatColor.WHITE + ".");
 			return;
 		}
 		

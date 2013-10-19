@@ -191,6 +191,9 @@ public abstract class Race {
 	 * End the race
 	 */
 	public void end() {
+		
+		this.course.onRaceEnd(this);
+		
 		Map<String, Jockey> tempJockeys = new HashMap<String, Jockey>(this.jockeys);
 		for (Jockey jockey : tempJockeys.values()) {
 			removeJockey(jockey);

@@ -282,6 +282,7 @@ public class RacecourseLap extends Racecourse {
 	 */
 	@Override
 	public void onRaceStart(Race race) {
+		super.onRaceStart(race);
 		this.currentLap.clear();
 		this.targetCheckpoints.clear();
 		for (Jockey jockey : race.getJockeys()) {

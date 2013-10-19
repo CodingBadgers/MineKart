@@ -1,8 +1,10 @@
 package uk.thecodingbadgers.minekart.listener;
 
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,13 +12,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
 
@@ -212,4 +218,67 @@ public class JockeyListener implements Listener {
 		}
 		
 	}
+	
+	/**
+	 * Called when a player pickups up an item.
+	 * @param event The item pickup event containing information on this event
+	 */
+	@EventHandler
+	public void onPickupItem(PlayerPickupItemEvent event) {
+		
+		final Player player = event.getPlayer();
+		final Item item = event.getItem();
+		final ItemMeta meta = item.getItemStack().getItemMeta();
+		
+		if (meta == null || !meta.hasDisplayName() || !meta.getDisplayName().startsWith("Powerup")) {
+			return;
+		}
+		
+		event.setCancelled(true);
+		
+		Jockey jockey = MineKart.getInstance().getJockey(player);
+		if (jockey == null) {
+			return;
+		}
+		
+		ItemStack slotItem = player.getInventory().getItem(1);
+		if (slotItem != null) {
+			return;
+		}
+		
+		item.remove();
+		
+		Powerup powerup = MineKart.getInstance().getRandomPowerup();
+		if (powerup == null) {
+			return;
+		}
+		
+		powerup.onPickup(player);
+				
+	}
+	
+	/**
+	 * Called when a player drops an item.
+	 * @param event The item drop event containing information on this event
+	 */
+	@EventHandler
+	public void onDropItem(PlayerDropItemEvent event) {
+		
+		final Player player = event.getPlayer();
+		
+		Jockey jockey = MineKart.getInstance().getJockey(player);
+		if (jockey == null) {
+			return;
+		}
+		
+		event.setCancelled(true);
+		
+		ItemStack secondSlotItem = player.getInventory().getItem(1);
+		
+		if (secondSlotItem == event.getItemDrop().getItemStack()) {
+			player.getInventory().setItem(1, new ItemStack(Material.AIR));
+		}
+		
+	}
+	
 }

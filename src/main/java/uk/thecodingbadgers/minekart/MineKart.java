@@ -3,9 +3,12 @@ package uk.thecodingbadgers.minekart;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -26,6 +29,11 @@ import uk.thecodingbadgers.minekart.command.RaceCommand;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.listener.BlockListener;
 import uk.thecodingbadgers.minekart.listener.JockeyListener;
+import uk.thecodingbadgers.minekart.powerup.Powerup;
+import uk.thecodingbadgers.minekart.powerup.PowerupDrop;
+import uk.thecodingbadgers.minekart.powerup.PowerupPotion;
+import uk.thecodingbadgers.minekart.powerup.PowerupProjectile;
+import uk.thecodingbadgers.minekart.powerup.PowerupUseMode;
 import uk.thecodingbadgers.minekart.racecourse.RacecourceType;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseCheckpoint;
@@ -51,6 +59,12 @@ public final class MineKart extends JavaPlugin {
 	/** The path to the folder where all racecourses reside */
 	private static File racecourseFolderPath = null;
 	
+	/** The path to the folder where all powerups reside */
+	private static File powerupFolderPath = null;
+	
+	/** All available powerups */
+	private List<Powerup> powerups = null;
+	
 	/**
 	 * Called when the plugin is enabled
 	 */
@@ -65,6 +79,12 @@ public final class MineKart extends JavaPlugin {
 			MineKart.racecourseFolderPath.mkdirs();
 		}
 		
+		// Setup the folder which will hold all the powerups configs
+		MineKart.powerupFolderPath = new File(this.getDataFolder() + File.separator + "powerups");
+		if (!MineKart.powerupFolderPath.exists()) {
+			MineKart.powerupFolderPath.mkdirs();
+		}
+		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		
 		// Get the world edit plugin instance
@@ -77,6 +97,7 @@ public final class MineKart extends JavaPlugin {
 		
 		this.courses = new HashMap<String, Racecourse>();
 		
+		loadPowerups();
 		loadRacecourses();
 	}
 
@@ -122,6 +143,47 @@ public final class MineKart extends JavaPlugin {
 		PluginManager manager = this.getServer().getPluginManager();
 		manager.registerEvents(new BlockListener(), this);
 		manager.registerEvents(new JockeyListener(), this);
+	}
+	
+	/**
+	 * Load all powerups
+	 */
+	private void loadPowerups() {
+		this.powerups = new ArrayList<Powerup>();
+		
+		File[] powerupFiles = MineKart.powerupFolderPath.listFiles();
+		for (File file : powerupFiles) {
+			final String filename = file.getName();
+			
+			if (!filename.endsWith(".yml"))
+				continue;
+			
+			final String[] nameparts = filename.split("\\.");
+			
+			final String powerupname = nameparts[0];
+			final String poweruptype = nameparts[1];
+			
+			Powerup powerup = null;
+			if (poweruptype.equalsIgnoreCase("potion")) {
+				powerup = new PowerupPotion();
+			}
+			else if (poweruptype.equalsIgnoreCase("projectile")) {
+				powerup = new PowerupProjectile();
+			}
+			else if (poweruptype.equalsIgnoreCase("drop")) {
+				powerup = new PowerupDrop();
+			}
+			
+			if (powerup == null) {
+				Bukkit.getLogger().log(Level.SEVERE, "Unknown powerup type '" + poweruptype + "' for powerup '" + powerupname + "'.");
+				continue;
+			}
+			
+			powerup.load(file);
+			this.powerups.add(powerup);
+			Bukkit.getLogger().log(Level.INFO, "Loaded powerup: " + powerupname);
+			
+		}
 	}
 	
 	/**
@@ -371,5 +433,31 @@ public final class MineKart extends JavaPlugin {
 		Date date = new Date(raceTime);
 		DateFormat formatter = new SimpleDateFormat("mm:ss:SS");
 		return formatter.format(date);
+	}
+	
+	/**
+	 * Get a random powerup
+	 * @return The random powerup instance
+	 */
+	public Powerup getRandomPowerup() {
+		
+		if (powerups.isEmpty()) {
+			return null;
+		}
+		
+		Random random = new Random();
+		Powerup powerup = powerups.get(random.nextInt(powerups.size()));
+		
+		if (powerup.getUseMode() == PowerupUseMode.Potion) {
+			return new PowerupPotion((PowerupPotion) powerup);
+		}
+		else if (powerup.getUseMode() == PowerupUseMode.Projectile) {
+			return new PowerupProjectile((PowerupProjectile) powerup);
+		}
+		else if (powerup.getUseMode() == PowerupUseMode.Drop) {
+			return new PowerupDrop((PowerupDrop) powerup);
+		}
+		
+		return null;
 	}
 }
