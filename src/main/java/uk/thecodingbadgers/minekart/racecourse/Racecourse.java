@@ -6,11 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -531,23 +533,32 @@ public abstract class Racecourse {
 	 * @param race The race which is starting
 	 */
 	public void onRaceStart(Race race) {
-		int powerupIndex = 0;
+	
 		List<Location> powerups = this.multiPoints.get("powerup");
 		for (Location location : powerups) {
-			Location spawnLocation = new Location(location.getWorld(), location.getX(), location.getY() + 1.0, location.getZ());
-			
-			ItemStack powerup = new ItemStack(Material.CHEST); // TODO: Make configrable
-			ItemMeta meta = powerup.getItemMeta();
-			meta.setDisplayName("Powerup " + powerupIndex);
-			powerup.setItemMeta(meta);
-			powerup.addUnsafeEnchantment(Enchantment.PROTECTION_FIRE, 0);
-			
-			Item item = location.getWorld().dropItem(spawnLocation, powerup);
-			item.setVelocity(new Vector(0, 0, 0));
-			this.powerupItems.add(item);			
-			
-			powerupIndex++;
+			Location spawnLocation = new Location(location.getWorld(), location.getX(), location.getY() + 1.0, location.getZ());	
+			spawnPowerup(spawnLocation);
 		}
+	}
+	
+	/**
+	 * 
+	 * @param location
+	 */
+	private void spawnPowerup(Location location) {
+		
+		ItemStack powerup = new ItemStack(Material.CHEST); // TODO: Make configrable
+		ItemMeta meta = powerup.getItemMeta();
+		meta.setDisplayName("Powerup " + (new Random()).nextInt());
+		powerup.setItemMeta(meta);
+		powerup.addUnsafeEnchantment(Enchantment.PROTECTION_FIRE, 0);
+		
+		Item item = location.getWorld().dropItem(location, powerup);
+		item.setVelocity(new Vector(0, 0, 0));
+		this.powerupItems.add(item);	
+		
+		location.getWorld().playSound(location, Sound.FIREWORK_TWINKLE, 1.0f, 1.0f);
+		
 	}
 	
 	/**
@@ -593,5 +604,25 @@ public abstract class Racecourse {
 	 */
 	public boolean isEnabled() {
 		return this.enabled;
+	}
+
+	/**
+	 * 
+	 * @param powerup
+	 */
+	public void removePowerup(Location location) {
+		this.powerupItems.remove(location);
+		location.getWorld().playSound(location, Sound.VILLAGER_YES, 1.0f, 1.0f);
+		
+		final Location spawnLocation = new Location(location.getWorld(), location.getX(), location.getY(), location.getZ());
+		
+		Bukkit.getScheduler().runTaskLater(MineKart.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				spawnPowerup(spawnLocation);
+			}
+			
+		}, 5 * 20L);
 	}
 }

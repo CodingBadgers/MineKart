@@ -95,6 +95,14 @@ public class JockeyListener implements Listener {
 			return;
 		}
 		
+		if (player.getInventory().getHeldItemSlot() == 1) {
+			Powerup powerup = jockey.getPowerup();
+			powerup.onUse(jockey);
+			player.getInventory().setItem(1, new ItemStack(Material.AIR));			
+			event.setCancelled(true);
+			return;
+		}
+		
 	}
 	
 	/**
@@ -253,7 +261,8 @@ public class JockeyListener implements Listener {
 			return;
 		}
 		
-		powerup.onPickup(player);
+		jockey.getRace().getCourse().removePowerup(item.getLocation());
+		powerup.onPickup(jockey);
 				
 	}
 	

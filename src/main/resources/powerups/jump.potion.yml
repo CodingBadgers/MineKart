@@ -1,0 +1,10 @@
+powerup:
+  name: "Jump"
+  material: SLIME_BALL
+  mode:
+    apply: Self
+    use: Potion
+  potion:
+    type: JUMP
+    length: 4
+    level: 2

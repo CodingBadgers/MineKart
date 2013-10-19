@@ -8,6 +8,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import uk.thecodingbadgers.minekart.jockey.Jockey;
+
 public abstract class Powerup {
 	
 	/** The name of the powerup **/
@@ -44,13 +46,13 @@ public abstract class Powerup {
 	 * Called when the powerup is picked up
 	 * @param player The player who picked it up
 	 */
-	public abstract void onPickup(Player player);
+	public abstract void onPickup(Jockey jockey);
 	
 	/**
 	 * Called when the powerup is used
 	 * @param player The player who used it
 	 */
-	public abstract void onUse(Player player);
+	public abstract void onUse(Jockey jockey);
 	
 	/**
 	 * Called when the powerup is dropped

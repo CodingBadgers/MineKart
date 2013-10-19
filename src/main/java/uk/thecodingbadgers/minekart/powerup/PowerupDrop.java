@@ -2,7 +2,7 @@ package uk.thecodingbadgers.minekart.powerup;
 
 import java.io.File;
 
-import org.bukkit.entity.Player;
+import uk.thecodingbadgers.minekart.jockey.Jockey;
 
 public class PowerupDrop extends Powerup {
 
@@ -23,13 +23,13 @@ public class PowerupDrop extends Powerup {
 	}
 
 	@Override
-	public void onPickup(Player player) {
+	public void onPickup(Jockey jockey) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onUse(Player player) {
+	public void onUse(Jockey jockey) {
 		// TODO Auto-generated method stub
 
 	}

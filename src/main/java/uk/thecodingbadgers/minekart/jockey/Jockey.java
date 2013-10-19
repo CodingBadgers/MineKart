@@ -23,6 +23,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.race.Race;
 
 /**
@@ -65,6 +66,9 @@ public class Jockey {
 	/** The last checkpoint a jockey went through, or their spawn point */
 	private Location respawnLocation = null;
 	
+	/** The jockeys powerup */
+	private Powerup powerup = null;
+	
 	/**
 	 * 
 	 * @param player
@@ -81,34 +85,7 @@ public class Jockey {
 		this.backup = new PlayerBackup();
 		backupInventory(this.player);
 		
-		// Give the player a coloured jersey
-		ItemStack jersey = new ItemStack(Material.LEATHER_CHESTPLATE);
-		LeatherArmorMeta jerseyMeta = (LeatherArmorMeta) jersey.getItemMeta();
-		jerseyMeta.setColor(this.jockeyColor);
-		jersey.setItemMeta(jerseyMeta);
-		
-		// Give the player a coloured hat
-		ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
-		LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
-		helmetMeta.setColor(this.jockeyColor);
-		helmet.setItemMeta(helmetMeta);
-		
-		// Give the jockey white leggings
-		ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS);
-		LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
-		leggingsMeta.setColor(Color.WHITE);
-		leggings.setItemMeta(leggingsMeta);
-		
-		// Give the jockey black boots
-		ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
-		LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
-		bootsMeta.setColor(Color.BLACK);
-		boots.setItemMeta(bootsMeta);
-		
-		player.getInventory().setHelmet(helmet);
-		player.getInventory().setChestplate(jersey);
-		player.getInventory().setLeggings(leggings);
-		player.getInventory().setBoots(boots);
+		equipGear();
 	}
 
 	/**
@@ -156,6 +133,42 @@ public class Jockey {
 		invent.setChestplate(null);
 		invent.setLeggings(null);
 		invent.setBoots(null);
+	}
+	
+	/**
+	 * Equip the jockey armour gear
+	 */
+	public void equipGear() {
+		// Give the player a coloured jersey
+		ItemStack jersey = new ItemStack(Material.LEATHER_CHESTPLATE);
+		LeatherArmorMeta jerseyMeta = (LeatherArmorMeta) jersey.getItemMeta();
+		jerseyMeta.setColor(this.jockeyColor);
+		jersey.setItemMeta(jerseyMeta);
+		
+		// Give the player a coloured hat
+		ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
+		LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
+		helmetMeta.setColor(this.jockeyColor);
+		helmet.setItemMeta(helmetMeta);
+		
+		// Give the jockey white leggings
+		ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS);
+		LeatherArmorMeta leggingsMeta = (LeatherArmorMeta) leggings.getItemMeta();
+		leggingsMeta.setColor(Color.WHITE);
+		leggings.setItemMeta(leggingsMeta);
+		
+		// Give the jockey black boots
+		ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
+		LeatherArmorMeta bootsMeta = (LeatherArmorMeta) boots.getItemMeta();
+		bootsMeta.setColor(Color.BLACK);
+		boots.setItemMeta(bootsMeta);
+		
+		player.getInventory().setHelmet(helmet);
+		player.getInventory().setChestplate(jersey);
+		player.getInventory().setLeggings(leggings);
+		player.getInventory().setBoots(boots);
+		
+		player.updateInventory();
 	}
 
 	/**
@@ -393,6 +406,22 @@ public class Jockey {
 	 */
 	public void updateRespawnLocation(Location location) {
 		this.respawnLocation = location;
+	}
+
+	/**
+	 * 
+	 * @param powerup
+	 */
+	public void setPowerup(Powerup powerup) {
+		this.powerup = powerup;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Powerup getPowerup() {
+		return this.powerup;
 	}
 	
 }

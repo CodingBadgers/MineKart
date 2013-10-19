@@ -1,0 +1,10 @@
+powerup:
+  name: "Speed"
+  material: RED_MUSHROOM
+  mode:
+    apply: Self
+    use: Potion
+  potion:
+    type: SPEED
+    length: 4
+    level: 2
