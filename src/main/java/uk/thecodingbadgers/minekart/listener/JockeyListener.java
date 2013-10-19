@@ -69,7 +69,7 @@ public class JockeyListener implements Listener {
 		
 		final Action action = event.getAction();
 		
-		if (item.getItemMeta().getDisplayName().equalsIgnoreCase("whip") && action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK || action == Action.PHYSICAL) {	
+		if (item.getItemMeta().getDisplayName().equalsIgnoreCase("whip") && (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK || action == Action.PHYSICAL)) {	
 			
 			int amount = item.getAmount();
 			if (amount <= 1) {
