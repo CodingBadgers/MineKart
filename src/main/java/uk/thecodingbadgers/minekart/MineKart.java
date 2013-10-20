@@ -194,6 +194,10 @@ public final class MineKart extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Copy the default powerups out of the jar and into the powerups
+	 * directory.
+	 */
 	private void copyDefaultPowerups() {
 		JarFile file = null;
 		JarEntry entry = null;
