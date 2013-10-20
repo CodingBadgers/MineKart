@@ -17,10 +17,8 @@ import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
-import java.util.zip.ZipEntry;
 
 import org.apache.commons.io.IOUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -100,7 +98,7 @@ public final class MineKart extends JavaPlugin {
 		// Get the world edit plugin instance
 		this.worldEdit = (WorldEditPlugin)pluginManager.getPlugin("WorldEdit");
 		if (this.worldEdit == null) {
-			Bukkit.getLogger().log(Level.SEVERE, "Could not find the WorldEdit plugin.");
+			getLogger().log(Level.SEVERE, "Could not find the WorldEdit plugin.");
 		}
 		
 		registerListeners();
@@ -185,13 +183,13 @@ public final class MineKart extends JavaPlugin {
 			}
 			
 			if (powerup == null) {
-				Bukkit.getLogger().log(Level.SEVERE, "Unknown powerup type '" + poweruptype + "' for powerup '" + powerupname + "'.");
+				getLogger().log(Level.SEVERE, "Unknown powerup type '" + poweruptype + "' for powerup '" + powerupname + "'.");
 				continue;
 			}
 			
 			powerup.load(file);
 			this.powerups.add(powerup);
-			Bukkit.getLogger().log(Level.INFO, "Loaded powerup: " + powerupname);
+			getLogger().log(Level.INFO, "Loaded powerup: " + powerupname);
 			
 		}
 	}
@@ -222,7 +220,7 @@ public final class MineKart extends JavaPlugin {
 			}
 			
 		} catch (IOException e) {
-			Bukkit.getLogger().log(Level.SEVERE, "Error copying default configs from jar", e);
+			getLogger().log(Level.SEVERE, "Error copying default configs from jar", e);
 		} finally {
 			if (file != null) {
 				try {
@@ -259,13 +257,13 @@ public final class MineKart extends JavaPlugin {
 			}
 			
 			if (course == null) {
-				Bukkit.getLogger().log(Level.SEVERE, "Unknown course type '" + coursetype + "' for course '" + coursename + "'.");
+				getLogger().log(Level.SEVERE, "Unknown course type '" + coursetype + "' for course '" + coursename + "'.");
 				continue;
 			}
 			
 			course.load(file);
 			this.courses.put(coursename.toLowerCase(), course);
-			Bukkit.getLogger().log(Level.INFO, "Loaded racecourse: " + coursename);
+			getLogger().log(Level.INFO, "Loaded racecourse: " + coursename);
 		}
 	}
 	
