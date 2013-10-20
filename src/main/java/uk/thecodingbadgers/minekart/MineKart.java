@@ -1,16 +1,25 @@
 package uk.thecodingbadgers.minekart;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
+import java.util.zip.ZipEntry;
 
+import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -83,6 +92,7 @@ public final class MineKart extends JavaPlugin {
 		MineKart.powerupFolderPath = new File(this.getDataFolder() + File.separator + "powerups");
 		if (!MineKart.powerupFolderPath.exists()) {
 			MineKart.powerupFolderPath.mkdirs();
+			copyDefaultPowerups();
 		}
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
@@ -186,7 +196,44 @@ public final class MineKart extends JavaPlugin {
 		}
 	}
 	
-	/**
+	private void copyDefaultPowerups() {
+		JarFile file = null;
+		JarEntry entry = null;
+		 
+		try {
+			file = new JarFile(getFile());
+			
+			for(Enumeration<JarEntry> em = file.entries(); em.hasMoreElements();) {  
+				entry = em.nextElement();
+				String s= entry.toString();
+				
+				if(s.startsWith(("powerups/"))){
+					String fileName = s.substring(s.lastIndexOf("/")+1, s.length());
+					if(fileName.endsWith(".yml")){
+						File powerupFile = new File(powerupFolderPath, fileName);
+						InputStream inStream = file.getInputStream(entry);
+						OutputStream out = new FileOutputStream(powerupFile);
+						
+						IOUtils.copy(inStream, out);
+						IOUtils.closeQuietly(inStream);
+						IOUtils.closeQuietly(out);
+					}
+				}
+			}
+			
+		} catch (IOException e) {
+			Bukkit.getLogger().log(Level.SEVERE, "Error copying default configs from jar", e);
+		} finally {
+			if (file != null) {
+				try {
+					file.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+	}
+	
+    /**
 	 * Load all racecourses
 	 */
 	private void loadRacecourses() {
