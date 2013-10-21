@@ -423,5 +423,14 @@ public class Jockey {
 	public Powerup getPowerup() {
 		return this.powerup;
 	}
+
+	/**
+	 * Mark this jockey as ready for the game to start
+	 * 
+     * @return true if successful, false otherwise (eg. already ready)
+	 */
+    public boolean readyUp() {
+        return this.race.readyUp(this);
+    }
 	
 }

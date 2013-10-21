@@ -2,6 +2,7 @@ package uk.thecodingbadgers.minekart.listener;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -51,7 +52,6 @@ public class JockeyListener implements Listener {
 	 * Called when a player interacts.
 	 * @param event The player interact event containing information on this event
 	 */
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		
@@ -60,9 +60,31 @@ public class JockeyListener implements Listener {
 		if (jockey == null)
 			return;
 		
-		if (jockey.getRace().getState() != RaceState.InRace)
-			return;
+		Race race = jockey.getRace();
 		
+		if (race.getState() == RaceState.InRace) {
+		    onPlayerInteractInGame(jockey, event);
+		} else if (race.getState() == RaceState.Waiting) {
+		    onPlayerInteractInLobby(jockey, event);
+		}
+		
+	}
+	
+	private void onPlayerInteractInLobby(Jockey jockey, PlayerInteractEvent event) {
+        
+	    Block clicked = event.getClickedBlock();
+        Race race = jockey.getRace();
+	    
+	    if (clicked != null && clicked.getType() == race.getCourse().getReadyBlock()) {
+	        jockey.readyUp();
+	    }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void onPlayerInteractInGame(Jockey jockey, PlayerInteractEvent event) {
+		
+	    Player player = event.getPlayer();
+	    
 		ItemStack item = player.getItemInHand();
 		if (item == null || item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null)
 			return;
@@ -195,7 +217,7 @@ public class JockeyListener implements Listener {
 	 * @param event The entity damage event containing information on this event
 	 */
 	@EventHandler
-	public void onPlayerMove(EntityDamageEvent event) {
+	public void onEntityDamage(EntityDamageEvent event) {
 	
 		Entity entity = event.getEntity();
 		if (!(entity instanceof Player)) {

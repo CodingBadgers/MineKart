@@ -77,7 +77,10 @@ public abstract class Racecourse {
 	
 	/** All spawned powerupItems */
 	private List<Item> powerupItems = null;
-	
+
+    /** The block the jockeys have to hit to ready up */
+    private Material readyblock;
+    
 	/**
 	 * Class constructor
 	 */
@@ -179,6 +182,9 @@ public abstract class Racecourse {
 		// Mount settings
 		this.mountType = EntityType.fromName(file.getString("mount.type", "EntityHorse"));
 		
+		// Lobby settings
+		this.readyblock = Material.getMaterial(file.getString("lobby.readyblock", "IRON_BLOCK"));
+		
 		// Single point locations
 		int noofSinglePoints = file.getInt("racecourse.singlepoint.count");
 		for (int pointIndex = 0; pointIndex < noofSinglePoints; ++pointIndex) {
@@ -224,6 +230,9 @@ public abstract class Racecourse {
 		
 		// Mount settings
 		file.set("mount.type", this.mountType.getName());
+		
+        // Lobby settings
+        file.set("lobby.readyblock", this.readyblock.name());
 
 		// Single point locations
 		file.set("racecourse.singlepoint.count", this.singlePoints.size());
@@ -625,4 +634,13 @@ public abstract class Racecourse {
 			
 		}, 5 * 20L);
 	}
+
+	/**
+	 * Gets the block the jockeys have to hit to "ready up"
+	 * 
+	 * @return The block the jockeys have to hit to "ready up"
+	 */
+    public Material getReadyBlock() {
+        return this.readyblock;
+    }
 }
