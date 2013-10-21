@@ -222,7 +222,11 @@ public class JockeyListener implements Listener {
 	 * @param event The entity damage event containing information on this event
 	 */
 	@EventHandler
+<<<<<<< HEAD
+	public void onENtityDamage(EntityDamageEvent event) {
+=======
 	public void onEntityDamage(EntityDamageEvent event) {
+>>>>>>> ae55cd3e4cb7f4aa644434115a294a70fa07aa7c
 	
 		Entity entity = event.getEntity();
 		if (!(entity instanceof Player)) {

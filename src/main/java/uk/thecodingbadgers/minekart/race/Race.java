@@ -2,8 +2,10 @@ package uk.thecodingbadgers.minekart.race;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,6 +33,9 @@ public abstract class Race {
 	
 	/** The jockeys in this race */
 	protected Map<String, Jockey> jockeys = new HashMap<String, Jockey>();
+	
+	/** All the jockeys that are marked as ready */
+	protected Set<Jockey> ready = new HashSet<Jockey>();
 	
 	/**
 	 * Set the course used by this race
@@ -252,4 +257,26 @@ public abstract class Race {
 		
 		end();
 	}
+
+	/**
+	 * Mark a player as ready to start the race
+	 * 
+	 * @param jockey the jockey to mark as ready
+	 * @return true if successful, false otherwise (eg. already ready)
+	 */
+    public boolean readyUp(Jockey jockey) {
+        if (this.ready.contains(jockey)) {
+            return false;
+        }
+        
+        this.ready.add(jockey);
+        this.outputToRace(jockey.getPlayer().getName() + " is now ready! (" + this.ready.size() + "/" + this.jockeys.size() + ")");
+        
+        if (this.ready.size() == jockeys.size()) {
+            this.ready.clear();
+            this.teleportToSpawns();
+        }
+        
+        return true;
+    }
 }
