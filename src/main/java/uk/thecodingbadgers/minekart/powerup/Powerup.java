@@ -7,7 +7,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 
 public abstract class Powerup {
@@ -16,13 +18,13 @@ public abstract class Powerup {
 	protected String name;
 	
 	/** The powerup mode **/
-	protected PowerupApplyMode applyMode;
-	
-	/** The powerup mode **/
 	protected PowerupUseMode useMode;
 	
-	/** The material the powerup is displayed as */
+	/** The material the powerup is displayed as **/
 	protected Material material;
+	
+	/** The number of uses **/
+	protected int amount;
 	
 	/**
 	 * Class constructor
@@ -37,16 +39,41 @@ public abstract class Powerup {
 	 */
 	public Powerup(Powerup powerup) {
 		this.name = powerup.name;
-		this.applyMode = powerup.applyMode;
 		this.useMode = powerup.useMode;
 		this.material = powerup.material;
+		this.amount = powerup.amount;
+	}
+	
+	/**
+	 * Load the powerup
+	 * @param file The file containing the powerup data
+	 */
+	public void load(File configfile) {
+		
+		FileConfiguration file = YamlConfiguration.loadConfiguration(configfile);
+		
+		this.name = file.getString("powerup.name");
+		this.material = Material.valueOf(file.getString("powerup.material"));
+		this.amount = file.getInt("powerup.amount");
+		
 	}
 	
 	/**
 	 * Called when the powerup is picked up
 	 * @param player The player who picked it up
 	 */
-	public abstract void onPickup(Jockey jockey);
+	public void onPickup(Jockey jockey)	{
+		
+		ItemStack item = new ItemStack(this.material, this.amount);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(this.name);
+		item.setItemMeta(meta);
+		
+		jockey.getPlayer().getInventory().setItem(1, item);		
+		jockey.setPowerup(this);
+		
+		MineKart.output(jockey.getPlayer(), "You picked up " + this.name);
+	}
 	
 	/**
 	 * Called when the powerup is used
@@ -60,14 +87,6 @@ public abstract class Powerup {
 	 */
 	public void onDrop(Player player) {
 		player.getInventory().setItem(1, new ItemStack(Material.AIR));
-	}
-
-	/**
-	 * Gets the apply mode of the potion
-	 * @return The apply mode
-	 */
-	public PowerupApplyMode getApplyMode() {
-		return applyMode;
 	}
 	
 	/**
@@ -85,20 +104,13 @@ public abstract class Powerup {
 	public Material getMaterial() {
 		return material;
 	}
-
+	
 	/**
-	 * Load the powerup
-	 * @param file The file containing the powerup data
+	 * Gets the amount of uses a powerup has
+	 * @return The amount of uses
 	 */
-	public void load(File configfile) {
-		
-		FileConfiguration file = YamlConfiguration.loadConfiguration(configfile);
-		
-		this.name = file.getString("powerup.name");
-		this.material = Material.valueOf(file.getString("powerup.material"));
-		this.applyMode = PowerupApplyMode.valueOf(file.getString("powerup.mode.apply"));
-		this.useMode = PowerupUseMode.valueOf(file.getString("powerup.mode.use"));
-		
+	public int getAmount() {
+		return this.amount;
 	}
 
 }

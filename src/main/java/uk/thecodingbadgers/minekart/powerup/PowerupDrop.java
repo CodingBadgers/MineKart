@@ -7,7 +7,7 @@ import uk.thecodingbadgers.minekart.jockey.Jockey;
 public class PowerupDrop extends Powerup {
 
 	public PowerupDrop() {
-		// TODO Auto-generated constructor stub
+		this.useMode = PowerupUseMode.Drop;
 	}
 	
 	public PowerupDrop(PowerupDrop powerup) {
@@ -23,15 +23,8 @@ public class PowerupDrop extends Powerup {
 	}
 
 	@Override
-	public void onPickup(Jockey jockey) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void onUse(Jockey jockey) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 }

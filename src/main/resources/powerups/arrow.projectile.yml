@@ -1,0 +1,7 @@
+powerup:
+  name: "Arrow Shot"
+  material: ARROW 
+  amount: 3
+  projectile:
+    type: ARROW
+    speed: -3

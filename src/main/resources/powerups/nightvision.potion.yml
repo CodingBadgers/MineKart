@@ -1,10 +1,9 @@
 powerup:
   name: "Night Vision"
   material: SPIDER_EYE
-  mode:
-    apply: Self
-    use: Potion
+  amount: 1
   potion:
+    apply: Self
     type: NIGHT_VISION
     length: 12
     level: 1

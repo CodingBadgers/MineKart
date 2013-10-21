@@ -98,7 +98,12 @@ public class JockeyListener implements Listener {
 		if (player.getInventory().getHeldItemSlot() == 1) {
 			Powerup powerup = jockey.getPowerup();
 			powerup.onUse(jockey);
-			player.getInventory().setItem(1, new ItemStack(Material.AIR));			
+			
+			if (powerup.getAmount() <= 0) {
+				player.getInventory().setItem(1, new ItemStack(Material.AIR));	
+			} else {
+				item.setAmount(powerup.getAmount());
+			}
 			event.setCancelled(true);
 			return;
 		}
@@ -195,11 +200,10 @@ public class JockeyListener implements Listener {
 	 * @param event The entity damage event containing information on this event
 	 */
 	@EventHandler
-	public void onPlayerMove(EntityDamageEvent event) {
+	public void onENtityDamage(EntityDamageEvent event) {
 	
 		Entity entity = event.getEntity();
 		if (!(entity instanceof Player)) {
-			event.setCancelled(true);
 			return;
 		}
 		

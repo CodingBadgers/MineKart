@@ -5,9 +5,7 @@ import java.io.File;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -24,16 +22,35 @@ public class PowerupPotion extends Powerup {
 	
 	/** The level of potion to use **/
 	private int level;
+	
+	/** The powerup mode **/
+	protected PowerupApplyMode applyMode;
 
+	/**
+	 * Class constructor
+	 */
 	public PowerupPotion() {
-		
+		this.useMode = PowerupUseMode.Potion;
 	}
 	
+	/**
+	 * Copy constructor
+	 * @param powerup Powerup to copy from
+	 */
 	public PowerupPotion(PowerupPotion powerup) {
 		super(powerup);
 		this.type = powerup.type;
 		this.length = powerup.length;
 		this.level = powerup.level;
+		this.applyMode = powerup.applyMode;
+	}
+	
+	/**
+	 * Gets the apply mode of the potion
+	 * @return The apply mode
+	 */
+	public PowerupApplyMode getApplyMode() {
+		return applyMode;
 	}
 	
 	/**
@@ -48,26 +65,18 @@ public class PowerupPotion extends Powerup {
 		this.length = file.getLong("powerup.potion.length");
 		this.level = file.getInt("powerup.potion.level");
 		this.type = PotionEffectType.getByName(file.getString("powerup.potion.type"));
+		this.applyMode = PowerupApplyMode.valueOf(file.getString("powerup.potion.apply"));
 		
 	}
-
-	@Override
-	public void onPickup(Jockey jockey) {
-		
-		ItemStack item = new ItemStack(this.material);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(this.name);
-		item.setItemMeta(meta);
-		
-		jockey.getPlayer().getInventory().setItem(1, item);		
-		jockey.setPowerup(this);
-		
-		MineKart.output(jockey.getPlayer(), "You picked up " + this.name);
-		
-	}
-
+	
+	/**
+	 * Called when the powerup is used
+	 * @param player The player who used it
+	 */
 	@Override
 	public void onUse(Jockey jockey) {
+		
+		this.amount--;
 		
 		PotionEffect effect = new PotionEffect(this.type, (int) (this.length * 20), this.level, false);
 				

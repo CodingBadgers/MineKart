@@ -1,0 +1,7 @@
+powerup:
+  name: "Flame Ball"
+  material: BLAZE_POWDER 
+  amount: 1
+  projectile:
+    type: FIREBALL
+    speed: 3

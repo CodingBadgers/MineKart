@@ -1,10 +1,9 @@
 powerup:
   name: "Invisibility"
   material: GLASS
-  mode:
-    apply: Self
-    use: Potion
+  amount: 1
   potion:
+    apply: Self
     type: INVISIBILITY
     length: 12
     level: 0
