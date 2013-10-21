@@ -70,6 +70,11 @@ public class JockeyListener implements Listener {
 		
 	}
 	
+	/**
+	 * Handle player interactions when the jockey is in the lobby
+	 * @param jockey The jockey who interacted
+	 * @param event The event holding the interact data
+	 */
 	private void onPlayerInteractInLobby(Jockey jockey, PlayerInteractEvent event) {
         
 	    Block clicked = event.getClickedBlock();
@@ -80,6 +85,11 @@ public class JockeyListener implements Listener {
 	    }
     }
 
+	/**
+	 * Handle player interactions when the jockey is in game
+	 * @param jockey The jockey who interacted
+	 * @param event The event holding the interact data
+	 */
     @SuppressWarnings("deprecation")
     private void onPlayerInteractInGame(Jockey jockey, PlayerInteractEvent event) {
 		
