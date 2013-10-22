@@ -409,16 +409,16 @@ public class Jockey {
 	}
 
 	/**
-	 * 
-	 * @param powerup
+	 * Set the powerup the jockey has
+	 * @param powerup The powerup the jockey now has
 	 */
 	public void setPowerup(Powerup powerup) {
 		this.powerup = powerup;
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Get the powerup the jockey has
+	 * @return The powerup istance
 	 */
 	public Powerup getPowerup() {
 		return this.powerup;
@@ -426,7 +426,6 @@ public class Jockey {
 
 	/**
 	 * Mark this jockey as ready for the game to start
-	 * 
      * @return true if successful, false otherwise (eg. already ready)
 	 */
     public boolean readyUp() {
