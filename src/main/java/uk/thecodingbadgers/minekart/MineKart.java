@@ -45,6 +45,7 @@ import uk.thecodingbadgers.minekart.racecourse.RacecourceType;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseCheckpoint;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseLap;
+import static uk.thecodingbadgers.minekart.lobby.LobbySignManager.loadSigns;
 
 /**
  * @author TheCodingBadgers
@@ -53,8 +54,8 @@ import uk.thecodingbadgers.minekart.racecourse.RacecourseLap;
  *
  */
 public final class MineKart extends JavaPlugin {
-	
-	/** The instance of the MineKart plugin */
+    
+    /** The instance of the MineKart plugin */
 	private static MineKart instance = null;
 	
 	/** Access to the world edit plugin */
@@ -68,7 +69,10 @@ public final class MineKart extends JavaPlugin {
 	
 	/** The path to the folder where all powerups reside */
 	private static File powerupFolderPath = null;
-	
+
+    /** The path to the folder where all lobby signs reside */
+    private static File lobbyFolderPath = null;
+    
 	/** All available powerups */
 	private List<Powerup> powerups = null;
 	
@@ -90,9 +94,15 @@ public final class MineKart extends JavaPlugin {
 		MineKart.powerupFolderPath = new File(this.getDataFolder() + File.separator + "powerups");
 		if (!MineKart.powerupFolderPath.exists()) {
 			MineKart.powerupFolderPath.mkdirs();
-			copyDefaultPowerups();
+			copyDefaultPowerups(); // extract default configs from jar
 		}
-		
+
+        // Setup the folder which will hold all the lobby signs configs
+        MineKart.lobbyFolderPath = new File(this.getDataFolder() + File.separator + "signs");
+        if (!MineKart.lobbyFolderPath.exists()) {
+            MineKart.lobbyFolderPath.mkdirs();
+        }
+        
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		
 		// Get the world edit plugin instance
@@ -107,6 +117,7 @@ public final class MineKart extends JavaPlugin {
 		
 		loadPowerups();
 		loadRacecourses();
+		loadSigns();
 	}
 
 	/**
@@ -143,6 +154,14 @@ public final class MineKart extends JavaPlugin {
 	public static File getRacecourseFolder() {
 		return MineKart.racecourseFolderPath;
 	}
+
+    /**
+     * Get the folder of which all lobby signs reside
+     * @return The folder where the lobby signs  should be
+     */
+    public static File getLobbyFolder() {
+        return MineKart.lobbyFolderPath;
+    }
 	
 	/**
 	 * Registers all listeners used by the plugin

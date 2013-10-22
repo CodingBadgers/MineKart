@@ -33,7 +33,14 @@ public class BlockListener implements Listener {
 	public void onBlockBreak(BlockBreakEvent event) {
 
 		Block block = event.getBlock();
-		
+		Player player = event.getPlayer();
+        LobbySign sign = LobbySignManager.getSignByLocation(block);
+        
+        if (sign != null && player.hasPermission("minekart.lobby.destroy")) {
+            LobbySignManager.removeSign(sign);
+            MineKart.output(player, "Successfully removed lobby sign");
+        }
+        
 		Map<String, Racecourse> courses = MineKart.getInstance().getAllRacecourses();
 		for (Racecourse course : courses.values()) {
 			if (course.isEnabled() && course.isInCourseBounds(block.getLocation())) {
@@ -83,7 +90,12 @@ public class BlockListener implements Listener {
 		}
 		
 	}
-	
+    
+    /**
+     * Called when a sign is changed.
+     * 
+     * @param event The sign change event containing information on this event
+     */
 	@EventHandler
 	public void onSignChange(SignChangeEvent event) {
 	    Player player = event.getPlayer();

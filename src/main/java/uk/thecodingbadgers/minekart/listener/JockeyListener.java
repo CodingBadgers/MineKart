@@ -23,6 +23,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.lobby.LobbySign;
+import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
@@ -57,20 +59,61 @@ public class JockeyListener implements Listener {
 		
 		Player player = event.getPlayer();
 		Jockey jockey = MineKart.getInstance().getJockey(player);
-		if (jockey == null)
+		
+		if (jockey == null) {
+		    onPlayerInteractOutOfGame(player, event);
 			return;
+		}
 		
 		Race race = jockey.getRace();
 		
 		if (race.getState() == RaceState.InRace) {
-		    onPlayerInteractInGame(jockey, event);
+		    onJockeyInteractInGame(jockey, event);
 		} else if (race.getState() == RaceState.Waiting) {
-		    onPlayerInteractInLobby(jockey, event);
+		    onJockeyInteractInLobby(jockey, event);
 		}
 		
 	}
 	
-	private void onPlayerInteractInLobby(Jockey jockey, PlayerInteractEvent event) {
+	/**
+	 * Perform actions for players that are not inside a racecourse
+	 * 
+	 * @param player the player that triggered this event
+	 * @param event the player interact event, containing information on this event
+	 */
+	private void onPlayerInteractOutOfGame(Player player, PlayerInteractEvent event) {
+	    
+	    if (!player.hasPermission("minekart.join")) {
+            MineKart.output(player, "You do not have the required permission 'minekart.join'");
+            return;
+        }
+	    
+	    if (player.isSneaking()) {
+	        return;
+	    }
+        
+	    Block block = event.getClickedBlock();
+	    
+	    if (block == null) {
+	        return;
+	    }
+	    
+        LobbySign sign = LobbySignManager.getSignByLocation(block);
+        
+        if (sign == null) {
+            return;
+        }
+        
+        sign.getCourse().getRace().addJockey(player);
+    }
+
+    /**
+     * Perform actions for players that are in a racecourse lobby
+     * 
+     * @param player the player that triggered this event
+     * @param event the player interact event, containing information on this event
+     */
+    private void onJockeyInteractInLobby(Jockey jockey, PlayerInteractEvent event) {
         
 	    Block clicked = event.getClickedBlock();
         Race race = jockey.getRace();
@@ -80,8 +123,14 @@ public class JockeyListener implements Listener {
 	    }
     }
 
+    /**
+     * Perform actions for players that are currently in a race
+     * 
+     * @param player the player that triggered this event
+     * @param event the player interact event, containing information on this event
+     */
     @SuppressWarnings("deprecation")
-    private void onPlayerInteractInGame(Jockey jockey, PlayerInteractEvent event) {
+    private void onJockeyInteractInGame(Jockey jockey, PlayerInteractEvent event) {
 		
 	    Player player = event.getPlayer();
 	    

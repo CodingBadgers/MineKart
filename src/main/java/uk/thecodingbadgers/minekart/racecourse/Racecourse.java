@@ -76,10 +76,10 @@ public abstract class Racecourse {
 	protected boolean enabled = true;
 	
 	/** All spawned powerupItems */
-	private List<Item> powerupItems = null;
+	protected List<Item> powerupItems = null;
 
     /** The block the jockeys have to hit to ready up */
-    private Material readyblock;
+	protected Material readyblock;
     
 	/**
 	 * Class constructor

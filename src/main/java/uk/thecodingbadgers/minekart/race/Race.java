@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 
 /**
@@ -43,7 +44,7 @@ public abstract class Race {
 	 */
 	public void setCourse(Racecourse course) {
 		this.course = course;
-		this.state = RaceState.Waiting;
+        setState(RaceState.Waiting);
 	}
 
 	/**
@@ -69,15 +70,16 @@ public abstract class Race {
 			return;
 		}
 		
+		LobbySignManager.updateSigns();		
 	}
 
 	/**
 	 * Teleport all jockeys to the starting spawns and put them on their mounts
 	 */
 	public void teleportToSpawns() {
-		
-		this.state = RaceState.Starting;	
-		
+
+        setState(RaceState.Starting);
+        
 		List<Location> spawns = this.course.getMultiWarp("spawn");
 		int spawnIndex = spawns.size() - 1;
 		
@@ -139,8 +141,8 @@ public abstract class Race {
 		for (Jockey jockey : this.jockeys.values()) {
 			jockey.onRaceStart();
 		}
-		
-		this.state = RaceState.InRace;	
+
+        setState(RaceState.InRace);
 	}
 
 	/**
@@ -185,6 +187,8 @@ public abstract class Race {
 		
 		this.jockeys.remove(jockey.getPlayer().getName());
 		jockey.onRaceEnd();
+
+        LobbySignManager.updateSigns(); 
 		
 		if (this.jockeys.isEmpty()) {
 			end();
@@ -203,7 +207,7 @@ public abstract class Race {
 		for (Jockey jockey : tempJockeys.values()) {
 			removeJockey(jockey);
 		}
-		this.state = RaceState.Waiting;
+		setState(RaceState.Waiting);
 	}
 
 	/**
@@ -213,7 +217,16 @@ public abstract class Race {
 	public RaceState getState() {
 		return this.state;
 	}
-
+	
+    /**
+     * Change the current state of this race.
+     * @param state the new state
+     */
+    public void setState(RaceState state) {
+        this.state = state;
+        LobbySignManager.updateSigns();
+    }
+    
 	/**
 	 * Get the course that this race is using
 	 * @return The course instance
@@ -246,7 +259,8 @@ public abstract class Race {
 		
 		if (this.state != RaceState.InRace)
 			return;
-		this.state = RaceState.Waiting;
+		
+        setState(RaceState.Waiting);
 		
 		this.outputToRace(
 				ChatColor.YELLOW + jockey.getPlayer().getName() + 
