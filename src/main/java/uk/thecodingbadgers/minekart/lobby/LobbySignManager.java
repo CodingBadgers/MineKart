@@ -67,7 +67,7 @@ public class LobbySignManager {
             sign.save(file, config);
             config.save(file);
         } catch (IOException e) {
-            MineKart.getInstance().getLogger().log(Level.WARNING, "A error has occured whilst creating a lobby sign.", e);
+            MineKart.getInstance().getLogger().log(Level.SEVERE, "A error has occured whilst creating a lobby sign.", e);
             return;
         }
     }
