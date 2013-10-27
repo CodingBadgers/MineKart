@@ -120,6 +120,8 @@ public class Jockey {
 		
 		// restore data
 		this.backup.restore(player);
+		
+		player.updateInventory();
 
 	}
 	

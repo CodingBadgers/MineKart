@@ -56,7 +56,7 @@ public class PlayerBackup implements java.io.Serializable {
 		
 		player.getInventory().setContents(this.inventoryContents);
 		player.getInventory().setArmorContents(this.armourContents);
-		
+				
 	}
 
 }
