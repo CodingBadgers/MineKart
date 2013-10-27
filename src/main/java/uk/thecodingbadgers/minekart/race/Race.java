@@ -286,7 +286,7 @@ public abstract class Race {
         this.ready.add(jockey);
         this.outputToRace(jockey.getPlayer().getName() + " is now ready! (" + this.ready.size() + "/" + this.jockeys.size() + ")");
         
-        if (this.ready.size() == jockeys.size()) {
+        if (this.ready.size() == this.jockeys.size() && this.jockeys.size() >= this.course.getMinimumPlayers()) {
             this.ready.clear();
             this.teleportToSpawns();
         }

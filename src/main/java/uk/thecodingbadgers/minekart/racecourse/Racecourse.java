@@ -80,6 +80,9 @@ public abstract class Racecourse {
 
     /** The block the jockeys have to hit to ready up */
 	protected Material readyblock;
+	
+	/** The minimum number of jockeys required for a race to take place **/
+	protected int minimumNoofPlayers = 2;
     
 	/**
 	 * Class constructor
@@ -181,9 +184,10 @@ public abstract class Racecourse {
 		
 		// Mount settings
 		this.mountType = EntityType.fromName(file.getString("mount.type", "EntityHorse"));
-		
+				
 		// Lobby settings
 		this.readyblock = Material.getMaterial(file.getString("lobby.readyblock", "IRON_BLOCK"));
+		this.minimumNoofPlayers = file.getInt("racecourse.minimumJockeys", 2);
 		
 		// Single point locations
 		int noofSinglePoints = file.getInt("racecourse.singlepoint.count");
@@ -233,6 +237,7 @@ public abstract class Racecourse {
 		
         // Lobby settings
         file.set("lobby.readyblock", this.readyblock.name());
+        file.set("racecourse.minimumJockeys", this.minimumNoofPlayers);
 
 		// Single point locations
 		file.set("racecourse.singlepoint.count", this.singlePoints.size());
@@ -643,4 +648,12 @@ public abstract class Racecourse {
     public Material getReadyBlock() {
         return this.readyblock;
     }
+
+    /**
+     * Get the minimum number of players need to for a race to take place
+     * @return The minimum number of players
+     */
+	public int getMinimumPlayers() {
+		return this.minimumNoofPlayers;
+	}
 }
