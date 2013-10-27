@@ -10,7 +10,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -177,10 +176,8 @@ public class JockeyListener implements Listener {
 		ItemStack item = player.getItemInHand();
 		if (item == null || item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null)
 			return;
-		
-		final Action action = event.getAction();
-		
-		if (item.getItemMeta().getDisplayName().equalsIgnoreCase("whip") && (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK || action == Action.PHYSICAL)) {	
+
+		if (item.getItemMeta().getDisplayName().equalsIgnoreCase("whip")) {	
 			
 			int amount = item.getAmount();
 			if (amount <= 1) {
