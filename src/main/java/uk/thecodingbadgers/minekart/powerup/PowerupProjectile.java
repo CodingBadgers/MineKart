@@ -64,7 +64,9 @@ public class PowerupProjectile extends Powerup {
 		
 		Location spawnLocation = player.getLocation();
 		Vector mountDirection = jockey.getMount().getBukkitEntity().getLocation().getDirection();
-		spawnLocation = spawnLocation.add(mountDirection.multiply(this.speed < 0 ? -2.0f : 2.0f));
+		
+		float scaler = this.speed < 0 ? -2.0f : 2.0f;
+		spawnLocation = spawnLocation.add(new Vector(scaler * mountDirection.getX(), 0.1, scaler * mountDirection.getZ()));
 		
 		Projectile projectile = (Projectile)player.getWorld().spawnEntity(spawnLocation, this.type);
 		projectile.setVelocity(mountDirection.multiply(this.speed));
