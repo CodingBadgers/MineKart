@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -58,12 +59,22 @@ public abstract class Race {
 			return;
 		}
 		
-		Jockey newJockey = new Jockey(player, this.course.getMountType(), this);
-		this.jockeys.put(player.getName(), newJockey);
+		Location loc = this.course.getWarp("lobby");
+		
+		if (loc == null) {
+		    // FIXME For some reason the plugin keeps forgetting about this spawn and then not be able to
+		    // teleport players to the lobby. Protection against error for now, needs a proper fix
+            MineKart.output(player, "A internal error has occurred. please inform staff");
+            MineKart.getInstance().getLogger().log(Level.INFO, "Lobby spawn is null");
+            return;
+		}
 		
 		player.teleport(this.course.getWarp("lobby"));
 		MineKart.output(player, "You have joined the lobby for the racecourse '" + this.course.getName() + "'.");		
-		
+
+        Jockey newJockey = new Jockey(player, this.course.getMountType(), this);
+        this.jockeys.put(player.getName(), newJockey);
+        
 		List<Location> spawns = this.course.getMultiWarp("spawn");
 		if (spawns.size() == this.jockeys.size()) {
 			teleportToSpawns();
