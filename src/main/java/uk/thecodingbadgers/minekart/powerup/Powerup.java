@@ -14,7 +14,10 @@ import uk.thecodingbadgers.minekart.jockey.Jockey;
 
 public abstract class Powerup {
 	
-	/** The name of the powerup **/
+    /** The slot a powerup is put in */
+	public static final int POWERUP_SLOT = 1;
+
+    /** The name of the powerup **/
 	protected String name;
 	
 	/** The powerup mode **/
@@ -69,7 +72,7 @@ public abstract class Powerup {
 		meta.setDisplayName(this.name);
 		item.setItemMeta(meta);
 		
-		jockey.getPlayer().getInventory().setItem(1, item);		
+		jockey.getPlayer().getInventory().setItem(POWERUP_SLOT, item);		
 		jockey.setPowerup(this);
 		
 		MineKart.output(jockey.getPlayer(), "You picked up " + this.name);
@@ -86,7 +89,7 @@ public abstract class Powerup {
 	 * @param player The player who picked it up
 	 */
 	public void onDrop(Player player) {
-		player.getInventory().setItem(1, new ItemStack(Material.AIR));
+		player.getInventory().setItem(POWERUP_SLOT, new ItemStack(Material.AIR));
 	}
 	
 	/**

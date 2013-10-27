@@ -166,12 +166,12 @@ public class JockeyListener implements Listener {
 			return;
 		}
 		
-		if (player.getInventory().getHeldItemSlot() == 1) {
+		if (player.getInventory().getHeldItemSlot() == Powerup.POWERUP_SLOT) {
 			Powerup powerup = jockey.getPowerup();
 			powerup.onUse(jockey);
 			
 			if (powerup.getAmount() <= 0) {
-				player.getInventory().setItem(1, new ItemStack(Material.AIR));	
+				player.getInventory().setItem(Powerup.POWERUP_SLOT, new ItemStack(Material.AIR));	
 			} else {
 				item.setAmount(powerup.getAmount());
 			}
@@ -357,10 +357,10 @@ public class JockeyListener implements Listener {
 		
 		event.setCancelled(true);
 		
-		ItemStack secondSlotItem = player.getInventory().getItem(1);
+		ItemStack powerupItem = player.getInventory().getItem(Powerup.POWERUP_SLOT);
 		
-		if (secondSlotItem == event.getItemDrop().getItemStack()) {
-			player.getInventory().setItem(1, new ItemStack(Material.AIR));
+		if (powerupItem == event.getItemDrop().getItemStack()) {
+			player.getInventory().setItem(Powerup.POWERUP_SLOT, new ItemStack(Material.AIR));
 		}
 		
 	}
