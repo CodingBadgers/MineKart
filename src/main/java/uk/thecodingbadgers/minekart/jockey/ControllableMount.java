@@ -290,7 +290,14 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
             boolean shouldJump = NMS.shouldJump(handle.passenger);
             if (shouldJump) {
                 if (onGround && jumpTicks == 0) {
-                    getHandle().motY = JUMP_VELOCITY;
+                	
+                	float jumpPotion = 1.0f;
+                	MobEffect jumpEffect = handle.getEffect(MobEffectList.JUMP);
+                	if (jumpEffect != null && jumpEffect.getAmplifier() != 0) {
+                		jumpPotion += jumpEffect.getAmplifier();
+                	}
+                	
+                    getHandle().motY = JUMP_VELOCITY * jumpPotion;
                     jumpTicks = 10;
                 }
             } else {
