@@ -15,8 +15,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -30,6 +32,44 @@ import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
 
 public class JockeyListener implements Listener {
+	
+	/**
+	 * Handle jockeys quiting from the game
+	 * @param event The player kicked event
+	 */
+	@EventHandler
+	public void onJockeyLeave(PlayerQuitEvent event) {
+		
+		Player player = event.getPlayer();
+		Jockey jockey = MineKart.getInstance().getJockey(player);
+		
+		if (jockey == null) {
+			return;
+		}
+		
+		jockey.getRace().removeJockey(jockey);
+		MineKart.output(player, "You have left the race.");
+		
+	}
+	
+	/**
+	 * Handle jockeys being kicked from the game
+	 * @param event The player kicked event
+	 */
+	@EventHandler
+	public void onJockeyKick(PlayerKickEvent event) {
+		
+		Player player = event.getPlayer();
+		Jockey jockey = MineKart.getInstance().getJockey(player);
+		
+		if (jockey == null) {
+			return;
+		}
+		
+		jockey.getRace().removeJockey(jockey);
+		MineKart.output(player, "You have left the race.");
+		
+	}
 
 	/**
 	 * Called when a player tried to dismount a vehicle.
