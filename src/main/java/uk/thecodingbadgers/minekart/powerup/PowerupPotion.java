@@ -83,6 +83,11 @@ public class PowerupPotion extends Powerup {
 		if (this.applyMode == PowerupApplyMode.Self) {
 			jockey.getPlayer().addPotionEffect(effect, true);
 			jockey.getMount().getBukkitEntity().addPotionEffect(effect, true);
+		} else if (this.applyMode == PowerupApplyMode.Others) {
+		    for (Jockey other : jockey.getRace().getJockeys()) {
+		        other.getPlayer().addPotionEffect(effect, true);
+	            other.getMount().getBukkitEntity().addPotionEffect(effect, true);
+		    }
 		}
 		
 		handleInvisible(jockey);
