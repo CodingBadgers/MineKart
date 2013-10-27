@@ -69,10 +69,12 @@ public abstract class Race {
             return;
 		}
 		
-		player.teleport(this.course.getWarp("lobby"));
+		Location oldLocation = player.getLocation();
+		
+		player.teleport(loc);
 		MineKart.output(player, "You have joined the lobby for the racecourse '" + this.course.getName() + "'.");		
 
-        Jockey newJockey = new Jockey(player, this.course.getMountType(), this);
+        Jockey newJockey = new Jockey(player, this.course.getMountType(), oldLocation, this);
         this.jockeys.put(player.getName(), newJockey);
         
 		List<Location> spawns = this.course.getMultiWarp("spawn");

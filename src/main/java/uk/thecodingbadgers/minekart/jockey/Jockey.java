@@ -75,11 +75,11 @@ public class Jockey {
 	 * @param mountType
 	 * @param race 
 	 */
-	public Jockey(Player player, EntityType mountType, Race race) {
+	public Jockey(Player player, EntityType mountType, Location oldLocation, Race race) {
 		this.player = player;
 		this.mountType = mountType;
 		this.race = race;
-		this.exitLocaiton = player.getLocation();
+		this.exitLocaiton = oldLocation;
 		this.jockeyColor = getRandomColor();
 		
 		this.backup = new PlayerBackup();
