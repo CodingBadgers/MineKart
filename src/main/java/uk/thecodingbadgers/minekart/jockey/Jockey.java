@@ -179,6 +179,15 @@ public class Jockey {
 	 */
 	private Color getRandomColor() {
 		Random random = new Random();
+		
+		if (player.getName().equalsIgnoreCase("tdc_hodgy") || player.getName().equalsIgnoreCase("tilly_lala")) {
+            return Color.fromRGB(85, 85, 255);
+		}
+
+        if (player.getName().equalsIgnoreCase("thefish97") || player.getName().equalsIgnoreCase("n3wton")) {
+            return Color.fromRGB(0, 170, 0);
+        }
+		
 		return Color.fromRGB(random.nextInt(256), random.nextInt(256), random.nextInt(256));
 	}
 
