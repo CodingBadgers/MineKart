@@ -37,7 +37,7 @@ public abstract class Race {
 	protected Map<String, Jockey> jockeys = new HashMap<String, Jockey>();
 	
 	/** All the jockeys that are marked as ready */
-	protected Set<Jockey> ready = new HashSet<Jockey>();
+	protected Set<String> ready = new HashSet<String>();
 	
 	/**
 	 * Set the course used by this race
@@ -199,6 +199,8 @@ public abstract class Race {
 	public void removeJockey(Jockey jockey) {
 		
 		this.jockeys.remove(jockey.getPlayer().getName());
+        this.ready.remove(jockey.getPlayer().getName());
+		
 		jockey.onRaceEnd();
 
         LobbySignManager.updateSigns(); 
@@ -292,14 +294,19 @@ public abstract class Race {
 	 * @return true if successful, false otherwise (eg. already ready)
 	 */
     public boolean readyUp(Jockey jockey) {
-        if (this.ready.contains(jockey)) {
+        if (this.ready.contains(jockey.getPlayer().getName())) {
             return false;
         }
         
-        this.ready.add(jockey);
+        this.ready.add(jockey.getPlayer().getName());
         this.outputToRace(jockey.getPlayer().getName() + " is now ready! (" + this.ready.size() + "/" + this.jockeys.size() + ")");
         
-        if (this.ready.size() == this.jockeys.size() && this.jockeys.size() >= this.course.getMinimumPlayers()) {
+        if (this.jockeys.size() < this.course.getMinimumPlayers()) {
+            this.outputToRace("You have to have a minimum of " + this.course.getMinimumPlayers() + " to start a game.");
+            return false;
+        }
+        
+        if (this.ready.size() == this.jockeys.size()) {
             this.ready.clear();
             this.teleportToSpawns();
         }
