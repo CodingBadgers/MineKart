@@ -252,19 +252,19 @@ public class Jockey {
 			"One Way", "Beans", "To The Moon", "Bitter Blue", "Black Cadillac", "Landing Gear", 
 			"Not American", "Ringo Star", "Mystery Man", "Spits-A-Lot", "Hungry Hippo", 
 			"Chapter 13", "Almost Pearls", "The Lady", "Graceling", 
-			"Lockpick", "Pants", "Gold Pilot", "Fire’s Star", "Simply Food", "Scrap Paper",
-			"Scrap Paper X", "Doomsday Kettle", "Vygotsky’s Plan", "German Tank", 
+			"Lockpick", "Pants", "Gold Pilot", "Fire's Star", "Simply Food", "Scrap Paper",
+			"Scrap Paper X", "Doomsday Kettle", "Vygotsky's Plan", "German Tank", 
 			"Horse-Bear", "Steroids Galore", "Blindsight", "The Scientist", "Robo Horse", 
 			"Lightning Hoof", "Robo Horse II", "Robo Horse III", "Added Calcium", "Gnasty Gnorc", 
 			"Dream Weaver", "French Toast", "Sun Seeker", "El Horso", "My Little Pony",
-			"Guy in a Suit", "Almost Dead", "Big Mac", "Gravity’s Foe", "George",
+			"Guy in a Suit", "Almost Dead", "Big Mac", "Gravity's Foe", "George",
 			"Applesauce", "Iron Knight", "In the Morning", "Cleverfoot", "Peggy",
 			"TDC Pizza", "Princess Tilly", "Emmerica"
 		};
 		
 		Random random = new Random();
 		
-		if (jockeyName.equalsIgnoreCase("itstolate") && random.nextBoolean()) {
+		if (jockeyName.equalsIgnoreCase("itstolate") && random.nextInt(4) == 0) {
 			return "Canada Smells";
 		}
 		
