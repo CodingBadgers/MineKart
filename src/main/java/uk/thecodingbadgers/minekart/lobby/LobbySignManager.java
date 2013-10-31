@@ -56,8 +56,7 @@ public class LobbySignManager {
         int i = 0;
         
         do {
-            file = new File(MineKart.getLobbyFolder(), sign.getCourse().getName() + "-" + i + ".yml");
-            i++;
+            file = new File(MineKart.getLobbyFolder(), sign.getCourse().getName() + "-" + i++ + ".yml");
         } while(file.exists());
         
         try {

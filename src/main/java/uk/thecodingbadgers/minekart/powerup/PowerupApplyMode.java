@@ -4,6 +4,8 @@ public enum PowerupApplyMode {
 
 	Self,
 	Others,
+	
+	// TODO Not yet implemented
 	Closet,
 	First
 	
