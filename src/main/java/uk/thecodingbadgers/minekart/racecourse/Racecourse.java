@@ -83,6 +83,9 @@ public abstract class Racecourse {
 	
 	/** The minimum number of jockeys required for a race to take place **/
 	protected int minimumNoofPlayers = 2;
+	
+	/** The cooldown between pickuping up powerups **/
+	protected int powerupCooldown = 2;
     
 	/**
 	 * Class constructor
@@ -188,6 +191,7 @@ public abstract class Racecourse {
 		// Lobby settings
 		this.readyblock = Material.getMaterial(file.getString("lobby.readyblock", "IRON_BLOCK"));
 		this.minimumNoofPlayers = file.getInt("racecourse.minimumJockeys", 2);
+		this.powerupCooldown = file.getInt("racecourse.powerupCooldown", 500);
 		
 		// Single point locations
 		int noofSinglePoints = file.getInt("racecourse.singlepoint.count");
@@ -238,6 +242,7 @@ public abstract class Racecourse {
         // Lobby settings
         file.set("lobby.readyblock", this.readyblock.name());
         file.set("racecourse.minimumJockeys", this.minimumNoofPlayers);
+        file.set("racecourse.powerupCooldown", this.powerupCooldown);
 
 		// Single point locations
 		file.set("racecourse.singlepoint.count", this.singlePoints.size());
@@ -655,5 +660,15 @@ public abstract class Racecourse {
      */
 	public int getMinimumPlayers() {
 		return this.minimumNoofPlayers;
+	}
+
+    /**
+     * Gets the time between players being able to pickup powerups, in
+     * milliseconds
+     * @return the time between players being able to pickup powerups, in
+     * 			milliseconds
+     */
+	public long getPowerupCooldown() {
+		return powerupCooldown;
 	}
 }

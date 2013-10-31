@@ -68,6 +68,9 @@ public class Jockey {
 	
 	/** The jockeys powerup */
 	private Powerup powerup = null;
+
+	/** The time the player picked up their last powerup */
+	private long lastpowerup;
 	
 	/**
 	 * 
@@ -424,6 +427,7 @@ public class Jockey {
 	 * @param powerup The powerup the jockey now has
 	 */
 	public void setPowerup(Powerup powerup) {
+		if (powerup != null) { this.lastpowerup = System.currentTimeMillis(); }
 		this.powerup = powerup;
 	}
 	
@@ -433,6 +437,14 @@ public class Jockey {
 	 */
 	public Powerup getPowerup() {
 		return this.powerup;
+	}
+	
+	/**
+	 * If this jockey can pickup a powerup at this time.
+	 * @return true if the jockey can pickup the powerup, false othewise
+	 */
+	public boolean canPickupPowerup() {
+		return System.currentTimeMillis() - lastpowerup >= this.race.getCourse().getPowerupCooldown();
 	}
 
 	/**

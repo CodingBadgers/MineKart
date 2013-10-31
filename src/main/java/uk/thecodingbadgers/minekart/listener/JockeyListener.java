@@ -345,19 +345,20 @@ public class JockeyListener implements Listener {
 	 */
 	@EventHandler
 	public void onPickupItem(PlayerPickupItemEvent event) {
-		
-		final Player player = event.getPlayer();
+
 		final Item item = event.getItem();
 		final ItemMeta meta = item.getItemStack().getItemMeta();
 		
 		if (meta == null || !meta.hasDisplayName() || !meta.getDisplayName().startsWith("Powerup")) {
 			return;
 		}
-		
+
 		event.setCancelled(true);
 		
-		Jockey jockey = MineKart.getInstance().getJockey(player);
-		if (jockey == null) {
+		final Player player = event.getPlayer();
+		final Jockey jockey = MineKart.getInstance().getJockey(player);
+		
+		if (jockey == null || !jockey.canPickupPowerup()) {
 			return;
 		}
 		
@@ -375,13 +376,13 @@ public class JockeyListener implements Listener {
 		
 		jockey.getRace().getCourse().removePowerup(item.getLocation());
 		powerup.onPickup(jockey);
-				
 	}
 	
 	/**
 	 * Called when a player drops an item.
 	 * @param event The item drop event containing information on this event
 	 */
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onDropItem(PlayerDropItemEvent event) {
 		
@@ -396,10 +397,11 @@ public class JockeyListener implements Listener {
 		
 		ItemStack powerupItem = player.getInventory().getItem(Powerup.POWERUP_SLOT);
 		
-		if (powerupItem == event.getItemDrop().getItemStack()) {
+		if (powerupItem.isSimilar(event.getItemDrop().getItemStack())) {
 			player.getInventory().setItem(Powerup.POWERUP_SLOT, new ItemStack(Material.AIR));
+			player.updateInventory();
+			jockey.setPowerup(null);
 		}
-		
 	}
 	
 }
