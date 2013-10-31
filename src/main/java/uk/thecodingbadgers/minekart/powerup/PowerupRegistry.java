@@ -20,7 +20,7 @@ public class PowerupRegistry {
 
 	/**
 	 * Gets the a powerup type by its string id.
-	 *
+	 * 
 	 * @param poweruptype the string id
 	 * @return the powerup type instance
 	 */
@@ -44,7 +44,7 @@ public class PowerupRegistry {
 
 	/**
 	 * Clone a powerup.
-	 *
+	 * 
 	 * @param <T> the generic type of the powerup
 	 * @param powerup the powerup to clone
 	 * @return the cloned powerup
@@ -63,10 +63,10 @@ public class PowerupRegistry {
 
 	/**
 	 * Register a new custom powerup type.
-	 *
+	 * 
 	 * @param id the string id of the type, for use in the config file
 	 * @param clazz the class to handle the powerup, the class must have a
-	 * 			public, no argument constructor and a copy constructor
+	 *            public, no argument constructor and a copy constructor
 	 */
 	public void registerPowerupType(String id, Class<? extends Powerup> clazz) {
 		powerupTypes.put(id, clazz);

@@ -158,7 +158,7 @@ public final class MineKart extends JavaPlugin {
 
 	/**
 	 * Gets the powerup registry.
-	 *
+	 * 
 	 * @return the powerup registry
 	 */
 	private PowerupRegistry getPowerupRegistry() {

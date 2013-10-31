@@ -36,371 +36,370 @@ import org.bukkit.util.Vector;
 import com.google.common.collect.Maps;
 
 public class ControllableMount extends Trait implements Toggleable, CommandConfigurable {
-	
-    private MovementController controller = new GroundController();
-    @Persist
-    private boolean enabled = true;
-    private EntityType explicitType;
-    private LivingEntity passenger = null;
 
-    public ControllableMount() {
-        super("controllablemount");
-    }
+	private MovementController controller = new GroundController();
+	@Persist
+	private boolean enabled = true;
+	private EntityType explicitType;
+	private LivingEntity passenger = null;
 
-    public ControllableMount(boolean enabled) {
-        this();
-        this.enabled = enabled;
-    }
+	public ControllableMount() {
+		super("controllablemount");
+	}
 
-    @Override
-    public void configure(CommandContext args) {
-        if (args.hasFlag('f')) {
-            explicitType = EntityType.BLAZE;
-        } else if (args.hasFlag('g')) {
-            explicitType = EntityType.OCELOT;
-        } else if (args.hasFlag('o')) {
-            explicitType = EntityType.UNKNOWN;
-        } else if (args.hasFlag('r')) {
-            explicitType = null;
-        } else if (args.hasValueFlag("explicittype"))
-            explicitType = Util.matchEntityType(args.getFlag("explicittype"));
-        if (npc.isSpawned())
-            loadController();
-    }
+	public ControllableMount(boolean enabled) {
+		this();
+		this.enabled = enabled;
+	}
 
-    private void enterOrLeaveVehicle(Player player) {
-        EntityPlayer handle = ((CraftPlayer) player).getHandle();
-        if (getHandle().passenger != null) {
-            if (getHandle().passenger == handle) {
-                player.leaveVehicle();
-                this.passenger = null;
-            }
-            return;
-        }
-        if (npc.getTrait(Owner.class).isOwnedBy(handle.getBukkitEntity())) {
-            handle.setPassengerOf(getHandle());
-            this.passenger = player;
-        }
-    }
+	@Override
+	public void configure(CommandContext args) {
+		if (args.hasFlag('f')) {
+			explicitType = EntityType.BLAZE;
+		} else if (args.hasFlag('g')) {
+			explicitType = EntityType.OCELOT;
+		} else if (args.hasFlag('o')) {
+			explicitType = EntityType.UNKNOWN;
+		} else if (args.hasFlag('r')) {
+			explicitType = null;
+		} else if (args.hasValueFlag("explicittype"))
+			explicitType = Util.matchEntityType(args.getFlag("explicittype"));
+		if (npc.isSpawned())
+			loadController();
+	}
 
-    private EntityLiving getHandle() {
-        return ((CraftLivingEntity) npc.getBukkitEntity()).getHandle();
-    }
+	private void enterOrLeaveVehicle(Player player) {
+		EntityPlayer handle = ((CraftPlayer) player).getHandle();
+		if (getHandle().passenger != null) {
+			if (getHandle().passenger == handle) {
+				player.leaveVehicle();
+				this.passenger = null;
+			}
+			return;
+		}
+		if (npc.getTrait(Owner.class).isOwnedBy(handle.getBukkitEntity())) {
+			handle.setPassengerOf(getHandle());
+			this.passenger = player;
+		}
+	}
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+	private EntityLiving getHandle() {
+		return ((CraftLivingEntity) npc.getBukkitEntity()).getHandle();
+	}
 
-    @Override
-    public void load(DataKey key) throws NPCLoadException {
-        if (key.keyExists("explicittype"))
-            explicitType = Util.matchEntityType(key.getString("explicittype"));
-    }
+	public boolean isEnabled() {
+		return enabled;
+	}
 
-    private void loadController() {
-        EntityType type = npc.getBukkitEntity().getType();
-        if (explicitType != null)
-            type = explicitType;
-        Class<? extends MovementController> clazz = controllerTypes.get(type);
-        if (clazz == null) {
-            controller = new GroundController();
-            return;
-        }
-        Constructor<? extends MovementController> innerConstructor = null;
-        try {
-            innerConstructor = clazz.getConstructor(ControllableMount.class);
-            innerConstructor.setAccessible(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+	@Override
+	public void load(DataKey key) throws NPCLoadException {
+		if (key.keyExists("explicittype"))
+			explicitType = Util.matchEntityType(key.getString("explicittype"));
+	}
 
-        try {
-            if (innerConstructor == null) {
-                controller = clazz.newInstance();
-            } else
-                controller = innerConstructor.newInstance(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-            controller = new GroundController();
-        }
-    }
+	private void loadController() {
+		EntityType type = npc.getBukkitEntity().getType();
+		if (explicitType != null)
+			type = explicitType;
+		Class<? extends MovementController> clazz = controllerTypes.get(type);
+		if (clazz == null) {
+			controller = new GroundController();
+			return;
+		}
+		Constructor<? extends MovementController> innerConstructor = null;
+		try {
+			innerConstructor = clazz.getConstructor(ControllableMount.class);
+			innerConstructor.setAccessible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    public boolean mount(Player toMount) {
-        Entity passenger = npc.getBukkitEntity().getPassenger();
-        if (passenger != null && passenger != toMount) {
-            return false;
-        }
-        enterOrLeaveVehicle(toMount);
-        return true;
-    }
+		try {
+			if (innerConstructor == null) {
+				controller = clazz.newInstance();
+			} else
+				controller = innerConstructor.newInstance(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+			controller = new GroundController();
+		}
+	}
 
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!npc.isSpawned() || !enabled)
-            return;
-        EntityPlayer handle = ((CraftPlayer) event.getPlayer()).getHandle();
-        Action performed = event.getAction();
-        if (!handle.equals(getHandle().passenger))
-            return;
-        switch (performed) {
-            case RIGHT_CLICK_BLOCK:
-            case RIGHT_CLICK_AIR:
-                controller.rightClick(event);
-                break;
-            case LEFT_CLICK_BLOCK:
-            case LEFT_CLICK_AIR:
-                controller.leftClick(event);
-                break;
-            default:
-                break;
-        }
-    }
+	public boolean mount(Player toMount) {
+		Entity passenger = npc.getBukkitEntity().getPassenger();
+		if (passenger != null && passenger != toMount) {
+			return false;
+		}
+		enterOrLeaveVehicle(toMount);
+		return true;
+	}
 
-    @EventHandler
-    public void onRightClick(NPCRightClickEvent event) {
-        if (!enabled || !npc.isSpawned() || !event.getNPC().equals(npc))
-            return;
-        controller.rightClickEntity(event);
-    }
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (!npc.isSpawned() || !enabled)
+			return;
+		EntityPlayer handle = ((CraftPlayer) event.getPlayer()).getHandle();
+		Action performed = event.getAction();
+		if (!handle.equals(getHandle().passenger))
+			return;
+		switch (performed) {
+			case RIGHT_CLICK_BLOCK:
+			case RIGHT_CLICK_AIR:
+				controller.rightClick(event);
+				break;
+			case LEFT_CLICK_BLOCK:
+			case LEFT_CLICK_AIR:
+				controller.leftClick(event);
+				break;
+			default:
+				break;
+		}
+	}
 
-    @Override
-    public void onSpawn() {
-        loadController();
-    }
+	@EventHandler
+	public void onRightClick(NPCRightClickEvent event) {
+		if (!enabled || !npc.isSpawned() || !event.getNPC().equals(npc))
+			return;
+		controller.rightClickEntity(event);
+	}
 
-    @Override
-    public void run() {
-    	
-    	if (!enabled || !npc.isSpawned())
-    		return;
-    	
-    	if (getHandle().passenger == null && this.passenger != null) {
-    		((CraftPlayer) this.passenger).getHandle().setPassengerOf(getHandle());
-    	}
-    	
-        if(getHandle().passenger == null)
-            return;
-        
-        controller.run((Player) getHandle().passenger.getBukkitEntity());
-    }
+	@Override
+	public void onSpawn() {
+		loadController();
+	}
 
-    @Override
-    public void save(DataKey key) {
-        if (explicitType == null) {
-            key.removeKey("explicittype");
-        } else {
-            key.setString("explicittype", explicitType.name());
-        }
-    }
+	@Override
+	public void run() {
 
-    public boolean setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        return enabled;
-    }
+		if (!enabled || !npc.isSpawned())
+			return;
 
-    private void setMountedYaw(EntityLiving handle) {
-        if (handle instanceof EntityEnderDragon || !Setting.USE_BOAT_CONTROLS.asBoolean())
-            return; // EnderDragon handles this separately
-        double tX = handle.locX + handle.motX;
-        double tZ = handle.locZ + handle.motZ;
-        if (handle.locZ > tZ) {
-            handle.yaw = (float) -Math.toDegrees(Math.atan((handle.locX - tX) / (handle.locZ - tZ))) + 180F;
-        } else if (handle.locZ < tZ) {
-            handle.yaw = (float) -Math.toDegrees(Math.atan((handle.locX - tX) / (handle.locZ - tZ)));
-        }
-        NMS.setHeadYaw(handle, handle.yaw);
-    }
+		if (getHandle().passenger == null && this.passenger != null) {
+			((CraftPlayer) this.passenger).getHandle().setPassengerOf(getHandle());
+		}
 
-    @Override
-    public boolean toggle() {
-        enabled = !enabled;
-        if (!enabled && getHandle().passenger != null) {
-            getHandle().passenger.getBukkitEntity().leaveVehicle();
-        }
-        return enabled;
-    }
+		if (getHandle().passenger == null)
+			return;
 
-    private double updateHorizontralSpeed(EntityLiving handle, double speed, float speedMod) {
-    	
-    	Double maxSpeed = 0.35D;
-    	
-    	MobEffect speedEffect = handle.getEffect(MobEffectList.FASTER_MOVEMENT);
-    	if (speedEffect != null && speedEffect.getAmplifier() != 0) {
-    		maxSpeed *= (speedEffect.getAmplifier() * 0.75f);
-    	}
-    	
-    	MobEffect slownessEffect = handle.getEffect(MobEffectList.SLOWER_MOVEMENT);
-    	if (slownessEffect != null && slownessEffect.getAmplifier() != 0) {
-    		maxSpeed /= (slownessEffect.getAmplifier() * 0.75f);
-    	}
-    	
-        double oldSpeed = Math.sqrt(handle.motX * handle.motX + handle.motZ * handle.motZ);
-        double horizontal = ((EntityLiving) handle.passenger).bf;
-        if (horizontal > 0.0D) {
-            double dXcos = -Math.sin(handle.passenger.yaw * Math.PI / 180.0F);
-            double dXsin = Math.cos(handle.passenger.yaw * Math.PI / 180.0F);
-            handle.motX += dXcos * speed * 0.5;
-            handle.motZ += dXsin * speed * 0.5;
-        }
-        handle.motX += handle.passenger.motX * speedMod;
-        handle.motZ += handle.passenger.motZ * speedMod;
+		controller.run((Player) getHandle().passenger.getBukkitEntity());
+	}
 
-        double newSpeed = Math.sqrt(handle.motX * handle.motX + handle.motZ * handle.motZ);
-        if (newSpeed > maxSpeed) {
-            double movementFactor = maxSpeed / newSpeed;
-            handle.motX *= movementFactor;
-            handle.motZ *= movementFactor;
-            newSpeed = maxSpeed;
-        }
+	@Override
+	public void save(DataKey key) {
+		if (explicitType == null) {
+			key.removeKey("explicittype");
+		} else {
+			key.setString("explicittype", explicitType.name());
+		}
+	}
 
-        if (newSpeed > oldSpeed && speed < maxSpeed) {
-            return (float) Math.min(maxSpeed, (speed + ((maxSpeed - speed) / maxSpeed)));
-        } else {
-            return (float) Math.max(0.07D, (speed - ((speed - 0.07D) / maxSpeed)));
-        }
-    }
+	public boolean setEnabled(boolean enabled) {
+		this.enabled = enabled;
+		return enabled;
+	}
 
-    public class GroundController implements MovementController {
-        private int jumpTicks = 0;
-        private double speed = 0.07D;
+	private void setMountedYaw(EntityLiving handle) {
+		if (handle instanceof EntityEnderDragon || !Setting.USE_BOAT_CONTROLS.asBoolean())
+			return; // EnderDragon handles this separately
+		double tX = handle.locX + handle.motX;
+		double tZ = handle.locZ + handle.motZ;
+		if (handle.locZ > tZ) {
+			handle.yaw = (float) -Math.toDegrees(Math.atan((handle.locX - tX) / (handle.locZ - tZ))) + 180F;
+		} else if (handle.locZ < tZ) {
+			handle.yaw = (float) -Math.toDegrees(Math.atan((handle.locX - tX) / (handle.locZ - tZ)));
+		}
+		NMS.setHeadYaw(handle, handle.yaw);
+	}
 
-        @Override
-        public void leftClick(PlayerInteractEvent event) {
-        }
+	@Override
+	public boolean toggle() {
+		enabled = !enabled;
+		if (!enabled && getHandle().passenger != null) {
+			getHandle().passenger.getBukkitEntity().leaveVehicle();
+		}
+		return enabled;
+	}
 
-        @Override
-        public void rightClick(PlayerInteractEvent event) {
-        }
+	private double updateHorizontralSpeed(EntityLiving handle, double speed, float speedMod) {
 
-        @Override
-        public void rightClickEntity(NPCRightClickEvent event) {
-            enterOrLeaveVehicle(event.getClicker());
-        }
+		Double maxSpeed = 0.35D;
 
-        @Override
-        public void run(Player rider) {
+		MobEffect speedEffect = handle.getEffect(MobEffectList.FASTER_MOVEMENT);
+		if (speedEffect != null && speedEffect.getAmplifier() != 0) {
+			maxSpeed *= (speedEffect.getAmplifier() * 0.75f);
+		}
 
-            EntityLiving handle = getHandle();
-            boolean onGround = handle.onGround;
-            
-            NavigatorParameters param = npc.getNavigator().getDefaultParameters();
-            float speedMod = param.modifiedSpeed((onGround ? GROUND_SPEED : AIR_SPEED));
-            this.speed = updateHorizontralSpeed(handle, this.speed, speedMod);
+		MobEffect slownessEffect = handle.getEffect(MobEffectList.SLOWER_MOVEMENT);
+		if (slownessEffect != null && slownessEffect.getAmplifier() != 0) {
+			maxSpeed /= (slownessEffect.getAmplifier() * 0.75f);
+		}
 
-            boolean shouldJump = NMS.shouldJump(handle.passenger);
-            if (shouldJump) {
-                if (onGround && jumpTicks == 0) {
-                	
-                	float jumpPotion = 1.0f;
-                	MobEffect jumpEffect = handle.getEffect(MobEffectList.JUMP);
-                	if (jumpEffect != null && jumpEffect.getAmplifier() != 0) {
-                		jumpPotion += jumpEffect.getAmplifier();
-                	}
-                	
-                    getHandle().motY = JUMP_VELOCITY * jumpPotion;
-                    jumpTicks = 10;
-                }
-            } else {
-                jumpTicks = 0;
-            }
-            jumpTicks = Math.max(0, jumpTicks - 1);
+		double oldSpeed = Math.sqrt(handle.motX * handle.motX + handle.motZ * handle.motZ);
+		double horizontal = ((EntityLiving) handle.passenger).bf;
+		if (horizontal > 0.0D) {
+			double dXcos = -Math.sin(handle.passenger.yaw * Math.PI / 180.0F);
+			double dXsin = Math.cos(handle.passenger.yaw * Math.PI / 180.0F);
+			handle.motX += dXcos * speed * 0.5;
+			handle.motZ += dXsin * speed * 0.5;
+		}
+		handle.motX += handle.passenger.motX * speedMod;
+		handle.motZ += handle.passenger.motZ * speedMod;
 
-            setMountedYaw(handle);
-        }
+		double newSpeed = Math.sqrt(handle.motX * handle.motX + handle.motZ * handle.motZ);
+		if (newSpeed > maxSpeed) {
+			double movementFactor = maxSpeed / newSpeed;
+			handle.motX *= movementFactor;
+			handle.motZ *= movementFactor;
+			newSpeed = maxSpeed;
+		}
 
-        private static final float AIR_SPEED = 1.5F;
-        private static final float GROUND_SPEED = 4F;
-        private static final float JUMP_VELOCITY = 0.6F;
-    }
+		if (newSpeed > oldSpeed && speed < maxSpeed) {
+			return (float) Math.min(maxSpeed, (speed + ((maxSpeed - speed) / maxSpeed)));
+		} else {
+			return (float) Math.max(0.07D, (speed - ((speed - 0.07D) / maxSpeed)));
+		}
+	}
 
-    public class LookAirController implements MovementController {
-        boolean paused = false;
+	public class GroundController implements MovementController {
+		private int jumpTicks = 0;
+		private double speed = 0.07D;
 
-        @Override
-        public void leftClick(PlayerInteractEvent event) {
-            paused = !paused;
-        }
+		@Override
+		public void leftClick(PlayerInteractEvent event) {
+		}
 
-        @Override
-        public void rightClick(PlayerInteractEvent event) {
-            paused = !paused;
-        }
+		@Override
+		public void rightClick(PlayerInteractEvent event) {
+		}
 
-        @Override
-        public void rightClickEntity(NPCRightClickEvent event) {
-            enterOrLeaveVehicle(event.getClicker());
-        }
+		@Override
+		public void rightClickEntity(NPCRightClickEvent event) {
+			enterOrLeaveVehicle(event.getClicker());
+		}
 
-        @Override
-        public void run(Player rider) {
-            if (paused) {
-                getHandle().motY = 0.001;
-                return;
-            }
-            Vector dir = rider.getEyeLocation().getDirection();
-            dir.multiply(npc.getNavigator().getDefaultParameters().speedModifier());
-            EntityLiving handle = getHandle();
-            handle.motX = dir.getX();
-            handle.motY = dir.getY();
-            handle.motZ = dir.getZ();
-            setMountedYaw(handle);
-        }
-    }
+		@Override
+		public void run(Player rider) {
 
-    public static interface MovementController {
-        void leftClick(PlayerInteractEvent event);
+			EntityLiving handle = getHandle();
+			boolean onGround = handle.onGround;
 
-        void rightClick(PlayerInteractEvent event);
+			NavigatorParameters param = npc.getNavigator().getDefaultParameters();
+			float speedMod = param.modifiedSpeed((onGround ? GROUND_SPEED : AIR_SPEED));
+			this.speed = updateHorizontralSpeed(handle, this.speed, speedMod);
 
-        void rightClickEntity(NPCRightClickEvent event);
+			boolean shouldJump = NMS.shouldJump(handle.passenger);
+			if (shouldJump) {
+				if (onGround && jumpTicks == 0) {
 
-        void run(Player rider);
-    }
+					float jumpPotion = 1.0f;
+					MobEffect jumpEffect = handle.getEffect(MobEffectList.JUMP);
+					if (jumpEffect != null && jumpEffect.getAmplifier() != 0) {
+						jumpPotion += jumpEffect.getAmplifier();
+					}
 
-    public class PlayerInputAirController implements MovementController {
-        boolean paused = false;
-        private double speed;
+					getHandle().motY = JUMP_VELOCITY * jumpPotion;
+					jumpTicks = 10;
+				}
+			} else {
+				jumpTicks = 0;
+			}
+			jumpTicks = Math.max(0, jumpTicks - 1);
 
-        @Override
-        public void leftClick(PlayerInteractEvent event) {
-            paused = !paused;
-        }
+			setMountedYaw(handle);
+		}
 
-        @Override
-        public void rightClick(PlayerInteractEvent event) {
-            getHandle().motY = -0.3F;
-        }
+		private static final float AIR_SPEED = 1.5F;
+		private static final float GROUND_SPEED = 4F;
+		private static final float JUMP_VELOCITY = 0.6F;
+	}
 
-        @Override
-        public void rightClickEntity(NPCRightClickEvent event) {
-            enterOrLeaveVehicle(event.getClicker());
-        }
+	public class LookAirController implements MovementController {
+		boolean paused = false;
 
-        @Override
-        public void run(Player rider) {
-            if (paused) {
-                getHandle().motY = 0.001;
-                return;
-            }
-            EntityLiving handle = getHandle();
-            this.speed = updateHorizontralSpeed(handle, this.speed, 1F);
-            boolean shouldJump = NMS.shouldJump(handle.passenger);
-            if (shouldJump) {
-                handle.motY = 0.3F;
-            }
-            handle.motY *= 0.98F;
-        }
-    }
+		@Override
+		public void leftClick(PlayerInteractEvent event) {
+			paused = !paused;
+		}
 
-    private static final Map<EntityType, Class<? extends MovementController>> controllerTypes = Maps
-            .newEnumMap(EntityType.class);
+		@Override
+		public void rightClick(PlayerInteractEvent event) {
+			paused = !paused;
+		}
 
-    static {
-        controllerTypes.put(EntityType.BAT, PlayerInputAirController.class);
-        controllerTypes.put(EntityType.BLAZE, PlayerInputAirController.class);
-        controllerTypes.put(EntityType.ENDER_DRAGON, PlayerInputAirController.class);
-        controllerTypes.put(EntityType.GHAST, PlayerInputAirController.class);
-        controllerTypes.put(EntityType.WITHER, PlayerInputAirController.class);
-        controllerTypes.put(EntityType.UNKNOWN, LookAirController.class);
-    }
+		@Override
+		public void rightClickEntity(NPCRightClickEvent event) {
+			enterOrLeaveVehicle(event.getClicker());
+		}
+
+		@Override
+		public void run(Player rider) {
+			if (paused) {
+				getHandle().motY = 0.001;
+				return;
+			}
+			Vector dir = rider.getEyeLocation().getDirection();
+			dir.multiply(npc.getNavigator().getDefaultParameters().speedModifier());
+			EntityLiving handle = getHandle();
+			handle.motX = dir.getX();
+			handle.motY = dir.getY();
+			handle.motZ = dir.getZ();
+			setMountedYaw(handle);
+		}
+	}
+
+	public static interface MovementController {
+		void leftClick(PlayerInteractEvent event);
+
+		void rightClick(PlayerInteractEvent event);
+
+		void rightClickEntity(NPCRightClickEvent event);
+
+		void run(Player rider);
+	}
+
+	public class PlayerInputAirController implements MovementController {
+		boolean paused = false;
+		private double speed;
+
+		@Override
+		public void leftClick(PlayerInteractEvent event) {
+			paused = !paused;
+		}
+
+		@Override
+		public void rightClick(PlayerInteractEvent event) {
+			getHandle().motY = -0.3F;
+		}
+
+		@Override
+		public void rightClickEntity(NPCRightClickEvent event) {
+			enterOrLeaveVehicle(event.getClicker());
+		}
+
+		@Override
+		public void run(Player rider) {
+			if (paused) {
+				getHandle().motY = 0.001;
+				return;
+			}
+			EntityLiving handle = getHandle();
+			this.speed = updateHorizontralSpeed(handle, this.speed, 1F);
+			boolean shouldJump = NMS.shouldJump(handle.passenger);
+			if (shouldJump) {
+				handle.motY = 0.3F;
+			}
+			handle.motY *= 0.98F;
+		}
+	}
+
+	private static final Map<EntityType, Class<? extends MovementController>> controllerTypes = Maps.newEnumMap(EntityType.class);
+
+	static {
+		controllerTypes.put(EntityType.BAT, PlayerInputAirController.class);
+		controllerTypes.put(EntityType.BLAZE, PlayerInputAirController.class);
+		controllerTypes.put(EntityType.ENDER_DRAGON, PlayerInputAirController.class);
+		controllerTypes.put(EntityType.GHAST, PlayerInputAirController.class);
+		controllerTypes.put(EntityType.WITHER, PlayerInputAirController.class);
+		controllerTypes.put(EntityType.UNKNOWN, LookAirController.class);
+	}
 }

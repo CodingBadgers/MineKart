@@ -9,13 +9,14 @@ public class PowerupDrop extends Powerup {
 	public PowerupDrop() {
 		this.useMode = PowerupUseMode.Drop;
 	}
-	
+
 	public PowerupDrop(PowerupDrop powerup) {
 		super(powerup);
 	}
-	
+
 	/**
 	 * Load the powerup
+	 * 
 	 * @param file The file containing the powerup data
 	 */
 	public void load(File file) {
@@ -24,7 +25,7 @@ public class PowerupDrop extends Powerup {
 
 	@Override
 	public void onUse(Jockey jockey) {
-		
+
 	}
 
 }

@@ -18,9 +18,9 @@ import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 
 /**
  * @author TheCodingBadgers
- *
- * This listener handles all block based event.
- *
+ * 
+ *         This listener handles all block based event.
+ * 
  */
 public class BlockListener implements Listener {
 
@@ -34,13 +34,13 @@ public class BlockListener implements Listener {
 
 		Block block = event.getBlock();
 		Player player = event.getPlayer();
-        LobbySign sign = LobbySignManager.getSignByLocation(block);
-        
-        if (sign != null && player.hasPermission("minekart.lobby.destroy")) {
-            LobbySignManager.removeSign(sign);
-            MineKart.output(player, "Successfully removed lobby sign");
-        }
-        
+		LobbySign sign = LobbySignManager.getSignByLocation(block);
+
+		if (sign != null && player.hasPermission("minekart.lobby.destroy")) {
+			LobbySignManager.removeSign(sign);
+			MineKart.output(player, "Successfully removed lobby sign");
+		}
+
 		Map<String, Racecourse> courses = MineKart.getInstance().getAllRacecourses();
 		for (Racecourse course : courses.values()) {
 			if (course.isEnabled() && course.isInCourseBounds(block.getLocation())) {
@@ -48,9 +48,9 @@ public class BlockListener implements Listener {
 				return;
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Called when a block is placed.
 	 * 
@@ -60,7 +60,7 @@ public class BlockListener implements Listener {
 	public void onBlockPlace(BlockPlaceEvent event) {
 
 		Block block = event.getBlock();
-		
+
 		Map<String, Racecourse> courses = MineKart.getInstance().getAllRacecourses();
 		for (Racecourse course : courses.values()) {
 			if (course.isEnabled() && course.isInCourseBounds(block.getLocation())) {
@@ -68,9 +68,9 @@ public class BlockListener implements Listener {
 				return;
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Called when a block is broken.
 	 * 
@@ -88,43 +88,43 @@ public class BlockListener implements Listener {
 				return;
 			}
 		}
-		
+
 	}
-    
-    /**
-     * Called when a sign is changed.
-     * 
-     * @param event The sign change event containing information on this event
-     */
+
+	/**
+	 * Called when a sign is changed.
+	 * 
+	 * @param event The sign change event containing information on this event
+	 */
 	@EventHandler
 	public void onSignChange(SignChangeEvent event) {
-	    Player player = event.getPlayer();
-	    
-	    if (!player.hasPermission("minekart.lobby.create")) {
-	        return;
-	    }
-	    
-	    if (!event.getLine(0).equalsIgnoreCase("[MineKart]")) {
-	        return;
-	    }
-	    
-	    String coursename = event.getLine(1);
-	    Racecourse course = MineKart.getInstance().getRacecourse(coursename);
-	    
-	    if (course == null) {
-	        return;
-	    }
-	    
-	    LobbySign sign = new LobbySign(event.getBlock(), course);
-	    LobbySignManager.addSign(sign);
-	    
-	    String[] lines = sign.getSignContent();
-	    
-	    for (int i = 0; i < 4; i++) {
-	        event.setLine(i, lines[i]);
-	    }
-	    
-	    MineKart.output(player, "You have created a lobby sign for " + course.getName());
+		Player player = event.getPlayer();
+
+		if (!player.hasPermission("minekart.lobby.create")) {
+			return;
+		}
+
+		if (!event.getLine(0).equalsIgnoreCase("[MineKart]")) {
+			return;
+		}
+
+		String coursename = event.getLine(1);
+		Racecourse course = MineKart.getInstance().getRacecourse(coursename);
+
+		if (course == null) {
+			return;
+		}
+
+		LobbySign sign = new LobbySign(event.getBlock(), course);
+		LobbySignManager.addSign(sign);
+
+		String[] lines = sign.getSignContent();
+
+		for (int i = 0; i < 4; i++) {
+			event.setLine(i, lines[i]);
+		}
+
+		MineKart.output(player, "You have created a lobby sign for " + course.getName());
 	}
-	
+
 }
