@@ -13,7 +13,7 @@ public class PlayerBackup implements java.io.Serializable {
 	private GameMode gamemode;
 	
 	/** The players health */
-	private Double health;
+	private double health;
 	
 	/** The players huner level */
 	private int hunger;
