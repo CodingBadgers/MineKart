@@ -1,6 +1,5 @@
 package uk.thecodingbadgers.minekart.race;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +13,14 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import com.google.common.collect.ImmutableSet;
+
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.events.jockey.JockeyJoinEvent;
+import uk.thecodingbadgers.minekart.events.jockey.JockeyLeaveEvent;
+import uk.thecodingbadgers.minekart.events.race.RaceCountdownStartEvent;
+import uk.thecodingbadgers.minekart.events.race.RaceEndEvent;
+import uk.thecodingbadgers.minekart.events.race.RaceStartEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
@@ -79,6 +85,10 @@ public abstract class Race {
 		Jockey newJockey = new Jockey(player, this.course.getMountType(), oldLocation, this);
 		this.jockeys.put(player.getName(), newJockey);
 
+		JockeyJoinEvent event = new JockeyJoinEvent(newJockey, this);
+		Bukkit.getPluginManager().callEvent(event);
+		
+		// autostart if game is full
 		List<Location> spawns = this.course.getMultiWarp("spawn");
 		if (spawns.size() == this.jockeys.size()) {
 			teleportToSpawns();
@@ -96,6 +106,9 @@ public abstract class Race {
 
 		setState(RaceState.Starting);
 
+		RaceCountdownStartEvent event = new RaceCountdownStartEvent(this, 3);
+		Bukkit.getPluginManager().callEvent(event);
+		
 		List<Location> spawns = this.course.getMultiWarp("spawn");
 		int spawnIndex = spawns.size() - 1;
 
@@ -105,7 +118,7 @@ public abstract class Race {
 			spawnIndex--;
 		}
 
-		startRace(3);
+		startRace(event.getCoundownLength());
 	}
 
 	/**
@@ -156,6 +169,9 @@ public abstract class Race {
 
 		this.course.onRaceStart(this);
 
+		RaceStartEvent event = new RaceStartEvent(this);
+		Bukkit.getPluginManager().callEvent(event);
+		
 		for (Jockey jockey : this.jockeys.values()) {
 			jockey.onRaceStart();
 		}
@@ -213,6 +229,9 @@ public abstract class Race {
 
 		jockey.onRaceEnd();
 
+		JockeyLeaveEvent event = new JockeyLeaveEvent(jockey);
+		Bukkit.getPluginManager().callEvent(event);
+		
 		LobbySignManager.updateSigns();
 
 		if (this.jockeys.isEmpty()) {
@@ -275,10 +294,10 @@ public abstract class Race {
 	/**
 	 * Gets all jockeys in this race
 	 * 
-	 * @return A collection of jockeys
+	 * @return A immutable set of jockeys
 	 */
-	public Collection<Jockey> getJockeys() {
-		return this.jockeys.values();
+	public Set<Jockey> getJockeys() {
+		return ImmutableSet.copyOf(this.jockeys.values());
 	}
 
 	/**
@@ -291,6 +310,9 @@ public abstract class Race {
 		if (this.state != RaceState.InRace)
 			return;
 
+		RaceEndEvent event = new RaceEndEvent(this, jockey);
+		Bukkit.getPluginManager().callEvent(event);
+		
 		setState(RaceState.Waiting);
 
 		this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + jockey.getMount().getName() + ChatColor.WHITE + " are the Winners!");

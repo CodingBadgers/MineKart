@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -15,6 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.events.jockey.JockeyCheckpointReachedEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
@@ -238,6 +240,9 @@ public class RacecourseLap extends Racecourse {
 		if (targetCheckpoint.contains(position)) {
 			jockey.updateRespawnLocation(jockey.getMount().getBukkitEntity().getLocation());
 
+			JockeyCheckpointReachedEvent event = new JockeyCheckpointReachedEvent(jockey, race, targetCheckpointIndex);
+			Bukkit.getPluginManager().callEvent(event);
+			
 			if (targetCheckpointIndex < this.checkPoints.size() - 1) {
 				this.targetCheckpoints.remove(jockey);
 				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);

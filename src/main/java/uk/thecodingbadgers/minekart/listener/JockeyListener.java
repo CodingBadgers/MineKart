@@ -1,5 +1,6 @@
 package uk.thecodingbadgers.minekart.listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -23,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.events.jockey.JockeyPowerupPickupEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySign;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
@@ -387,8 +389,11 @@ public class JockeyListener implements Listener {
 			return;
 		}
 
+		JockeyPowerupPickupEvent powerupEvent = new JockeyPowerupPickupEvent(jockey, jockey.getRace(), powerup);
+		Bukkit.getPluginManager().callEvent(powerupEvent);
+		
 		jockey.getRace().getCourse().removePowerup(item.getLocation());
-		powerup.onPickup(jockey);
+		powerupEvent.getPowerup().onPickup(jockey);
 	}
 
 	/**

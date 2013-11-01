@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,6 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.events.jockey.JockeyCheckpointReachedEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
@@ -210,9 +212,13 @@ public class RacecourseCheckpoint extends Racecourse {
 		if (targetCheckpoint.contains(position)) {
 			jockey.updateRespawnLocation(jockey.getMount().getBukkitEntity().getLocation());
 
+			JockeyCheckpointReachedEvent event = new JockeyCheckpointReachedEvent(jockey, race, targetCheckpointIndex);
+			Bukkit.getPluginManager().callEvent(event);
+			
 			if (targetCheckpointIndex < this.checkPoints.size() - 1) {
 				this.targetCheckpoints.remove(jockey);
 				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);
+				
 				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
 			} else {
 				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
