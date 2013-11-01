@@ -129,6 +129,7 @@ public abstract class Racecourse {
 		}
 
 		this.name = name;
+		this.readyblock = Material.IRON_BLOCK;
 
 		this.fileConfiguration = new File(MineKart.getRacecourseFolder() + File.separator + this.name + "." + this.type + ".yml");
 		if (!this.fileConfiguration.exists()) {
