@@ -29,6 +29,7 @@ import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.util.FireworkFactory;
+import uk.thecodingbadgers.minekart.util.RaceHelper;
 
 /**
  * @author TheCodingBadgers
@@ -51,7 +52,10 @@ public abstract class Race {
 	protected Set<String> ready = new HashSet<String>();
 	
 	/** The winning jockey */
-	protected List<Jockey> winner = null;
+	protected List<Jockey> winners = null;
+	
+	/** The current position of the jockeys in the race */
+	protected List<Jockey> raceRankings = new ArrayList<Jockey>();
 	
 	/** The timer used when ending a race */
 	BukkitTask endTimer = null;
@@ -177,7 +181,8 @@ public abstract class Race {
 	 */
 	private void onRaceStart() {
 		outputToRace("and they're off!");
-		this.winner = new ArrayList<Jockey>();
+		this.winners = new ArrayList<Jockey>();
+		this.raceRankings.clear();
 
 		this.course.onRaceStart(this);
 
@@ -185,6 +190,7 @@ public abstract class Race {
 		Bukkit.getPluginManager().callEvent(event);
 		
 		for (Jockey jockey : this.jockeys.values()) {
+			this.raceRankings.add(jockey);
 			jockey.onRaceStart();
 		}
 
@@ -339,41 +345,16 @@ public abstract class Race {
 	}
 	
 	/**
-	 * Convert a value into 1st, 2nd, 3rd ect..
-	 * @param value The value to convert
-	 * @return The string representation of the value
-	 */
-	public String ordinalNo(int value) {
-		
-        int hunRem = value % 100;
-        int tenRem = value % 10;
-        if (hunRem - tenRem == 10) {
-        	return value + "th";
-        }
-        
-        switch (tenRem) {
-	        case 1:
-	        	return value + "st";
-	        case 2:
-                return value + "nd";
-	        case 3:
-                return value + "rd";
-	        default:
-                return value + "th";
-        }
-	}
-
-	/**
 	 * Set the winner of the race
 	 * 
 	 * @param jockey The jockey who is the winner
 	 */
 	public void setWinner(Jockey jockey) {
 
-		this.winner.add(jockey);
-		final int position = this.winner.size();
+		this.winners.add(jockey);
+		final int position = this.winners.size();
 		if (position != 1) {
-			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + jockey.getMount().getName() + ChatColor.WHITE + " came " + ordinalNo(position) + ".");
+			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + jockey.getMount().getName() + ChatColor.WHITE + " came " + RaceHelper.ordinalNo(position) + ".");
 			
 			// all players have finished.
 			if (position == this.jockeys.size()) {
@@ -421,4 +402,21 @@ public abstract class Race {
 
 		return true;
 	}
+
+	/**
+	 * 
+	 * @param ranks
+	 */
+	public void setRankings(List<Jockey> ranks) {
+		this.raceRankings = ranks;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<Jockey> getRankings() {
+		return this.raceRankings;
+	}
+	
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,6 +21,7 @@ import uk.thecodingbadgers.minekart.events.jockey.JockeyCheckpointReachedEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
+import uk.thecodingbadgers.minekart.util.RaceHelper;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -34,12 +36,25 @@ import com.sk89q.worldedit.regions.Region;
  * 
  */
 public class RacecourseCheckpoint extends Racecourse {
+	
+	class CheckpointTimeData {
+		public CheckpointTimeData(int checkpoint, long time) {
+			this.checkpoint = checkpoint;
+			this.time = time;
+		}
+		
+		public int checkpoint;
+		public long time;
+	}
 
 	/** The checkpoints a jockey must pass through to complete the race */
 	protected List<Region> checkPoints = null;
 
 	/** A map of a jockey and their next checkpoint id */
 	protected Map<Jockey, Integer> targetCheckpoints = null;
+	
+	/** A map of a jockey and their checkpoint time data */
+	protected Map<Jockey, CheckpointTimeData> checkpointTime = null;
 
 	/**
 	 * Class constructor
@@ -63,6 +78,7 @@ public class RacecourseCheckpoint extends Racecourse {
 
 		this.checkPoints = new ArrayList<Region>();
 		this.targetCheckpoints = new HashMap<Jockey, Integer>();
+		this.checkpointTime = new HashMap<Jockey, CheckpointTimeData>();
 
 		save();
 		return true;
@@ -81,6 +97,7 @@ public class RacecourseCheckpoint extends Racecourse {
 		// Checkpoints
 		this.checkPoints = new ArrayList<Region>();
 		this.targetCheckpoints = new HashMap<Jockey, Integer>();
+		this.checkpointTime = new HashMap<Jockey, CheckpointTimeData>();
 
 		int noofCheckpoints = file.getInt("racecourse.checkpoint.count");
 		for (int checkpointIndex = 0; checkpointIndex < noofCheckpoints; ++checkpointIndex) {
@@ -208,7 +225,7 @@ public class RacecourseCheckpoint extends Racecourse {
 		
 		// player has finished the race
 		if (!this.targetCheckpoints.containsKey(jockey))
-			return false;
+			return true;
 
 		final int targetCheckpointIndex = this.targetCheckpoints.get(jockey);
 		Region targetCheckpoint = this.checkPoints.get(targetCheckpointIndex);
@@ -217,6 +234,27 @@ public class RacecourseCheckpoint extends Racecourse {
 
 		if (targetCheckpoint.contains(position)) {
 			
+			//
+			CheckpointTimeData data = this.checkpointTime.get(jockey);
+			data.checkpoint = targetCheckpointIndex;
+			data.time = jockey.getRaceTime();
+			updateRankings(race);	
+			
+			
+			// Temp standings output, until we get a scoreboard working
+			race.outputToRace("||== Race Standings == ||");
+			
+			int p = 1;
+			List<Jockey> rankings = race.getRankings();
+			for (Jockey j : rankings) {
+				race.outputToRace(ChatColor.GOLD + RaceHelper.ordinalNo(p) + " - " + j.getPlayer().getName());
+				p++;
+			}
+			
+			race.outputToRace("||================= ||");
+			// End temp code
+			
+			//
 			jockey.updateRespawnLocation(jockey.getMount().getBukkitEntity().getLocation());
 
 			JockeyCheckpointReachedEvent event = new JockeyCheckpointReachedEvent(jockey, race, targetCheckpointIndex);
@@ -228,7 +266,7 @@ public class RacecourseCheckpoint extends Racecourse {
 				Location location = player.getLocation();
 				
 				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);
-				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
+				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(data.time));
 			
 				player.playSound(location, Sound.ORB_PICKUP, 1.0f, 1.0f);
 
@@ -236,13 +274,56 @@ public class RacecourseCheckpoint extends Racecourse {
 				player.setExp(lapComplete);
 			
 			} else {
-				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
+				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(data.time));
 				this.targetCheckpoints.remove(jockey);
 				race.setWinner(jockey);
 			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * Update the rankings of the race, based upon checkpoint/time progress
+	 * @param race The race in progress
+	 */
+	private void updateRankings(Race race) {
+		
+		List<Jockey> ranks = new ArrayList<Jockey>();
+		
+		for (int checkpointIndex = this.checkPoints.size() - 1; checkpointIndex >= 0; --checkpointIndex) {
+			
+			// Get all jockeys at this checkpoint
+			Map<Jockey, CheckpointTimeData> checkpointRanks = new HashMap<Jockey, CheckpointTimeData>();
+			for (Jockey jockey : race.getJockeys()) {
+				CheckpointTimeData data = this.checkpointTime.get(jockey);
+				if (data.checkpoint == checkpointIndex) {
+					checkpointRanks.put(jockey, data);
+				}
+			}
+			
+			// Sort the data by time
+			while (!checkpointRanks.isEmpty()) {
+				
+				Entry<Jockey, CheckpointTimeData> fastest = null;
+				for (Entry<Jockey, CheckpointTimeData> jockeyData : checkpointRanks.entrySet()) {
+					if (fastest == null) {
+						fastest = jockeyData;
+						continue;
+					}
+					
+					if (jockeyData.getValue().time < fastest.getValue().time) {
+						fastest = jockeyData;
+					}
+				}
+				
+				ranks.add(fastest.getKey());
+				checkpointRanks.remove(fastest.getKey());
+			}
+		}
+		
+		race.setRankings(ranks);
+		
 	}
 
 	/**
@@ -256,6 +337,7 @@ public class RacecourseCheckpoint extends Racecourse {
 		this.targetCheckpoints.clear();
 		for (Jockey jockey : race.getJockeys()) {
 			this.targetCheckpoints.put(jockey, 0);
+			this.checkpointTime.put(jockey, new CheckpointTimeData(-1, -1));
 		}
 	}
 
