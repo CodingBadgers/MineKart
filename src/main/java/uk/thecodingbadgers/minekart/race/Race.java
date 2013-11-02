@@ -1,5 +1,6 @@
 package uk.thecodingbadgers.minekart.race;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,9 @@ public abstract class Race {
 
 	/** All the jockeys that are marked as ready */
 	protected Set<String> ready = new HashSet<String>();
+	
+	/** The winning jockey */
+	protected List<Jockey> winner = null;
 
 	/**
 	 * Set the course used by this race
@@ -166,6 +170,7 @@ public abstract class Race {
 	 */
 	private void onRaceStart() {
 		outputToRace("and they're off!");
+		this.winner = new ArrayList<Jockey>();
 
 		this.course.onRaceStart(this);
 
@@ -253,6 +258,31 @@ public abstract class Race {
 		}
 		setState(RaceState.Waiting);
 	}
+	
+	/**
+	 * End the race in a given amount of time
+	 */
+	public void end(int time, final int rate) {
+
+		if (time <= 0) {
+			end();
+			return;
+		}
+		
+		outputToRace("The race will end in " + time + " seconds...");
+		
+		final int nextRate = time <= 5 ? 1 : rate;
+		final int nextTime = time - nextRate;
+		
+		Bukkit.getScheduler().runTaskLater(MineKart.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				end(nextTime, rate);
+			}
+			
+		}, nextRate * 20L);		
+	}
 
 	/**
 	 * Get the current state of the race
@@ -299,6 +329,31 @@ public abstract class Race {
 	public Set<Jockey> getJockeys() {
 		return ImmutableSet.copyOf(this.jockeys.values());
 	}
+	
+	/**
+	 * Convert a value into 1st, 2nd, 3rd ect..
+	 * @param value The value to convert
+	 * @return The string representation of the value
+	 */
+	public String ordinalNo(int value) {
+		
+        int hunRem = value % 100;
+        int tenRem = value % 10;
+        if (hunRem - tenRem == 10) {
+        	return value + "th";
+        }
+        
+        switch (tenRem) {
+	        case 1:
+	        	return value + "st";
+	        case 2:
+                return value + "nd";
+	        case 3:
+                return value + "rd";
+	        default:
+                return value + "th";
+        }
+	}
 
 	/**
 	 * Set the winner of the race
@@ -307,17 +362,19 @@ public abstract class Race {
 	 */
 	public void setWinner(Jockey jockey) {
 
-		if (this.state != RaceState.InRace)
+		this.winner.add(jockey);
+		final int position = this.winner.size();
+		if (position != 1) {
+			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + jockey.getMount().getName() + ChatColor.WHITE + " came " + ordinalNo(position) + ".");
 			return;
-
+		}
+		
+		this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + jockey.getMount().getName() + ChatColor.WHITE + " are the Winners!");
+		
 		RaceEndEvent event = new RaceEndEvent(this, jockey);
 		Bukkit.getPluginManager().callEvent(event);
 		
-		setState(RaceState.Waiting);
-
-		this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + jockey.getMount().getName() + ChatColor.WHITE + " are the Winners!");
-
-		end();
+		end(30, 5);
 	}
 
 	/**

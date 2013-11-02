@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -203,32 +205,44 @@ public class RacecourseCheckpoint extends Racecourse {
 
 		if (race.getState() != RaceState.InRace)
 			return false;
+		
+		// player has finished the race
+		if (!this.targetCheckpoints.containsKey(jockey))
+			return false;
 
-		int targetCheckpointIndex = this.targetCheckpoints.get(jockey);
+		final int targetCheckpointIndex = this.targetCheckpoints.get(jockey);
 		Region targetCheckpoint = this.checkPoints.get(targetCheckpointIndex);
 
-		com.sk89q.worldedit.Vector position = new com.sk89q.worldedit.Vector(jockey.getPlayer().getLocation().getBlockX(), jockey.getPlayer().getLocation().getBlockY(), jockey.getPlayer().getLocation().getBlockZ());
+		com.sk89q.worldedit.Vector position = jockey.getWorldEditLocation();
 
 		if (targetCheckpoint.contains(position)) {
+			
 			jockey.updateRespawnLocation(jockey.getMount().getBukkitEntity().getLocation());
 
 			JockeyCheckpointReachedEvent event = new JockeyCheckpointReachedEvent(jockey, race, targetCheckpointIndex);
 			Bukkit.getPluginManager().callEvent(event);
 			
 			if (targetCheckpointIndex < this.checkPoints.size() - 1) {
-				this.targetCheckpoints.remove(jockey);
-				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);
 				
+				Player player = jockey.getPlayer();
+				Location location = player.getLocation();
+				
+				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);
 				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
+			
+				player.playSound(location, Sound.ORB_PICKUP, 1.0f, 1.0f);
+
+				float lapComplete = 1.0f / ((float) this.checkPoints.size() / (float) (targetCheckpointIndex + 1.0f));
+				player.setExp(lapComplete);
+			
 			} else {
 				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
-
+				this.targetCheckpoints.remove(jockey);
 				race.setWinner(jockey);
 			}
 		}
 
 		return true;
-
 	}
 
 	/**

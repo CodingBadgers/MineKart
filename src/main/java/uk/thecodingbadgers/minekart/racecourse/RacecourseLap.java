@@ -230,43 +230,47 @@ public class RacecourseLap extends Racecourse {
 
 		if (race.getState() != RaceState.InRace)
 			return false;
+		
+		// player has finished the race
+		if (!this.targetCheckpoints.containsKey(jockey))
+			return false;
 
-		int targetCheckpointIndex = this.targetCheckpoints.get(jockey);
+		final int targetCheckpointIndex = this.targetCheckpoints.get(jockey);
 		Region targetCheckpoint = this.checkPoints.get(targetCheckpointIndex);
 
-		Location location = jockey.getPlayer().getLocation();
-		com.sk89q.worldedit.Vector position = new com.sk89q.worldedit.Vector(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-
-		if (targetCheckpoint.contains(position)) {
+		if (targetCheckpoint.contains(jockey.getWorldEditLocation())) {
+			
+			final Player player = jockey.getPlayer();
+			final Location location = player.getLocation();
+			
 			jockey.updateRespawnLocation(jockey.getMount().getBukkitEntity().getLocation());
 
 			JockeyCheckpointReachedEvent event = new JockeyCheckpointReachedEvent(jockey, race, targetCheckpointIndex);
 			Bukkit.getPluginManager().callEvent(event);
 			
 			if (targetCheckpointIndex < this.checkPoints.size() - 1) {
-				this.targetCheckpoints.remove(jockey);
 				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);
-				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]      " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
+				MineKart.output(player, "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]      " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
 
-				jockey.getPlayer().playSound(location, Sound.ORB_PICKUP, 1.0f, 1.0f);
+				player.playSound(location, Sound.ORB_PICKUP, 1.0f, 1.0f);
 
 				float lapComplete = 1.0f / ((float) this.checkPoints.size() / (float) (targetCheckpointIndex + 1.0f));
-				jockey.getPlayer().setExp(lapComplete);
+				player.setExp(lapComplete);
 			} else {
 				int jockeyLap = this.currentLap.get(jockey) + 1;
 				this.currentLap.remove(jockey);
 				this.currentLap.put(jockey, jockeyLap);
 
-				MineKart.output(jockey.getPlayer(), "Lap Complete [" + jockeyLap + "/" + this.noofLaps + "]   " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
+				MineKart.output(player, "Lap Complete [" + jockeyLap + "/" + this.noofLaps + "]   " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
 
-				jockey.getPlayer().setLevel(jockeyLap);
-				jockey.getPlayer().setExp(0.0f);
-				jockey.getPlayer().playSound(location, Sound.LEVEL_UP, 1.0f, 1.0f);
+				player.setLevel(jockeyLap);
+				player.setExp(0.0f);
+				player.playSound(location, Sound.LEVEL_UP, 1.0f, 1.0f);
 
 				if (jockeyLap >= this.noofLaps) {
+					this.targetCheckpoints.remove(jockey);
 					race.setWinner(jockey);
 				} else {
-					this.targetCheckpoints.remove(jockey);
 					this.targetCheckpoints.put(jockey, 0);
 				}
 			}

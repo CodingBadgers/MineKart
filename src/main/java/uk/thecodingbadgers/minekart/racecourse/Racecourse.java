@@ -547,10 +547,7 @@ public abstract class Racecourse {
 		if (race.getState() != RaceState.InRace)
 			return false;
 
-		Location location = jockey.getPlayer().getLocation();
-		com.sk89q.worldedit.Vector position = new com.sk89q.worldedit.Vector(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-
-		if (!this.bounds.contains(position)) {
+		if (!this.bounds.contains(jockey.getWorldEditLocation())) {
 			race.outputToRace("The jockey " + ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " has left the race course.");
 			race.removeJockey(jockey);
 			return false;
