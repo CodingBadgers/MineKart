@@ -338,6 +338,7 @@ public class RacecourseCheckpoint extends Racecourse {
 		for (Jockey jockey : race.getJockeys()) {
 			this.targetCheckpoints.put(jockey, 0);
 			this.checkpointTime.put(jockey, new CheckpointTimeData(-1, -1));
+			jockey.getPlayer().setLevel(0);
 		}
 	}
 
