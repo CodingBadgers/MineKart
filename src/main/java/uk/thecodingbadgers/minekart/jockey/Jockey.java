@@ -101,7 +101,7 @@ public class Jockey {
 		this.backup.backup(player);
 
 		// clear invent
-		player.setGameMode(GameMode.ADVENTURE);
+		player.setGameMode(GameMode.CREATIVE);
 		player.setFlying(false);
 		clearInventory(player.getInventory());
 		player.updateInventory();
