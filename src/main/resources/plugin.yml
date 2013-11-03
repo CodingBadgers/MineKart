@@ -3,6 +3,7 @@ version: 1.0.0
 main: uk.thecodingbadgers.minekart.MineKart
 authors: [n3wton, TheFish97]
 description: Fully Automated MineCraft Racing Plugin
+depend: [WorldEdit]
 
 commands:
     minekart:
