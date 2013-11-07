@@ -142,9 +142,9 @@ public class LobbySign {
 		Race race = course.getRace();
 
 		String[] lines = new String[4];
-		lines[0] = ChatColor.GREEN + "[MineKart]";
+		lines[0] = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "[MineKart]";
 		lines[1] = ChatColor.BOLD + course.getName();
-		lines[2] = ChatColor.GREEN + "" + race.getJockeys().size() + "/" + course.getMultiWarp("spawn").size();
+		lines[2] = ChatColor.BLACK + "" + race.getJockeys().size() + "/" + course.getMultiWarp("spawn").size();
 		lines[3] = getStateColor(race.getState()) + race.getState().toString();
 		return lines;
 	}
@@ -159,7 +159,7 @@ public class LobbySign {
 		switch (state)
 		{
 		case Waiting:
-			return ChatColor.DARK_GREEN;
+			return ChatColor.GREEN;
 		case Starting:
 			return ChatColor.GOLD;
 		case InRace:
