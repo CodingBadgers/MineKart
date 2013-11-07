@@ -76,6 +76,11 @@ public abstract class Race {
 	 * @param player The player who will become the jockey
 	 */
 	public void addJockey(Player player) {
+		
+		if (!this.course.isEnabled()) {
+			MineKart.output(player, "This race course is disabled.");
+			return;
+		}
 
 		if (this.state != RaceState.Waiting) {
 			MineKart.output(player, "You can't currently join this race.");

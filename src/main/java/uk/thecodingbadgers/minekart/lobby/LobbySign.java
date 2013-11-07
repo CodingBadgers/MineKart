@@ -14,7 +14,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.race.Race;
-import uk.thecodingbadgers.minekart.race.RaceState;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 
 /**
@@ -145,7 +144,7 @@ public class LobbySign {
 		lines[0] = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "[MineKart]";
 		lines[1] = ChatColor.BOLD + course.getName();
 		lines[2] = ChatColor.BLACK + "" + race.getJockeys().size() + "/" + course.getMultiWarp("spawn").size();
-		lines[3] = getStateColor(race.getState()) + race.getState().toString();
+		lines[3] = getStateColor(race);
 		return lines;
 	}
 
@@ -154,21 +153,25 @@ public class LobbySign {
 	 * @param state The state to get the color for
 	 * @return The chatcolor to use
 	 */
-	private ChatColor getStateColor(RaceState state) {
+	private String getStateColor(Race race) {
 		
-		switch (state)
-		{
-		case Waiting:
-			return ChatColor.GREEN;
-		case Starting:
-			return ChatColor.GOLD;
-		case InRace:
-			return ChatColor.RED;
-		case Unknown:
-			return ChatColor.DARK_RED;
+		if (!race.getCourse().isEnabled()) {
+			return ChatColor.DARK_RED + "Disabled";
 		}
 		
-		return ChatColor.BLACK;
+		switch (race.getState())
+		{
+		case Waiting:
+			return ChatColor.GREEN + race.getState().toString();
+		case Starting:
+			return ChatColor.GOLD + race.getState().toString();
+		case InRace:
+			return ChatColor.RED + race.getState().toString();
+		case Unknown:
+			return ChatColor.DARK_RED + race.getState().toString();
+		}
+		
+		return ChatColor.DARK_RED + race.getState().toString();
 	}
 
 	/**

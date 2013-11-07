@@ -33,6 +33,7 @@ import com.sk89q.worldedit.regions.Region;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
 import uk.thecodingbadgers.minekart.race.RaceState;
@@ -636,6 +637,7 @@ public abstract class Racecourse {
 	 */
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+		LobbySignManager.updateSigns();
 	}
 
 	/**
