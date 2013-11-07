@@ -382,9 +382,11 @@ public final class MineKart extends JavaPlugin {
 		MineKart.output(sender, "MineKart by " + pluginDescription.getAuthors());
 		MineKart.output(sender, "Version " + pluginDescription.getVersion());
 		MineKart.output(sender, "===================");
-		MineKart.output(sender, "/mk setup help");
-		MineKart.output(sender, "/mk admin help");
-		MineKart.output(sender, "/mk player help");
+		MineKart.output(sender, "/mk course");
+		MineKart.output(sender, "/mk mount");
+		MineKart.output(sender, "/mk join <coursename>");
+		MineKart.output(sender, "/mk leave");
+		MineKart.output(sender, "/mk list");
 
 	}
 
