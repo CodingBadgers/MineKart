@@ -148,6 +148,13 @@ public class CourseCommand {
 	 */
 	public static void handleCourseCommand(CommandSender sender, String[] args) {
 		
+		if (args.length <= 2) {
+			MineKart.output(sender, "Invalid command usage...");
+			MineKart.output(sender, " - /mk course <coursename> <command>");
+			MineKart.output(sender, "command: create, delete, enable, disable");
+			return;
+		}
+		
 		final String command = args[2];
 		
 		if (command.equalsIgnoreCase("create")) {
@@ -165,8 +172,9 @@ public class CourseCommand {
 			return;
 		}
 		
-		MineKart.output(sender, "Unknown command '" + command + "'...");
-				
+		MineKart.output(sender, "Invalid command usage...");
+		MineKart.output(sender, " - /mk course <coursename> <command>");
+		MineKart.output(sender, "command: create, delete, enable, disable");	
 	}
 
 }
