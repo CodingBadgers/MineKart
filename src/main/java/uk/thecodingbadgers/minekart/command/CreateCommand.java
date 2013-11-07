@@ -5,60 +5,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
-import uk.thecodingbadgers.minekart.racecourse.RacecourceType;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 
 public class CreateCommand {
-
-	/**
-	 * Handle the /mk create course <course> command
-	 * 
-	 * @param sender The thing that used the command
-	 * @param args The command args
-	 */
-	public static void handleCreateCommand(CommandSender sender, String[] args) {
-
-		if (!(sender instanceof Player))
-			return;
-
-		final Player player = (Player) sender;
-
-		if (!player.hasPermission("minekart.create.course")) {
-			MineKart.output(player, "You do not have the required permission 'minekart.create.course'");
-			return;
-		}
-
-		// create arena <name> <type>
-		if (args.length == 4) {
-
-			if (!args[1].equalsIgnoreCase("course")) {
-				MineKart.output(player, "Invalid command usage...");
-				MineKart.output(player, " - /mk create course <name> <type>");
-				return;
-			}
-
-			final String name = args[2];
-			RacecourceType type = RacecourceType.Unknown;
-
-			if (args[3].equalsIgnoreCase("lap")) {
-				type = RacecourceType.Lap;
-			} else if (args[3].equalsIgnoreCase("checkpoint")) {
-				type = RacecourceType.CheckPoint;
-			}
-
-			if (type == RacecourceType.Unknown) {
-				MineKart.output(player, "Unknown racecourse type '" + args[3] + "'");
-				return;
-			}
-
-			MineKart mineKart = MineKart.getInstance();
-			mineKart.createArena(player, name, type);
-			return;
-		}
-
-		MineKart.output(player, "Invalid command usage...");
-		MineKart.output(player, " - /mk create course <name> <type>");
-	}
 
 	/**
 	 * Handle the /mk set[name]|add[name] <course> command
@@ -109,7 +58,7 @@ public class CreateCommand {
 	}
 
 	/**
-	 * Handle the /mk mount <setting> <value> <course> command
+	 * Handle the /mk mount <setting> <course> <value> command
 	 * 
 	 * @param sender The thing that used the command
 	 * @param args The command args
@@ -124,7 +73,7 @@ public class CreateCommand {
 
 		if (args.length == 4) {
 
-			final String coursename = args[3];
+			final String coursename = args[2];
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
 				MineKart.output(sender, "Could not find a racecourse with the name '" + coursename + "'.");
@@ -133,7 +82,7 @@ public class CreateCommand {
 			}
 
 			final String setting = args[1];
-			final String value = args[2];
+			final String value = args[3];
 
 			if (setting.equalsIgnoreCase("type")) {
 
@@ -157,7 +106,7 @@ public class CreateCommand {
 		}
 
 		MineKart.output(sender, "Invalid command usage...");
-		MineKart.output(sender, " - /mk mount <setting> <value> <coursename>");
+		MineKart.output(sender, " - /mk mount <setting> <coursename> <value>");
 		MineKart.output(sender, "setting: type, speed");
 
 	}

@@ -151,6 +151,13 @@ public abstract class Racecourse {
 
 		return true;
 	}
+	
+	/**
+	 * Delete this racecourse
+	 */
+	public void delete() {
+		this.fileConfiguration.delete();
+	}
 
 	/**
 	 * Check to see if a given location is within the course bounds.
