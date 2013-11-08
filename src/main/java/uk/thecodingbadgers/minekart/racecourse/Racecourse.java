@@ -657,8 +657,8 @@ public abstract class Racecourse {
 	}
 
 	/**
-	 * 
-	 * @param powerup
+	 * Remove a powerup at a given location.
+	 * @param location The location of the powerup
 	 */
 	public void removePowerup(Location location) {
 		this.powerupItems.remove(location);

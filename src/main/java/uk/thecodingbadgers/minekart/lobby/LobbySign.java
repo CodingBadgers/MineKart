@@ -54,7 +54,7 @@ public class LobbySign {
 	 * <em>Please note, this sign will not work until you have loaded the data
 	 * from a sign config file</em>
 	 * 
-	 * @see #load(FileConfiguration)
+	 * @see #load(File, FileConfiguration)
 	 */
 	public LobbySign() {
 	}

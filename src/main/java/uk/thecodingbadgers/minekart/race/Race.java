@@ -409,16 +409,16 @@ public abstract class Race {
 	}
 
 	/**
-	 * 
-	 * @param ranks
+	 * Set the rankings
+	 * @param ranks The rankings to use
 	 */
 	public void setRankings(List<Jockey> ranks) {
 		this.raceRankings = ranks;
 	}
 
 	/**
-	 * 
-	 * @return
+	 * Get the rankings of the race
+	 * @return A list of rankings
 	 */
 	public List<Jockey> getRankings() {
 		return this.raceRankings;

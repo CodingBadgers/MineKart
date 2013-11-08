@@ -407,9 +407,9 @@ public final class MineKart extends JavaPlugin {
 	/**
 	 * create a new arena
 	 * 
-	 * @player The player who is creating the arena
-	 * @name The name of the arena
-	 * @type The type of arena to create
+	 * @param player The player who is creating the arena
+	 * @param name The name of the arena
+	 * @param type The type of arena to create
 	 */
 	public void createCourse(Player player, String name, RacecourceType type) {
 
@@ -519,9 +519,9 @@ public final class MineKart extends JavaPlugin {
 	}
 
 	/**
-	 * 
-	 * @param raceTime
-	 * @return
+	 * Converts milliseconds into user friendly time format
+	 * @param raceTime The time to convert
+	 * @return A string representing the time in a nice format
 	 */
 	public static String formatTime(long raceTime) {
 		Date date = new Date(raceTime);
