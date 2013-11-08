@@ -650,7 +650,7 @@ public abstract class Racecourse {
 	/**
 	 * Get the enabled state of the race course
 	 * 
-	 * @return True if enabled, fale if disabled.
+	 * @return True if enabled, false if disabled.
 	 */
 	public boolean isEnabled() {
 		return this.enabled;
