@@ -141,11 +141,37 @@ public class LobbySign {
 		Race race = course.getRace();
 
 		String[] lines = new String[4];
-		lines[0] = ChatColor.DARK_GREEN + "[MineKart]";
-		lines[1] = ChatColor.GREEN + course.getName();
-		lines[2] = ChatColor.GREEN + "" + race.getJockeys().size() + "/" + course.getMultiWarp("spawn").size();
-		lines[3] = ChatColor.GREEN + race.getState().toString();
+		lines[0] = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "[MineKart]";
+		lines[1] = ChatColor.BOLD + course.getName();
+		lines[2] = ChatColor.BLACK + "" + race.getJockeys().size() + "/" + course.getMultiWarp("spawn").size();
+		lines[3] = getStateColor(race);
 		return lines;
+	}
+
+	/**
+	 * Get the color to use for the racing state.
+	 * @param state The state to get the color for
+	 * @return The chatcolor to use
+	 */
+	private String getStateColor(Race race) {
+		
+		if (!race.getCourse().isEnabled()) {
+			return ChatColor.DARK_RED + "Disabled";
+		}
+		
+		switch (race.getState())
+		{
+		case Waiting:
+			return ChatColor.GREEN + race.getState().toString();
+		case Starting:
+			return ChatColor.GOLD + race.getState().toString();
+		case InRace:
+			return ChatColor.RED + race.getState().toString();
+		case Unknown:
+			return ChatColor.DARK_RED + race.getState().toString();
+		}
+		
+		return ChatColor.DARK_RED + race.getState().toString();
 	}
 
 	/**

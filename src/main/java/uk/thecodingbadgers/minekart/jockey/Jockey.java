@@ -22,6 +22,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import com.sk89q.worldedit.LocalPlayer;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.race.Race;
@@ -39,6 +42,9 @@ public class Jockey {
 
 	/** The player which represents this jockey */
 	private Player player = null;
+	
+	/** The world edit instance of a player */
+	private LocalPlayer worldEditPlayer = null;
 
 	/** The type of mount the jockey will use */
 	private EntityType mountType = EntityType.UNKNOWN;
@@ -85,6 +91,9 @@ public class Jockey {
 		this.race = race;
 		this.exitLocaiton = oldLocation;
 		this.jockeyColor = getRandomColor();
+		
+		WorldEditPlugin worldEdit = MineKart.getInstance().getWorldEditPlugin();
+		this.worldEditPlayer = worldEdit.wrapPlayer(player);
 
 		this.backup = new PlayerBackup();
 		backupInventory(this.player);
@@ -101,7 +110,7 @@ public class Jockey {
 		this.backup.backup(player);
 
 		// clear invent
-		player.setGameMode(GameMode.ADVENTURE);
+		player.setGameMode(GameMode.SURVIVAL);
 		player.setFlying(false);
 		clearInventory(player.getInventory());
 		player.updateInventory();
@@ -450,6 +459,15 @@ public class Jockey {
 	 */
 	public boolean readyUp() {
 		return this.race.readyUp(this);
+	}
+	
+	/**
+	 * Get the world edit representation of a players location
+	 * 
+	 * @return A world edit vector representation of a players location
+	 */
+	public com.sk89q.worldedit.Vector getWorldEditLocation() {
+		return this.worldEditPlayer.getPosition();
 	}
 
 }

@@ -1,5 +1,6 @@
 package uk.thecodingbadgers.minekart.race;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,9 +10,12 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -24,6 +28,8 @@ import uk.thecodingbadgers.minekart.events.race.RaceStartEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
+import uk.thecodingbadgers.minekart.util.FireworkFactory;
+import uk.thecodingbadgers.minekart.util.RaceHelper;
 
 /**
  * @author TheCodingBadgers
@@ -44,6 +50,15 @@ public abstract class Race {
 
 	/** All the jockeys that are marked as ready */
 	protected Set<String> ready = new HashSet<String>();
+	
+	/** The winning jockey */
+	protected List<Jockey> winners = null;
+	
+	/** The current position of the jockeys in the race */
+	protected List<Jockey> raceRankings = new ArrayList<Jockey>();
+	
+	/** The timer used when ending a race */
+	BukkitTask endTimer = null;
 
 	/**
 	 * Set the course used by this race
@@ -61,6 +76,11 @@ public abstract class Race {
 	 * @param player The player who will become the jockey
 	 */
 	public void addJockey(Player player) {
+		
+		if (!this.course.isEnabled()) {
+			MineKart.output(player, "This race course is disabled.");
+			return;
+		}
 
 		if (this.state != RaceState.Waiting) {
 			MineKart.output(player, "You can't currently join this race.");
@@ -166,6 +186,8 @@ public abstract class Race {
 	 */
 	private void onRaceStart() {
 		outputToRace("and they're off!");
+		this.winners = new ArrayList<Jockey>();
+		this.raceRankings.clear();
 
 		this.course.onRaceStart(this);
 
@@ -173,6 +195,7 @@ public abstract class Race {
 		Bukkit.getPluginManager().callEvent(event);
 		
 		for (Jockey jockey : this.jockeys.values()) {
+			this.raceRankings.add(jockey);
 			jockey.onRaceStart();
 		}
 
@@ -246,12 +269,38 @@ public abstract class Race {
 	public void end() {
 
 		this.course.onRaceEnd(this);
+		this.endTimer = null;
 
 		Map<String, Jockey> tempJockeys = new HashMap<String, Jockey>(this.jockeys);
 		for (Jockey jockey : tempJockeys.values()) {
 			removeJockey(jockey);
 		}
 		setState(RaceState.Waiting);
+	}
+	
+	/**
+	 * End the race in a given amount of time
+	 */
+	public void end(int time, final int rate) {
+
+		if (time <= 0) {
+			end();
+			return;
+		}
+		
+		outputToRace("The race will end in " + time + " seconds...");
+		
+		final int nextRate = time <= 5 ? 1 : rate;
+		final int nextTime = time - nextRate;
+		
+		endTimer = Bukkit.getScheduler().runTaskLater(MineKart.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				end(nextTime, rate);
+			}
+			
+		}, nextRate * 20L);	
 	}
 
 	/**
@@ -299,7 +348,7 @@ public abstract class Race {
 	public Set<Jockey> getJockeys() {
 		return ImmutableSet.copyOf(this.jockeys.values());
 	}
-
+	
 	/**
 	 * Set the winner of the race
 	 * 
@@ -307,17 +356,29 @@ public abstract class Race {
 	 */
 	public void setWinner(Jockey jockey) {
 
-		if (this.state != RaceState.InRace)
+		this.winners.add(jockey);
+		final int position = this.winners.size();
+		if (position != 1) {
+			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + jockey.getMount().getName() + ChatColor.WHITE + " came " + RaceHelper.ordinalNo(position) + ".");
+			
+			// all players have finished.
+			if (position == this.jockeys.size()) {
+				if (endTimer != null) {
+					endTimer.cancel();
+				}
+				end(5, 1);
+			}
+			
 			return;
-
+		}
+		
+		this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + jockey.getMount().getName() + ChatColor.WHITE + " are the Winners!");
+		FireworkFactory.LaunchFirework(jockey.getPlayer().getLocation(), Type.STAR, 2, Color.fromRGB(0xFFDD47));
+		
 		RaceEndEvent event = new RaceEndEvent(this, jockey);
 		Bukkit.getPluginManager().callEvent(event);
 		
-		setState(RaceState.Waiting);
-
-		this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + jockey.getMount().getName() + ChatColor.WHITE + " are the Winners!");
-
-		end();
+		end(30, 5);
 	}
 
 	/**
@@ -346,4 +407,21 @@ public abstract class Race {
 
 		return true;
 	}
+
+	/**
+	 * 
+	 * @param ranks
+	 */
+	public void setRankings(List<Jockey> ranks) {
+		this.raceRankings = ranks;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<Jockey> getRankings() {
+		return this.raceRankings;
+	}
+	
 }

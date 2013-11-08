@@ -72,14 +72,14 @@ public class BlockListener implements Listener {
 	}
 
 	/**
-	 * Called when a block is broken.
+	 * Called when a block is damaged.
 	 * 
 	 * @param event The block break event containing information on this event
 	 */
 	@EventHandler
-	public void onBlockBreak(BlockDamageEvent event) {
+	public void onBlockDamaged(BlockDamageEvent event) {
 
-		Block block = event.getBlock();
+		final Block block = event.getBlock();
 
 		Map<String, Racecourse> courses = MineKart.getInstance().getAllRacecourses();
 		for (Racecourse course : courses.values()) {

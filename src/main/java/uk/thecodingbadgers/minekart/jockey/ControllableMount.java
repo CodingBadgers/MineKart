@@ -208,7 +208,7 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 		} else if (handle.locZ < tZ) {
 			handle.yaw = (float) -Math.toDegrees(Math.atan((handle.locX - tX) / (handle.locZ - tZ)));
 		}
-		NMS.setHeadYaw(handle, handle.yaw);
+		//NMS.setHeadYaw(handle, handle.yaw);
 	}
 
 	@Override

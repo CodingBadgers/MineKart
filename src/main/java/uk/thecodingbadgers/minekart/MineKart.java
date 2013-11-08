@@ -319,8 +319,8 @@ public final class MineKart extends JavaPlugin {
 		final String controlArgument = args[0].toLowerCase();
 
 		// if the control argument is create, let the create command handler take care of it
-		if (controlArgument.equalsIgnoreCase("create") || controlArgument.equalsIgnoreCase("c")) {
-			CreateCommand.handleCreateCommand(sender, args);
+		if (controlArgument.startsWith("course")) {
+			CourseCommand.handleCourseCommand(sender, args);
 			return true;
 		}
 
@@ -366,12 +366,6 @@ public final class MineKart extends JavaPlugin {
 			return true;
 		}
 
-		// if the control argument is course, let the course command handler take care of it
-		if (controlArgument.startsWith("course")) {
-			CourseCommand.handleEnableCommand(sender, args);
-			return true;
-		}
-
 		// Unknown command
 		showPluginHelp(sender);
 		return true;
@@ -388,9 +382,11 @@ public final class MineKart extends JavaPlugin {
 		MineKart.output(sender, "MineKart by " + pluginDescription.getAuthors());
 		MineKart.output(sender, "Version " + pluginDescription.getVersion());
 		MineKart.output(sender, "===================");
-		MineKart.output(sender, "/mk setup help");
-		MineKart.output(sender, "/mk admin help");
-		MineKart.output(sender, "/mk player help");
+		MineKart.output(sender, "/mk course");
+		MineKart.output(sender, "/mk mount");
+		MineKart.output(sender, "/mk join <coursename>");
+		MineKart.output(sender, "/mk leave");
+		MineKart.output(sender, "/mk list");
 
 	}
 
@@ -415,7 +411,7 @@ public final class MineKart extends JavaPlugin {
 	 * @name The name of the arena
 	 * @type The type of arena to create
 	 */
-	public void createArena(Player player, String name, RacecourceType type) {
+	public void createCourse(Player player, String name, RacecourceType type) {
 
 		if (this.courses.containsKey(name.toLowerCase())) {
 			MineKart.output(player, "A racecourse with this name already exists.");
@@ -429,7 +425,6 @@ public final class MineKart extends JavaPlugin {
 				newCourse = new RacecourseCheckpoint();
 				break;
 			}
-
 
 			case Lap: {
 				newCourse = new RacecourseLap();
@@ -455,6 +450,24 @@ public final class MineKart extends JavaPlugin {
 		MineKart.output(player, "Next you need to...");
 		newCourse.outputRequirements(player);
 
+	}
+	
+	/**
+	 * Delete a racecourse
+	 * @param sender The thing executing the command
+	 * @param course The course to delete.
+	 */
+	public void deleteCourse(CommandSender sender, Racecourse course) {
+		
+		// remove it from memory
+		this.courses.remove(course);
+		
+		// remove it from file
+		course.delete();
+			
+		sender.sendMessage("The racecourse '" + course.getName() + "' has been deleted...");
+		course = null;
+		
 	}
 
 	/**

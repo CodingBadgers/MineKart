@@ -1,5 +1,9 @@
 package uk.thecodingbadgers.minekart.listener;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -422,5 +427,49 @@ public class JockeyListener implements Listener {
 			jockey.setPowerup(null);
 		}
 	}
+	
+	/**
+	 * Called when a player executes a command.
+	 * 
+	 * @param event The pre-process command event containing information on this event
+	 */
+	@SuppressWarnings("unchecked")
+	@EventHandler
+	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+		
+		final Player player = event.getPlayer();
+		if (player.hasPermission("minekart.command.override")) {
+			return;
+		}
+
+		Jockey jockey = MineKart.getInstance().getJockey(player);
+		if (jockey == null) {
+			return;
+		}
+		
+		MineKart mineKart = MineKart.getInstance();
+		Map<String, Map<String, Object>> commands = mineKart.getDescription().getCommands();
+		
+		final String requestedCommand = event.getMessage().substring(1);
+
+		// Is it a command used by this plugin?
+		for (Entry<String, Map<String, Object>> command : commands.entrySet())
+		{
+			if (requestedCommand.startsWith(command.getKey())) {
+				return;
+			}
+			
+			List<String> allias = (List<String>) command.getValue().get("aliases");
+			for (String alli : (List<String>)allias) {
+				if (requestedCommand.startsWith(alli)) {
+					return;
+				}
+			}
+		}
+		
+		MineKart.output(player, "You can not use that command whilst in MineKart...");
+		event.setCancelled(true);		
+	}
+	
 
 }

@@ -33,6 +33,7 @@ import com.sk89q.worldedit.regions.Region;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
 import uk.thecodingbadgers.minekart.race.RaceState;
@@ -129,6 +130,7 @@ public abstract class Racecourse {
 		}
 
 		this.name = name;
+		this.readyblock = Material.IRON_BLOCK;
 
 		this.fileConfiguration = new File(MineKart.getRacecourseFolder() + File.separator + this.name + "." + this.type + ".yml");
 		if (!this.fileConfiguration.exists()) {
@@ -149,6 +151,13 @@ public abstract class Racecourse {
 		this.race.setCourse(this);
 
 		return true;
+	}
+	
+	/**
+	 * Delete this racecourse
+	 */
+	public void delete() {
+		this.fileConfiguration.delete();
 	}
 
 	/**
@@ -181,6 +190,9 @@ public abstract class Racecourse {
 
 		// Course name
 		this.name = file.getString("racecourse.name");
+		
+		// Enabled State
+		this.enabled = file.getBoolean("racecourse.enabled", this.enabled);
 
 		// Course bounds
 		this.world = Bukkit.getWorld(file.getString("racecourse.world"));
@@ -232,6 +244,9 @@ public abstract class Racecourse {
 
 		// Course name
 		file.set("racecourse.name", this.name);
+		
+		// Enabled State
+		file.set("racecourse.enabled", this.enabled);
 
 		// Course bounds
 		file.set("racecourse.world", this.world.getName());
@@ -546,10 +561,7 @@ public abstract class Racecourse {
 		if (race.getState() != RaceState.InRace)
 			return false;
 
-		Location location = jockey.getPlayer().getLocation();
-		com.sk89q.worldedit.Vector position = new com.sk89q.worldedit.Vector(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-
-		if (!this.bounds.contains(position)) {
+		if (!this.bounds.contains(jockey.getWorldEditLocation())) {
 			race.outputToRace("The jockey " + ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " has left the race course.");
 			race.removeJockey(jockey);
 			return false;
@@ -631,6 +643,8 @@ public abstract class Racecourse {
 	 */
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+		LobbySignManager.updateSigns();
+		this.save();
 	}
 
 	/**
