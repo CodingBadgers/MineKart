@@ -190,6 +190,9 @@ public abstract class Racecourse {
 
 		// Course name
 		this.name = file.getString("racecourse.name");
+		
+		// Enabled State
+		this.enabled = file.getBoolean("racecourse.enabled", this.enabled);
 
 		// Course bounds
 		this.world = Bukkit.getWorld(file.getString("racecourse.world"));
@@ -241,6 +244,9 @@ public abstract class Racecourse {
 
 		// Course name
 		file.set("racecourse.name", this.name);
+		
+		// Enabled State
+		file.set("racecourse.enabled", this.enabled);
 
 		// Course bounds
 		file.set("racecourse.world", this.world.getName());
@@ -638,6 +644,7 @@ public abstract class Racecourse {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 		LobbySignManager.updateSigns();
+		this.save();
 	}
 
 	/**
