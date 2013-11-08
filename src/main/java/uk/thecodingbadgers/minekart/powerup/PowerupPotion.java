@@ -78,6 +78,7 @@ public class PowerupPotion extends Powerup {
 	 * @param jockey The player who used it
 	 */
 	@Override
+	@SuppressWarnings("deprecation")
 	public void onUse(Jockey jockey) {
 
 		this.amount--;
