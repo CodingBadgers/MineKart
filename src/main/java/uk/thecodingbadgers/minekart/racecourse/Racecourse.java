@@ -650,15 +650,15 @@ public abstract class Racecourse {
 	/**
 	 * Get the enabled state of the race course
 	 * 
-	 * @return True if enabled, fale if disabled.
+	 * @return True if enabled, false if disabled.
 	 */
 	public boolean isEnabled() {
 		return this.enabled;
 	}
 
 	/**
-	 * 
-	 * @param powerup
+	 * Remove a powerup at a given location.
+	 * @param location The location of the powerup
 	 */
 	public void removePowerup(Location location) {
 		this.powerupItems.remove(location);

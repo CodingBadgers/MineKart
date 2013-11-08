@@ -83,6 +83,7 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private EntityLiving getHandle() {
 		return ((CraftLivingEntity) npc.getBukkitEntity()).getHandle();
 	}
@@ -97,6 +98,7 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 			explicitType = Util.matchEntityType(key.getString("explicittype"));
 	}
 
+	@SuppressWarnings("deprecation")
 	private void loadController() {
 		EntityType type = npc.getBukkitEntity().getType();
 		if (explicitType != null)
@@ -125,6 +127,7 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean mount(Player toMount) {
 		Entity passenger = npc.getBukkitEntity().getPassenger();
 		if (passenger != null && passenger != toMount) {

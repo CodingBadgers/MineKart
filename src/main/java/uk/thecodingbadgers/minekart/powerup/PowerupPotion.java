@@ -58,7 +58,7 @@ public class PowerupPotion extends Powerup {
 	/**
 	 * Load the powerup
 	 * 
-	 * @param file The file containing the powerup data
+	 * @param configfile The file containing the powerup data
 	 */
 	public void load(File configfile) {
 		super.load(configfile);
@@ -75,9 +75,10 @@ public class PowerupPotion extends Powerup {
 	/**
 	 * Called when the powerup is used
 	 * 
-	 * @param player The player who used it
+	 * @param jockey The player who used it
 	 */
 	@Override
+	@SuppressWarnings("deprecation")
 	public void onUse(Jockey jockey) {
 
 		this.amount--;

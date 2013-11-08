@@ -51,7 +51,7 @@ public abstract class Powerup {
 	/**
 	 * Load the powerup
 	 * 
-	 * @param file The file containing the powerup data
+	 * @param configfile The file containing the powerup data
 	 */
 	public void load(File configfile) {
 
@@ -66,7 +66,7 @@ public abstract class Powerup {
 	/**
 	 * Called when the powerup is picked up
 	 * 
-	 * @param player The player who picked it up
+	 * @param jockey The player who picked it up
 	 */
 	public void onPickup(Jockey jockey) {
 
@@ -84,7 +84,7 @@ public abstract class Powerup {
 	/**
 	 * Called when the powerup is used
 	 * 
-	 * @param player The player who used it
+	 * @param jockey The player who used it
 	 */
 	public abstract void onUse(Jockey jockey);
 

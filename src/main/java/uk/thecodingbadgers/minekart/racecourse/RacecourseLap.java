@@ -281,7 +281,7 @@ public class RacecourseLap extends Racecourse {
 			race.outputToRace("||================= ||");
 			// End temp code
 			
-			jockey.updateRespawnLocation(jockey.getMount().getBukkitEntity().getLocation());
+			jockey.updateRespawnLocation(jockey.getMount().getEntity().getLocation());
 
 			JockeyCheckpointReachedEvent event = new JockeyCheckpointReachedEvent(jockey, race, targetCheckpointIndex);
 			Bukkit.getPluginManager().callEvent(event);
