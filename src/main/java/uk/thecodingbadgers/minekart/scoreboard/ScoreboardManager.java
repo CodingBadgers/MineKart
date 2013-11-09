@@ -48,9 +48,7 @@ public class ScoreboardManager {
 	public void onRaceStart() {
 		
 		reset();
-		
-		int position = 1;
-		
+
 		Set<Jockey> jockeys = this.race.getJockeys();
 		for (Jockey jockey : jockeys) {
 			final Player player = jockey.getPlayer();
@@ -59,7 +57,7 @@ public class ScoreboardManager {
 			Team jockeyTeam = this.scoreboard.registerNewTeam(name);
 			
 			String prefixName = name.length() > 8 ? name.substring(0, 8) : name;
-			jockeyTeam.setPrefix(ChatColor.YELLOW + "[" + prefixName + "] " + ChatColor.WHITE);
+			jockeyTeam.setPrefix(ChatColor.YELLOW + "[" + prefixName.trim() + "] " + ChatColor.WHITE);
 			
 			jockeyTeam.setAllowFriendlyFire(true);
 			jockeyTeam.setCanSeeFriendlyInvisibles(false);
@@ -71,8 +69,7 @@ public class ScoreboardManager {
 			
 			// Set the players score to zero, then increase it
 			Score score = this.sidebarObjective.getScore(player);
-			score.setScore(position);
-			position++;
+			score.setScore(jockeys.size());
 		}
 		
 		updateSidebarTitle();
@@ -131,9 +128,11 @@ public class ScoreboardManager {
 	 */
 	public void setJockyStanding(Jockey jockey, int standing) {
 		
+		final int maxPlayers = this.race.getJockeys().size() + 1;
+		
 		Score score = this.sidebarObjective.getScore(jockey.getPlayer());
 		if (score != null) {
-			score.setScore(standing);
+			score.setScore(maxPlayers - standing);
 		}
 		
 	}
