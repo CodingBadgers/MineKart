@@ -5,11 +5,52 @@
 	<artifactId>minekart</artifactId>
 	<version>1.0.0</version>
 	<name>MineKart</name>
+	
+	<organization>
+	    <name>CodingBadgers</name>
+	</organization>
 
 	<properties>
-	    <bukkit.version>1.6.4-R2.0</bukkit.version>
-	    <citizens.version>2.0.10-SNAPSHOT</citizens.version>
+		<bukkit.version>1.6.4-R2.0</bukkit.version>
+		<citizens.version>2.0.10-SNAPSHOT</citizens.version>
 	</properties>
+
+	<scm>
+	    <connection>scm:git:https://github.com/CodingBadgers/MineKart.git</connection>
+	    <developerConnection>scm:git:https://github.com/CodingBadgers/MineKart.git</developerConnection>
+	    <url>http://github.com/CodingBadgers/MineKart</url>
+	</scm>
+	
+	<issueManagement>
+	    <system>github</system>
+	    <url>http://github.com/CodingBadgers/MineKart/issues</url>
+	</issueManagement>
+	
+	<licenses>
+	    <license>
+	        <name>GPL v2</name>
+	        <url>http://www.gnu.org/licenses/gpl-2.0-standalone.html</url>
+	    </license>
+	</licenses>
+	
+	<developers>
+	    <developer>
+	        <id>thefishlive</id>
+	        <name>James Fitzpatrick</name>
+	        <email>thefishlive@hotmail.com</email>
+	        <organization>CodingBadgers</organization>
+	        <organizationUrl>http://mcbadgercraft.com</organizationUrl>
+	        <timezone>0</timezone>
+	    </developer>
+	    <developer>
+	        <id>n3wton</id>
+	        <name>Sam Oates</name>
+	        <email>sam@samoatesgames.com</email>
+	        <organization>CodingBadgers</organization>
+	        <organizationUrl>http://mcbadgercraft.com</organizationUrl>
+	        <timezone>0</timezone>
+	    </developer>
+	</developers>
 	
 	<repositories>
 		<repository>
@@ -47,11 +88,6 @@
 			<version>5.5.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>net.milkbowl.vault</groupId>
-			<artifactId>Vault</artifactId>
-			<version>1.2.26-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<artifactId>citizensapi</artifactId>
 			<groupId>net.citizensnpcs</groupId>
 			<version>${citizens.version}</version>
@@ -75,7 +111,7 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -87,28 +123,31 @@
 					<finalName>${project.name}</finalName>
 				</configuration>
 			</plugin>
-			
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <links>
-                                <link>http://jd.bukkit.org/dev/apidocs/</link>
-                                <link>http://mythcraft.dyndns.org/javadoc/vault/</link>
-                            </links>
-                            <javadocVersion>1.7</javadocVersion>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.3</version>
+			</plugin>
 		</plugins>
+
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.scm</groupId>
+				<artifactId>maven-scm-provider-gitexe</artifactId>
+				<version>1.3</version>
+			</extension>
+			<extension>
+				<groupId>org.apache.maven.scm</groupId>
+				<artifactId>maven-scm-manager-plexus</artifactId>
+				<version>1.3</version>
+			</extension>
+			<extension>
+				<groupId>org.kathrynhuxtable.maven.wagon</groupId>
+				<artifactId>wagon-gitsite</artifactId>
+				<version>0.3.1</version>
+			</extension>
+		</extensions>
 
 		<resources>
 			<resource>
@@ -137,4 +176,42 @@
 		</resources>
 	</build>
 
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8.1</version>
+				<configuration>
+					<links>
+						<link>http://jd.bukkit.org/dev/apidocs/</link>
+						<link>http://mythcraft.dyndns.org/javadoc/vault/</link>
+					</links>
+					<javadocVersion>1.7</javadocVersion>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.7</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>project-team</report>
+							<report>issue-tracking</report>
+							<report>license</report>
+							<report>scm</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<distributionManagement>
+		<site>
+			<id>github.minekart.site</id>
+			<url>gitsite:github.com/CodingBadgers/MineKart.git</url>
+		</site>
+	</distributionManagement>
 </project>

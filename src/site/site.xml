@@ -1,0 +1,28 @@
+<project name="MineKart">
+	<bannerLeft>
+		<name>MineKart</name>
+		<href>http://mcbadgercraft.com/</href>
+	</bannerLeft>
+	<body>
+		<links>
+			<item name="Homepage" href="http://mcbadgercraft.com/" />
+			<item name="Forums" href="http://mcbadgercraft.com/forum" />
+			<item name="Source/Github" href="https://github.com/CodingBadgers/" />
+		</links>
+		<menu name="Coding Badgers">
+			<item name="Homepage" href="http://mcbadgercraft.com/" />
+			<item name="Forums" href="http://mcbadgercraft.com/forums" />
+			<item name="Source/Github" href="https://github.com/CodingBadgers/" />
+		</menu>
+		<menu name="API Documentation">
+			<item name="JavaDocs" href="apidocs/index.html" />
+		</menu>
+		<menu ref="reports" />
+	</body>
+
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-stylus-skin</artifactId>
+		<version>1.5</version>
+	</skin>
+</project>
