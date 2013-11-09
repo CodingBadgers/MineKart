@@ -419,8 +419,10 @@ public abstract class Racecourse {
 		for (Entry<String, List<Location>> point : this.multiPoints.entrySet()) {
 			if (point.getValue() != null && !point.getValue().isEmpty()) {
 				MineKart.output(sender, point.getKey());
+				int id = 0;
 				for (Location location : point.getValue()) {
-					MineKart.output(sender, " - " + location.toString());
+					MineKart.output(sender, " - [" + id + "] [" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + "]");
+					id++;
 				}
 			}
 		}
