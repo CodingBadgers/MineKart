@@ -86,7 +86,7 @@ public abstract class Racecourse {
 	protected int minimumNoofPlayers = 2;
 
 	/** The cooldown between pickuping up powerups **/
-	protected int powerupCooldown = 2;
+	protected int powerupCooldown = 1000;
 
 	/**
 	 * Class constructor
@@ -204,7 +204,7 @@ public abstract class Racecourse {
 		// Lobby settings
 		this.readyblock = Material.getMaterial(file.getString("lobby.readyblock", "IRON_BLOCK"));
 		this.minimumNoofPlayers = file.getInt("racecourse.minimumJockeys", 2);
-		this.powerupCooldown = file.getInt("racecourse.powerupCooldown", 500);
+		this.powerupCooldown = file.getInt("racecourse.powerupCooldown", 1000);
 
 		// Single point locations
 		int noofSinglePoints = file.getInt("racecourse.singlepoint.count");

@@ -9,3 +9,5 @@
 .project
 .settings/*
 target/*
+
+/src/main/java/uk/thecodingbadgers/minekart/gui
