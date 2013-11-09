@@ -54,7 +54,10 @@ public class ScoreboardManager {
 			final Player player = jockey.getPlayer();
 			
 			String name = jockey.getMount().getName();
-			Team jockeyTeam = this.scoreboard.registerNewTeam(name);
+			Team jockeyTeam = this.scoreboard.getTeam(name);
+			if (jockeyTeam == null) {
+				jockeyTeam = this.scoreboard.registerNewTeam(name);
+			}
 			
 			String prefixName = name.length() > 8 ? name.substring(0, 8) : name;
 			jockeyTeam.setPrefix(ChatColor.YELLOW + "[" + prefixName.trim() + "] " + ChatColor.WHITE);
@@ -83,14 +86,16 @@ public class ScoreboardManager {
 		
 		final Player player = jockey.getPlayer();
 		final Scoreboard scoreboard = this.oldScoreboards.get(player);
-		player.setScoreboard(scoreboard == null ? Bukkit.getScoreboardManager().getMainScoreboard() : scoreboard);
-		
-		final String name = jockey.getMount().getName();
-		Team team = this.scoreboard.getTeam(name);
-		if (team != null) {
-			team.removePlayer(player);
+		if (scoreboard != null) {
+			player.setScoreboard(scoreboard);
+			
+			final String name = jockey.getMount().getName();
+			Team team = this.scoreboard.getTeam(name);
+			if (team != null) {
+				team.removePlayer(player);
+			}
 		}
-		
+				
 	}
 	
 	/**
