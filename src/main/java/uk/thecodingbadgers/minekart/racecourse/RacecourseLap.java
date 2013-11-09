@@ -21,7 +21,6 @@ import uk.thecodingbadgers.minekart.events.jockey.JockeyCheckpointReachedEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
-import uk.thecodingbadgers.minekart.util.RaceHelper;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -241,6 +240,7 @@ public class RacecourseLap extends Racecourse {
 	 * @param jockey The jockey who moved
 	 * @param race The race the jockeys are in
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onJockeyMove(Jockey jockey, Race race) {
 
@@ -268,20 +268,14 @@ public class RacecourseLap extends Racecourse {
 			data.lap = this.currentLap.get(jockey);
 			updateRankings(race);
 			
-			// Temp standings output, until we get a scoreboard working
-			race.outputToRace("||== Race Standings == ||");
-			
-			int p = 1;
+			int standing = 1;
 			List<Jockey> rankings = race.getRankings();
 			for (Jockey j : rankings) {
-				race.outputToRace(ChatColor.GOLD + RaceHelper.ordinalNo(p) + " - " + j.getPlayer().getName());
-				p++;
+				race.getScoreboardManager().setJockyStanding(j, standing);
+				standing++;
 			}
 			
-			race.outputToRace("||================= ||");
-			// End temp code
-			
-			jockey.updateRespawnLocation(jockey.getMount().getEntity().getLocation());
+			jockey.updateRespawnLocation(jockey.getMount().getBukkitEntity().getLocation());
 
 			JockeyCheckpointReachedEvent event = new JockeyCheckpointReachedEvent(jockey, race, targetCheckpointIndex);
 			Bukkit.getPluginManager().callEvent(event);

@@ -28,6 +28,7 @@ import uk.thecodingbadgers.minekart.events.race.RaceStartEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
+import uk.thecodingbadgers.minekart.scoreboard.ScoreboardManager;
 import uk.thecodingbadgers.minekart.util.FireworkFactory;
 import uk.thecodingbadgers.minekart.util.RaceHelper;
 
@@ -59,6 +60,16 @@ public abstract class Race {
 	
 	/** The timer used when ending a race */
 	BukkitTask endTimer = null;
+	
+	/** Scoreboards for the race */
+	ScoreboardManager scoreboardManager = null;
+	
+	/**
+	 * Class constructor
+	 */
+	public Race() {
+		scoreboardManager = new ScoreboardManager(this);
+	}
 
 	/**
 	 * Set the course used by this race
@@ -138,6 +149,7 @@ public abstract class Race {
 			spawnIndex--;
 		}
 
+		this.scoreboardManager.onRaceStart();
 		startRace(event.getCoundownLength());
 	}
 
@@ -246,6 +258,8 @@ public abstract class Race {
 	 * @param jockey The jockey to remove
 	 */
 	public void removeJockey(Jockey jockey) {
+		
+		this.scoreboardManager.onPlayerLeave(jockey);
 
 		this.jockeys.remove(jockey.getPlayer().getName());
 		this.ready.remove(jockey.getPlayer().getName());
@@ -422,6 +436,14 @@ public abstract class Race {
 	 */
 	public List<Jockey> getRankings() {
 		return this.raceRankings;
+	}
+	
+	/**
+	 * Get the races scoreboard manager
+	 * @return The instance of this races scoreboard manager
+	 */
+	public ScoreboardManager getScoreboardManager() {
+		return this.scoreboardManager;
 	}
 	
 }

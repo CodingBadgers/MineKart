@@ -17,13 +17,12 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.Vector;
 
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -34,6 +33,7 @@ import com.sk89q.worldedit.regions.Region;
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
+import uk.thecodingbadgers.minekart.powerup.EntityPowerup;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
 import uk.thecodingbadgers.minekart.race.RaceState;
@@ -77,7 +77,7 @@ public abstract class Racecourse {
 	protected boolean enabled = true;
 
 	/** All spawned powerupItems */
-	protected List<Item> powerupItems = null;
+	protected List<EntityPowerup> powerupItems = null;
 
 	/** The block the jockeys have to hit to ready up */
 	protected Material readyblock;
@@ -95,7 +95,7 @@ public abstract class Racecourse {
 
 		this.multiPoints = new HashMap<String, List<Location>>();
 		this.singlePoints = new HashMap<String, Location>();
-		this.powerupItems = new ArrayList<Item>();
+		this.powerupItems = new ArrayList<EntityPowerup>();
 
 		registerWarp(Bukkit.getConsoleSender(), "spawn", "add");
 		registerWarp(Bukkit.getConsoleSender(), "powerup", "add");
@@ -419,8 +419,10 @@ public abstract class Racecourse {
 		for (Entry<String, List<Location>> point : this.multiPoints.entrySet()) {
 			if (point.getValue() != null && !point.getValue().isEmpty()) {
 				MineKart.output(sender, point.getKey());
+				int id = 0;
 				for (Location location : point.getValue()) {
-					MineKart.output(sender, " - " + location.toString());
+					MineKart.output(sender, " - [" + id + "] [" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + "]");
+					id++;
 				}
 			}
 		}
@@ -596,9 +598,11 @@ public abstract class Racecourse {
 		powerup.setItemMeta(meta);
 		powerup.addUnsafeEnchantment(Enchantment.PROTECTION_FIRE, 0);
 
-		Item item = location.getWorld().dropItem(location, powerup);
-		item.setVelocity(new Vector(0, 0, 0));
-		this.powerupItems.add(item);
+		EntityPowerup powerupEntity = new EntityPowerup(location, powerup);
+		CraftWorld world = ((CraftWorld)location.getWorld());
+		world.getHandle().addEntity(powerupEntity);
+		
+		this.powerupItems.add(powerupEntity);
 
 		location.getWorld().playSound(location, Sound.FIREWORK_TWINKLE, 1.0f, 1.0f);
 
@@ -611,8 +615,8 @@ public abstract class Racecourse {
 	 */
 	public void onRaceEnd(Race race) {
 
-		for (Item powerup : this.powerupItems) {
-			powerup.remove();
+		for (EntityPowerup powerup : this.powerupItems) {
+			powerup.die();
 		}
 
 	}
