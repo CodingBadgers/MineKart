@@ -214,6 +214,7 @@ public class RacecourseCheckpoint extends Racecourse {
 	 * @param jockey The jockey who moved
 	 * @param race The race the jockeys are in
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onJockeyMove(Jockey jockey, Race race) {
 
@@ -255,7 +256,7 @@ public class RacecourseCheckpoint extends Racecourse {
 			// End temp code
 			
 			//
-			jockey.updateRespawnLocation(jockey.getMount().getEntity().getLocation());
+			jockey.updateRespawnLocation(jockey.getMount().getBukkitEntity().getLocation());
 
 			JockeyCheckpointReachedEvent event = new JockeyCheckpointReachedEvent(jockey, race, targetCheckpointIndex);
 			Bukkit.getPluginManager().callEvent(event);
