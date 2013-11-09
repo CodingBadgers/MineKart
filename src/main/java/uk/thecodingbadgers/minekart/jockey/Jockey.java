@@ -188,6 +188,14 @@ public class Jockey {
 	}
 
 	/**
+	 * Get the jockeys color
+	 * @return The color used by the jockey
+	 */
+	public Color getJockeyColor() {
+		return this.jockeyColor;
+	}
+	
+	/**
 	 * Get a random color
 	 * 
 	 * @return A color
