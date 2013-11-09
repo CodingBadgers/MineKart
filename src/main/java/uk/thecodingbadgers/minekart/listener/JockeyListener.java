@@ -389,7 +389,7 @@ public class JockeyListener implements Listener {
 
 		item.remove();
 
-		Powerup powerup = MineKart.getInstance().getRandomPowerup();
+		Powerup powerup = MineKart.getInstance().getRandomPowerup(jockey.getRace().getCourse());
 		if (powerup == null) {
 			return;
 		}

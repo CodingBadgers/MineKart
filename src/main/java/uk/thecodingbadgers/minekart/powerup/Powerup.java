@@ -123,5 +123,14 @@ public abstract class Powerup {
 	public int getAmount() {
 		return this.amount;
 	}
+	
+	/**
+	 * Gets the name of the powerup
+	 * 
+	 * @return The name of the powerup
+	 */
+	public String getName() {
+		return this.name;
+	}
 
 }

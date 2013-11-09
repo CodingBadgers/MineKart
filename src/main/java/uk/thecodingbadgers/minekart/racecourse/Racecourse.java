@@ -78,6 +78,9 @@ public abstract class Racecourse {
 
 	/** All spawned powerupItems */
 	protected List<EntityPowerup> powerupItems = null;
+	
+	/** All black listed powerups */
+	protected List<String> powerupBlacklist = null;
 
 	/** The block the jockeys have to hit to ready up */
 	protected Material readyblock;
@@ -96,6 +99,7 @@ public abstract class Racecourse {
 		this.multiPoints = new HashMap<String, List<Location>>();
 		this.singlePoints = new HashMap<String, Location>();
 		this.powerupItems = new ArrayList<EntityPowerup>();
+		this.powerupBlacklist = new ArrayList<String>();
 
 		registerWarp(Bukkit.getConsoleSender(), "spawn", "add");
 		registerWarp(Bukkit.getConsoleSender(), "powerup", "add");
@@ -200,7 +204,15 @@ public abstract class Racecourse {
 
 		// Mount settings
 		this.mountType = EntityType.fromName(file.getString("mount.type", "EntityHorse"));
-
+		
+		// Powerup settings
+		List<String> blacklistPowerup = file.getStringList("powerup.blacklist");
+		
+		this.powerupBlacklist = new ArrayList<String>();
+		for (String powerup : blacklistPowerup) {
+			this.powerupBlacklist.add(powerup.toLowerCase());
+		}
+		
 		// Lobby settings
 		this.readyblock = Material.getMaterial(file.getString("lobby.readyblock", "IRON_BLOCK"));
 		this.minimumNoofPlayers = file.getInt("racecourse.minimumJockeys", 2);
@@ -254,6 +266,9 @@ public abstract class Racecourse {
 
 		// Mount settings
 		file.set("mount.type", this.mountType.getName());
+		
+		// Powerup settings;
+		file.set("powerup.blacklist", this.powerupBlacklist);
 
 		// Lobby settings
 		file.set("lobby.readyblock", this.readyblock.name());
@@ -707,5 +722,13 @@ public abstract class Racecourse {
 	 */
 	public long getPowerupCooldown() {
 		return powerupCooldown;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<String> getPowerupBlackList() {
+		return this.powerupBlacklist;
 	}
 }
