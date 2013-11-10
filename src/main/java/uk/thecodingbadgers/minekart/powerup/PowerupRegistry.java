@@ -66,8 +66,8 @@ public class PowerupRegistry {
 	/**
 	 * Register a new custom powerup type.
 	 * <p>
-	 * A powerup must have public, no argument constructor and a public
-	 * copy constructor.
+	 * Along with abstract methods a powerup must have a public no argument 
+	 * constructor and a public copy constructor.
 	 * 
 	 * @param id the string id of the type, for use in the config file
 	 * @param clazz the class to handle the powerup
