@@ -438,17 +438,26 @@ public final class MineKart extends JavaPlugin {
 
 	/**
 	 * Get a random powerup
-	 * 
+	 * @param course The race course the powerup will be long too.
 	 * @return The random powerup instance
 	 */
-	public Powerup getRandomPowerup() {
+	public Powerup getRandomPowerup(Racecourse course) {
 
 		if (powerups.isEmpty()) {
 			return null;
 		}
 
+		List<Powerup> allowedPowerups = new ArrayList<Powerup>();
+		for (Powerup p : powerups) {
+			if (course.getPowerupBlackList().contains(p.getName().toLowerCase())) {
+				continue;
+			}
+			
+			allowedPowerups.add(p);
+		}
+
 		Random random = new Random();
-		Powerup powerup = powerups.get(random.nextInt(powerups.size()));
+		Powerup powerup = allowedPowerups.get(random.nextInt(allowedPowerups.size()));
 
 		return this.powerupRegistry.clonePowerup(powerup);
 	}
