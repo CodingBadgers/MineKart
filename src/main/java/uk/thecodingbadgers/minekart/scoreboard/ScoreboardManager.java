@@ -86,7 +86,7 @@ public class ScoreboardManager {
 		
 		final Player player = jockey.getPlayer();
 		final Scoreboard scoreboard = this.oldScoreboards.get(player);
-		if (scoreboard != null) {
+		if (scoreboard != null && player.isOnline()) {
 			player.setScoreboard(scoreboard);
 			
 			final String name = jockey.getMount().getName();
