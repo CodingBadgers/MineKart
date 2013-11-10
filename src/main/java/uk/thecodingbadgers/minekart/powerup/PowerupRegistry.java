@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
+
 /**
  * The powerup registry, handles registration and handling of powerup types
  */
@@ -63,13 +65,27 @@ public class PowerupRegistry {
 
 	/**
 	 * Register a new custom powerup type.
+	 * <p>
+	 * A powerup must have public, no argument constructor and a public
+	 * copy constructor.
 	 * 
 	 * @param id the string id of the type, for use in the config file
-	 * @param clazz the class to handle the powerup, the class must have a
-	 *            public, no argument constructor and a copy constructor
+	 * @param clazz the class to handle the powerup
+	 * @throws IllegalArgumentException if powerup constraints are not met
 	 */
-	public void registerPowerupType(String id, Class<? extends Powerup> clazz) {
+	public void registerPowerupType(String id, Class<? extends Powerup> clazz) throws IllegalArgumentException {
+		checkForConstructor(clazz, "A powerup must have a valid public no arguement constructor");
+		checkForConstructor(clazz, "A powerup must have a valid public copy constructor constructor", clazz);
+		
 		powerupTypes.put(id, clazz);
+	}
+	
+	private void checkForConstructor(Class<?> clazz, String error, Class<?>... arguements) {
+		try {
+			Validate.isTrue(clazz.getConstructor(arguements) != null, error);
+		} catch (Exception ex) {
+			throw new IllegalArgumentException(error);
+		}
 	}
 
 }
