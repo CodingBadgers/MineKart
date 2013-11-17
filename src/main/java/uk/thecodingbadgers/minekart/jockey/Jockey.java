@@ -235,19 +235,21 @@ public class Jockey {
 		this.respawnLocation = spawn;
 
 		// Make their mounts
-		this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, getRadomMountName(this.player.getName()));
-		this.mount.setProtected(true);
-		this.mount.addTrait(new ControllableMount(true));
-		this.mount.spawn(spawn);
-
-		// Set the owner of the mount to the jockey
-		Owner owner = this.mount.getTrait(Owner.class);
-		owner.setOwner(this.player.getName());
-
-		// Make the NPC controllable and mount the player
-		ControllableMount trait = this.mount.getTrait(ControllableMount.class);
-		trait.mount(this.player);
-		trait.setEnabled(false); // disable it until the race has started
+		if (this.mountType != EntityType.UNKNOWN) {
+			this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, getRadomMountName(this.player.getName()));
+			this.mount.setProtected(true);
+			this.mount.addTrait(new ControllableMount(true));
+			this.mount.spawn(spawn);
+	
+			// Set the owner of the mount to the jockey
+			Owner owner = this.mount.getTrait(Owner.class);
+			owner.setOwner(this.player.getName());
+	
+			// Make the NPC controllable and mount the player
+			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
+			trait.mount(this.player);
+			trait.setEnabled(false); // disable it until the race has started
+		}
 
 		// Give the player a whip
 		ItemStack whip = new ItemStack(Material.STICK);
@@ -295,8 +297,10 @@ public class Jockey {
 	 */
 	public void onRaceStart() {
 
-		ControllableMount trait = this.mount.getTrait(ControllableMount.class);
-		trait.setEnabled(true);
+		if (this.mount != null) {
+			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
+			trait.setEnabled(true);
+		}
 		this.startTime = System.currentTimeMillis();
 
 	}
@@ -338,7 +342,10 @@ public class Jockey {
 
 		PotionEffect effect = new PotionEffect(PotionEffectType.SPEED, length * 20, speed, false);
 		this.player.addPotionEffect(effect, true);
-		this.mount.getBukkitEntity().addPotionEffect(effect, true);
+		
+		if (this.mount != null) {
+			this.mount.getBukkitEntity().addPotionEffect(effect, true);
+		}
 
 	}
 
@@ -349,6 +356,14 @@ public class Jockey {
 	 */
 	public NPC getMount() {
 		return this.mount;
+	}
+	
+	/**
+	 * Get the mount type the jockey is using
+	 * @return The entity type that represents the mount being used or Unknown if no mount is uses.
+	 */
+	public EntityType getMountType() {
+		return this.mountType;
 	}
 
 	/**
@@ -386,11 +401,13 @@ public class Jockey {
 	 */
 	public void respawn() {
 
-		final String mountName = this.mount.getName();
-
-		ControllableMount trait = this.mount.getTrait(ControllableMount.class);
-		trait.mount(this.player);
-		this.mount.destroy();
+		final String mountName = this.mount == null ? "" : this.mount.getName();
+		
+		if (this.mount != null) {
+			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
+			trait.mount(this.player);
+			this.mount.destroy();
+		}
 
 		final Jockey jockey = this;
 		Bukkit.getScheduler().scheduleSyncDelayedTask(MineKart.getInstance(), new Runnable() {
@@ -403,19 +420,21 @@ public class Jockey {
 				jockey.player.setFireTicks(0);
 
 				// Make a new mount
-				jockey.mount = CitizensAPI.getNPCRegistry().createNPC(jockey.mountType, mountName);
-				jockey.mount.setProtected(true);
-				jockey.mount.addTrait(new ControllableMount(true));
-				jockey.mount.spawn(jockey.respawnLocation);
-
-				// Set the owner of the mount to the jockey
-				Owner owner = jockey.mount.getTrait(Owner.class);
-				owner.setOwner(jockey.player.getName());
-
-				// Make the NPC controllable and mount the player
-				ControllableMount trait = jockey.mount.getTrait(ControllableMount.class);
-				trait.mount(jockey.player);
-				trait.setEnabled(true);
+				if (jockey.mountType != EntityType.UNKNOWN) {
+					jockey.mount = CitizensAPI.getNPCRegistry().createNPC(jockey.mountType, mountName);
+					jockey.mount.setProtected(true);
+					jockey.mount.addTrait(new ControllableMount(true));
+					jockey.mount.spawn(jockey.respawnLocation);
+	
+					// Set the owner of the mount to the jockey
+					Owner owner = jockey.mount.getTrait(Owner.class);
+					owner.setOwner(jockey.player.getName());
+	
+					// Make the NPC controllable and mount the player
+					ControllableMount trait = jockey.mount.getTrait(ControllableMount.class);
+					trait.mount(jockey.player);
+					trait.setEnabled(true);
+				}
 
 			}
 

@@ -8,7 +8,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.util.Vector;
 
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 
@@ -59,7 +58,6 @@ public class PowerupProjectile extends Powerup {
 	 * @param jockey The player who used it
 	 */
 	@Override
-	@SuppressWarnings("deprecation")
 	public void onUse(Jockey jockey) {
 
 		this.amount--;
@@ -67,13 +65,8 @@ public class PowerupProjectile extends Powerup {
 		final Player player = jockey.getPlayer();
 
 		Location spawnLocation = player.getLocation();
-		Vector mountDirection = jockey.getMount().getBukkitEntity().getLocation().getDirection();
-
-		float scaler = this.speed < 0 ? -2.0f : 2.0f;
-		spawnLocation = spawnLocation.add(new Vector(scaler * mountDirection.getX(), 0.1, scaler * mountDirection.getZ()));
-
 		Projectile projectile = (Projectile) player.getWorld().spawnEntity(spawnLocation, this.type);
-		projectile.setVelocity(mountDirection.multiply(this.speed));
+		projectile.setVelocity(spawnLocation.getDirection().multiply(this.speed));
 		projectile.setShooter(player);
 
 	}

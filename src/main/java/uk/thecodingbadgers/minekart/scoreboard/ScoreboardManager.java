@@ -53,14 +53,16 @@ public class ScoreboardManager {
 		for (Jockey jockey : jockeys) {
 			final Player player = jockey.getPlayer();
 			
-			String name = jockey.getMount().getName();
+			String name = jockey.getMount() != null ? jockey.getMount().getName() : player.getName();
 			Team jockeyTeam = this.scoreboard.getTeam(name);
 			if (jockeyTeam == null) {
 				jockeyTeam = this.scoreboard.registerNewTeam(name);
 			}
 			
-			String prefixName = name.length() > 8 ? name.substring(0, 8) : name;
-			jockeyTeam.setPrefix(ChatColor.YELLOW + "[" + prefixName.trim() + "] " + ChatColor.WHITE);
+			if (jockey.getMount() != null) {
+				String prefixName = name.length() > 8 ? name.substring(0, 8) : name;
+				jockeyTeam.setPrefix(ChatColor.YELLOW + "[" + prefixName.trim() + "] " + ChatColor.WHITE);
+			}
 			
 			jockeyTeam.setAllowFriendlyFire(true);
 			jockeyTeam.setCanSeeFriendlyInvisibles(false);
@@ -89,7 +91,7 @@ public class ScoreboardManager {
 		if (scoreboard != null && player.isOnline()) {
 			player.setScoreboard(scoreboard);
 			
-			final String name = jockey.getMount().getName();
+			final String name = jockey.getMount() != null ? jockey.getMount().getName() : player.getName();
 			Team team = this.scoreboard.getTeam(name);
 			if (team != null) {
 				team.removePlayer(player);

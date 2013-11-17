@@ -86,18 +86,23 @@ public class CreateCommand {
 
 			if (setting.equalsIgnoreCase("type")) {
 
-				EntityType mountType = EntityType.fromName(value);
-				if (mountType == null) {
-					MineKart.output(sender, "Unknown mount type '" + value + "'");
-					return;
+				EntityType mountType = EntityType.UNKNOWN;
+				
+				if (!value.equalsIgnoreCase("none")) {
+					
+					mountType = EntityType.fromName(value);
+					if (mountType == null) {
+						MineKart.output(sender, "Unknown mount type '" + value + "'");
+						return;
+					}
+	
+					if (!mountType.isAlive()) {
+						MineKart.output(sender, "You can only set mounts to be living entities.");
+						return;
+					}
 				}
 
-				if (!mountType.isAlive()) {
-					MineKart.output(sender, "You can only set mounts to be living entities.");
-					return;
-				}
-
-				MineKart.output(sender, "The mount type for '" + coursename + "' has been set to '" + value + "'.");
+				MineKart.output(sender, "The mount type for '" + course.getName() + "' has been set to '" + value + "'.");
 				course.setMountType(mountType);
 				return;
 			}
