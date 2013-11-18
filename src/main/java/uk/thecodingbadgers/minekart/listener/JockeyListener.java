@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -17,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -205,7 +207,7 @@ public class JockeyListener implements Listener {
 
 			jockey.increaseSpeed(2, 4); // strength, time
 			jockey.getRace().outputToRace(jockey.getPlayer(), "hYah!");
-			jockey.getPlayer().playSound(player.getLocation(), getWhipSound(jockey.getMount().getBukkitEntity().getType()), 2.0f, 1.0f);
+			jockey.getPlayer().playSound(player.getLocation(), getWhipSound(jockey.getMountType()), 2.0f, 1.0f);
 			event.setCancelled(true);
 			return;
 		}
@@ -311,6 +313,19 @@ public class JockeyListener implements Listener {
 			return;
 
 		Race race = jockey.getRace();
+		if (race.getState() == RaceState.Starting) {
+			
+			Location from = event.getFrom();
+			Location to = event.getTo();
+			int xDiff = from.getBlockX() - to.getBlockX();
+			int zDiff = from.getBlockZ() - to.getBlockZ();
+			
+			if (xDiff + zDiff != 0) {
+				event.setCancelled(true);
+			}			
+			return;
+		}
+		
 		if (race.getState() != RaceState.InRace)
 			return;
 
@@ -318,6 +333,23 @@ public class JockeyListener implements Listener {
 			return;
 
 		race.onJockeyMove(jockey);
+	}
+	
+	/**
+	 * Called when a players hunger level changes.
+	 * 
+	 * @param event The player hunger change event containing information on this event
+	 */
+	@EventHandler
+	public void onPlayerHungerChange(FoodLevelChangeEvent event) {
+		
+		Player player = (Player)event.getEntity();
+		Jockey jockey = MineKart.getInstance().getJockey(player);
+		if (jockey == null)
+			return;
+		
+		event.setCancelled(true);
+		
 	}
 
 	/**

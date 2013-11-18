@@ -248,7 +248,11 @@ public class RacecourseCheckpoint extends Racecourse {
 			}
 
 			//
-			jockey.updateRespawnLocation(jockey.getMount().getBukkitEntity().getLocation());
+			Location respawnLocation = jockey.getPlayer().getLocation();
+			if (jockey.getMount() != null) {
+				respawnLocation = jockey.getMount().getBukkitEntity().getLocation();
+			}
+			jockey.updateRespawnLocation(respawnLocation);
 
 			JockeyCheckpointReachedEvent event = new JockeyCheckpointReachedEvent(jockey, race, targetCheckpointIndex);
 			Bukkit.getPluginManager().callEvent(event);

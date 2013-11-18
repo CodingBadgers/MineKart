@@ -256,23 +256,24 @@ public class Jockey {
 	}
 
 	private void createMount(String mountName, Location spawn) {
-		// Make their mounts
-		this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, mountName);
-		this.mount.setProtected(true);
-		this.mount.addTrait(new ControllableMount(true));
-		this.mount.spawn(spawn);
-		this.race.getCourse().getMountData().applyMountData(this.mount.getEntity());
-
-		
-		// Set the owner of the mount to the jockey
-		Owner owner = this.mount.getTrait(Owner.class);
-		owner.setOwner(this.player.getName());
-
-		// Make the NPC controllable and mount the player
-		ControllableMount trait = this.mount.getTrait(ControllableMount.class);
-		trait.mount(this.player);
-		trait.setEnabled(false); // disable it until the race has started
-		
+		if (this.mountType != EntityType.UNKNOWN) {
+			// Make their mounts
+			this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, mountName);
+			this.mount.setProtected(true);
+			this.mount.addTrait(new ControllableMount(true));
+			this.mount.spawn(spawn);
+			this.race.getCourse().getMountData().applyMountData(this.mount.getEntity());
+	
+			
+			// Set the owner of the mount to the jockey
+			Owner owner = this.mount.getTrait(Owner.class);
+			owner.setOwner(this.player.getName());
+	
+			// Make the NPC controllable and mount the player
+			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
+			trait.mount(this.player);
+			trait.setEnabled(false); // disable it until the race has started
+		}
 	}
 
 	/**
@@ -359,6 +360,14 @@ public class Jockey {
 		return this.mount;
 	}
 
+   /**
+    * Get the mount type the jockey is using
+    * @return The entity type that represents the mount being used or Unknown if no mount is uses.
+    */
+	public EntityType getMountType() {
+		return this.mountType;
+	}
+	
 	/**
 	 * Get the time the player has been in the race
 	 * 
@@ -394,11 +403,13 @@ public class Jockey {
 	 */
 	public void respawn() {
 
-		final String mountName = this.mount.getName();
-
-		ControllableMount trait = this.mount.getTrait(ControllableMount.class);
-		trait.mount(this.player);
-		this.mount.destroy();
+		final String mountName = this.mount == null ? "" : this.mount.getName();
+		
+		if (this.mount != null) {
+			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
+			trait.mount(this.player);
+			this.mount.destroy();
+		}
 
 		final Jockey jockey = this;
 		Bukkit.getScheduler().scheduleSyncDelayedTask(MineKart.getInstance(), new Runnable() {

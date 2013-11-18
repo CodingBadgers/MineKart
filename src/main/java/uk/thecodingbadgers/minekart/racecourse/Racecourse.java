@@ -208,7 +208,8 @@ public abstract class Racecourse {
 		this.bounds = loadRegion(file, "racecourse.bounds");
 
 		// Mount settings
-		this.mountType = EntityType.fromName(file.getString("mount.type", "EntityHorse"));
+		final String loadedMount = file.getString("mount.type", "EntityHorse");
+		this.mountType = loadedMount.equalsIgnoreCase("none") ? EntityType.UNKNOWN : EntityType.fromName(loadedMount);
 		this.mountTypeData = MineKart.getInstance().getMountDataRegistry().getMountData(mountType);
 		ConfigurationSection section = file.getConfigurationSection("mount.data");
 
@@ -276,7 +277,7 @@ public abstract class Racecourse {
 		saveRegion(file, "racecourse.bounds", this.bounds);
 
 		// Mount settings
-		file.set("mount.type", this.mountType.getName());
+		file.set("mount.type", this.mountType == EntityType.UNKNOWN ? "none" : this.mountType.getName());
 		file.set("mount.data", this.mountTypeData.getSaveData(file.getConfigurationSection("mount.data")));
 		
 		// Powerup settings;
@@ -591,8 +592,7 @@ public abstract class Racecourse {
 			return false;
 
 		if (!this.bounds.contains(jockey.getWorldEditLocation())) {
-			race.outputToRace("The jockey " + ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " has left the race course.");
-			race.removeJockey(jockey);
+			jockey.respawn();
 			return false;
 		}
 
@@ -651,14 +651,14 @@ public abstract class Racecourse {
 	/**
 	 * Get the mount type this race course uses
 	 * 
-	 * @return The EntityType that this course uses as a mount
+	 * @return The EntityType that this course uses as a mount (Unknown means none)
 	 */
 	public EntityType getMountType() {
 		return this.mountType;
 	}
 
 	/**
-	 * Set the mount type this race course uses
+	 * Set the mount type this race course uses (Unknown means none)
 	 * 
 	 * @param mountType The EntityType that this course should use as a mount
 	 */

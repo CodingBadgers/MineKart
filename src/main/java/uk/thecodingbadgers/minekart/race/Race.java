@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import net.citizensnpcs.api.npc.NPC;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -135,8 +137,6 @@ public abstract class Race {
 	 */
 	public void teleportToSpawns() {
 
-		setState(RaceState.Starting);
-
 		RaceCountdownStartEvent event = new RaceCountdownStartEvent(this, 3);
 		Bukkit.getPluginManager().callEvent(event);
 		
@@ -149,6 +149,7 @@ public abstract class Race {
 			spawnIndex--;
 		}
 
+		setState(RaceState.Starting);
 		this.scoreboardManager.onRaceStart();
 		startRace(event.getCoundownLength());
 	}
@@ -373,7 +374,13 @@ public abstract class Race {
 		this.winners.add(jockey);
 		final int position = this.winners.size();
 		if (position != 1) {
-			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + jockey.getMount().getName() + ChatColor.WHITE + " came " + RaceHelper.ordinalNo(position) + ".");
+			
+			NPC mount = jockey.getMount();
+			if (mount != null) {
+				this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + mount.getName() + ChatColor.WHITE + " came " + RaceHelper.ordinalNo(position) + ".");
+			} else {
+				this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " came " + RaceHelper.ordinalNo(position) + ".");
+			}
 			
 			// all players have finished.
 			if (position == this.jockeys.size()) {
@@ -386,7 +393,13 @@ public abstract class Race {
 			return;
 		}
 		
-		this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + jockey.getMount().getName() + ChatColor.WHITE + " are the Winners!");
+		NPC mount = jockey.getMount();
+		if (mount != null) {
+			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + mount.getName() + ChatColor.WHITE + "are the Winners!");
+		} else {
+			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " has won!");
+		}
+
 		FireworkFactory.LaunchFirework(jockey.getPlayer().getLocation(), Type.STAR, 2, Color.fromRGB(0xFFDD47));
 		
 		RaceEndEvent event = new RaceEndEvent(this, jockey);
