@@ -5,7 +5,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
-import uk.thecodingbadgers.minekart.racecourse.RacecourceType;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 
 public class CourseCommand {
@@ -41,21 +40,8 @@ public class CourseCommand {
 				return;
 			}
 			
-			RacecourceType type = RacecourceType.Unknown;
-
-			if (args[3].equalsIgnoreCase("lap")) {
-				type = RacecourceType.Lap;
-			} else if (args[3].equalsIgnoreCase("checkpoint")) {
-				type = RacecourceType.CheckPoint;
-			}
-
-			if (type == RacecourceType.Unknown) {
-				MineKart.output(player, "Unknown racecourse type '" + args[3] + "'. Valid values are 'lap' or 'checkpoint'.");
-				return;
-			}
-
 			MineKart mineKart = MineKart.getInstance();
-			mineKart.createCourse(player, name, type);
+			mineKart.createCourse(player, name, args[3]);
 			return;
 		}
 

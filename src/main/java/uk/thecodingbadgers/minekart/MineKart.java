@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,15 +32,17 @@ import uk.thecodingbadgers.minekart.command.CommandHandler;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.listener.BlockListener;
 import uk.thecodingbadgers.minekart.listener.JockeyListener;
+import uk.thecodingbadgers.minekart.mount.HorseMountData;
+import uk.thecodingbadgers.minekart.mount.MountDataRegistry;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.powerup.PowerupDrop;
 import uk.thecodingbadgers.minekart.powerup.PowerupPotion;
 import uk.thecodingbadgers.minekart.powerup.PowerupProjectile;
 import uk.thecodingbadgers.minekart.powerup.PowerupRegistry;
-import uk.thecodingbadgers.minekart.racecourse.RacecourceType;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseCheckpoint;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseLap;
+import uk.thecodingbadgers.minekart.racecourse.RacecourseTypeRegistry;
 import static uk.thecodingbadgers.minekart.lobby.LobbySignManager.loadSigns;
 
 /**
@@ -71,7 +74,14 @@ public final class MineKart extends JavaPlugin {
 	/** All available powerups */
 	private List<Powerup> powerups = null;
 
+	/** Powerup type registry */
 	private PowerupRegistry powerupRegistry;
+
+	/** Racecourse type registry */
+	private RacecourseTypeRegistry racecourseTypeRegistry;
+	
+	/** Mount data registry*/
+	private MountDataRegistry mountDataRegistry;
 
 	/**
 	 * Called when the plugin is enabled
@@ -81,6 +91,8 @@ public final class MineKart extends JavaPlugin {
 		// Store the instance of the plugin
 		MineKart.instance = this;
 
+		/* Setup plugin folder */
+		
 		// Setup the folder which will hold all the racecourse configs
 		MineKart.racecourseFolderPath = new File(this.getDataFolder() + File.separator + "courses");
 		if (!MineKart.racecourseFolderPath.exists()) {
@@ -108,11 +120,19 @@ public final class MineKart extends JavaPlugin {
 			getLogger().log(Level.SEVERE, "Could not find the WorldEdit plugin.");
 		}
 
+		// Register powerup types
 		this.powerupRegistry = new PowerupRegistry();
 		this.powerupRegistry.registerPowerupType("potion", PowerupPotion.class);
 		this.powerupRegistry.registerPowerupType("projectile", PowerupProjectile.class);
 		this.powerupRegistry.registerPowerupType("drop", PowerupDrop.class);
 
+		this.racecourseTypeRegistry = new RacecourseTypeRegistry();
+		this.racecourseTypeRegistry.registerRacecourseType("lap", RacecourseLap.class);
+		this.racecourseTypeRegistry.registerRacecourseType("checkpoint", RacecourseCheckpoint.class);
+		
+		this.mountDataRegistry = new MountDataRegistry();
+		this.mountDataRegistry.registerCustomMountData(EntityType.HORSE, HorseMountData.class);
+		
 		registerListeners();
 
 		getCommand("minekart").setExecutor(new CommandHandler());
@@ -128,6 +148,7 @@ public final class MineKart extends JavaPlugin {
 	 * Called when the plugin is disabled
 	 */
 	public void onDisable() {
+		// Reset the instance on disable
 		MineKart.instance = null;
 
 		for (Racecourse course : this.courses.values()) {
@@ -138,7 +159,8 @@ public final class MineKart extends JavaPlugin {
 	/**
 	 * Gets the active instance of the MineKart plugin.
 	 * 
-	 * @return The instance of the MineKart plugin.
+	 * @return The instance of the MineKart plugin, or null if the plugin
+	 * 			isn't enabled.
 	 */
 	public static MineKart getInstance() {
 		return MineKart.instance;
@@ -158,10 +180,28 @@ public final class MineKart extends JavaPlugin {
 	 * 
 	 * @return the powerup registry
 	 */
-	private PowerupRegistry getPowerupRegistry() {
+	public PowerupRegistry getPowerupRegistry() {
 		return this.powerupRegistry;
 	}
 
+	/**
+	 * Gets the mount data registry.
+	 * 
+	 * @return the mount data registry
+	 */
+	public MountDataRegistry getMountDataRegistry() {
+		return this.mountDataRegistry;
+	}
+
+	/**
+	 * Gets the racecourse type registry.
+	 * 
+	 * @return the racecourse type registry
+	 */
+	public RacecourseTypeRegistry getRacecourseTypeRegistry() {
+		return this.racecourseTypeRegistry;
+	}
+	
 	/**
 	 * Get the folder of which all racecourse configs reside
 	 * 
@@ -279,12 +319,7 @@ public final class MineKart extends JavaPlugin {
 			final String coursename = nameparts[0];
 			final String coursetype = nameparts[1];
 
-			Racecourse course = null;
-			if (coursetype.equalsIgnoreCase("lap")) {
-				course = new RacecourseLap();
-			} else if (coursetype.equalsIgnoreCase("checkpoint")) {
-				course = new RacecourseCheckpoint();
-			}
+			Racecourse course = this.racecourseTypeRegistry.createRacecourse(coursetype);
 
 			if (course == null) {
 				getLogger().log(Level.SEVERE, "Unknown course type '" + coursetype + "' for course '" + coursename + "'.");
@@ -301,6 +336,10 @@ public final class MineKart extends JavaPlugin {
 	 * Output a message to a given command sender
 	 */
 	public static void output(CommandSender sender, String message) {
+		if (MineKart.getInstance() == null) {
+			return;
+		}
+		
 		sender.sendMessage(ChatColor.DARK_GREEN + "[MineKart] " + ChatColor.WHITE + message);
 	}
 
@@ -308,6 +347,10 @@ public final class MineKart extends JavaPlugin {
 	 * Output a message to a given command sender from a given player
 	 */
 	public static void output(CommandSender to, CommandSender from, String message) {
+		if (MineKart.getInstance() == null) {
+			return;
+		}
+		
 		to.sendMessage(ChatColor.DARK_GREEN + "[MineKart] " + ChatColor.YELLOW + "[" + from.getName() + "] " + ChatColor.WHITE + message);
 	}
 
@@ -318,7 +361,7 @@ public final class MineKart extends JavaPlugin {
 	 * @param name The name of the arena
 	 * @param type The type of arena to create
 	 */
-	public void createCourse(Player player, String name, RacecourceType type) {
+	public void createCourse(Player player, String name, String type) {
 
 		if (this.courses.containsKey(name.toLowerCase())) {
 			MineKart.output(player, "A racecourse with this name already exists.");
@@ -326,25 +369,14 @@ public final class MineKart extends JavaPlugin {
 			return;
 		}
 
-		Racecourse newCourse = null;
-		switch (type) {
-			case CheckPoint: {
-				newCourse = new RacecourseCheckpoint();
-				break;
-			}
-
-			case Lap: {
-				newCourse = new RacecourseLap();
-				break;
-			}
-
-			default: {
-				MineKart.output(player, "This racecourse type is not yet supported.");
-				MineKart.output(player, "Creation of '" + name + "' failed.");
-				return;
-			}
+		Racecourse newCourse = this.racecourseTypeRegistry.createRacecourse(type);
+		
+		if (newCourse == null) {
+			MineKart.output(player, "This racecourse type is not yet supported.");
+			MineKart.output(player, "Creation of '" + name + "' failed.");
+			return;
 		}
-
+		
 		if (!newCourse.setup(player, name)) {
 			MineKart.output(player, "Failed to setup new arena.");
 			MineKart.output(player, "Creation of '" + name + "' failed.");

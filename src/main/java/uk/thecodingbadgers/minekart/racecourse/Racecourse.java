@@ -15,6 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
@@ -33,6 +34,7 @@ import com.sk89q.worldedit.regions.Region;
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
+import uk.thecodingbadgers.minekart.mount.MountTypeData;
 import uk.thecodingbadgers.minekart.powerup.EntityPowerup;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
@@ -90,6 +92,9 @@ public abstract class Racecourse {
 
 	/** The cooldown between pickuping up powerups **/
 	protected int powerupCooldown = 1000;
+
+	/** The custom mount type data */
+	protected MountTypeData mountTypeData;
 
 	/**
 	 * Class constructor
@@ -204,6 +209,12 @@ public abstract class Racecourse {
 
 		// Mount settings
 		this.mountType = EntityType.fromName(file.getString("mount.type", "EntityHorse"));
+		this.mountTypeData = MineKart.getInstance().getMountDataRegistry().getMountData(mountType);
+		ConfigurationSection section = file.getConfigurationSection("mount.data");
+
+		if (section != null) {
+			this.mountTypeData.loadData(section);
+		}
 		
 		// Powerup settings
 		List<String> blacklistPowerup = file.getStringList("powerup.blacklist");
@@ -266,6 +277,7 @@ public abstract class Racecourse {
 
 		// Mount settings
 		file.set("mount.type", this.mountType.getName());
+		file.set("mount.data", this.mountTypeData.getSaveData(file.getConfigurationSection("mount.data")));
 		
 		// Powerup settings;
 		file.set("powerup.blacklist", this.powerupBlacklist);
@@ -730,5 +742,14 @@ public abstract class Racecourse {
 	 */
 	public List<String> getPowerupBlackList() {
 		return this.powerupBlacklist;
+	}
+
+	/**
+	 * Gets the custom data for the mount type for this racecourse
+	 * 
+	 * @return the custom mount type data
+	 */
+	public MountTypeData getMountData() {
+		return this.mountTypeData;
 	}
 }

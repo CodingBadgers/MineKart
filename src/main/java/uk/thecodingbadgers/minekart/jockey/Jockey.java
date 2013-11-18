@@ -234,20 +234,7 @@ public class Jockey {
 		this.player.teleport(spawn);
 		this.respawnLocation = spawn;
 
-		// Make their mounts
-		this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, getRadomMountName(this.player.getName()));
-		this.mount.setProtected(true);
-		this.mount.addTrait(new ControllableMount(true));
-		this.mount.spawn(spawn);
-
-		// Set the owner of the mount to the jockey
-		Owner owner = this.mount.getTrait(Owner.class);
-		owner.setOwner(this.player.getName());
-
-		// Make the NPC controllable and mount the player
-		ControllableMount trait = this.mount.getTrait(ControllableMount.class);
-		trait.mount(this.player);
-		trait.setEnabled(false); // disable it until the race has started
+		createMount(getRadomMountName(this.player.getName()), spawn);
 
 		// Give the player a whip
 		ItemStack whip = new ItemStack(Material.STICK);
@@ -268,6 +255,26 @@ public class Jockey {
 		player.getInventory().setHeldItemSlot(0);
 	}
 
+	private void createMount(String mountName, Location spawn) {
+		// Make their mounts
+		this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, mountName);
+		this.mount.setProtected(true);
+		this.mount.addTrait(new ControllableMount(true));
+		this.mount.spawn(spawn);
+		this.race.getCourse().getMountData().applyMountData(this.mount.getEntity());
+
+		
+		// Set the owner of the mount to the jockey
+		Owner owner = this.mount.getTrait(Owner.class);
+		owner.setOwner(this.player.getName());
+
+		// Make the NPC controllable and mount the player
+		ControllableMount trait = this.mount.getTrait(ControllableMount.class);
+		trait.mount(this.player);
+		trait.setEnabled(false); // disable it until the race has started
+		
+	}
+
 	/**
 	 * Get a random name to be used by a mount
 	 * 
@@ -275,6 +282,7 @@ public class Jockey {
 	 */
 	private String getRadomMountName(String jockeyName) {
 
+		// TODO move to external file
 		String[] allNames = {"Mental Boy", "Nervous Sparxx", "OAP Money", "Clean Smoke", "Gnashing Panic", "Near Pride", "Bringing Action", "Nefarious Dusty", "Tornado Fall", "Jim's Depression", "Caramel Comedy", "Wally's Maiden", "Dirty Underwear", "Romantic Apple", "Wisby's Revenge", "Rabid Ruler", "Scared Sally", "Prancers Dream", "Tidy's Teen", "Losing Hope", "Whisky Galore", "Who's Dr", "Nintendon't", "Glue Factory", "Hooves McCoy", "Red Lightning", "Lazy Susan", "Woolly Toque", "Granola Bar", "Bloody Harvest", "Wet Blanket", "Actually Fast", "Horse IV", "See Spot Fly", "Fox in Socks", "One Way", "Beans", "To The Moon", "Bitter Blue", "Black Cadillac", "Landing Gear", "Not American", "Ringo Star", "Mystery Man", "Spits-A-Lot", "Hungry Hippo", "Chapter 13", "Almost Pearls", "The Lady", "Graceling", "Lockpick", "Pants", "Gold Pilot", "Fire's Star", "Simply Food", "Scrap Paper", "Scrap Paper X", "Doomsday Kettle", "Vygotsky's Plan", "German Tank", "Horse-Bear", "Steroids Galore", "Blindsight", "The Scientist", "Robo Horse", "Lightning Hoof", "Robo Horse II", "Robo Horse III", "Added Calcium", "Gnasty Gnorc", "Dream Weaver", "French Toast", "Sun Seeker", "El Horso", "My Little Pony", "Guy in a Suit", "Almost Dead", "Big Mac", "Gravity's Foe", "George", "Applesauce", "Iron Knight", "In the Morning", "Cleverfoot", "Peggy", "TDC Pizza", "Princess Tilly", "Emmerica" };
 
 		Random random = new Random();
@@ -402,21 +410,7 @@ public class Jockey {
 				jockey.player.setHealth(jockey.player.getMaxHealth());
 				jockey.player.setFireTicks(0);
 
-				// Make a new mount
-				jockey.mount = CitizensAPI.getNPCRegistry().createNPC(jockey.mountType, mountName);
-				jockey.mount.setProtected(true);
-				jockey.mount.addTrait(new ControllableMount(true));
-				jockey.mount.spawn(jockey.respawnLocation);
-
-				// Set the owner of the mount to the jockey
-				Owner owner = jockey.mount.getTrait(Owner.class);
-				owner.setOwner(jockey.player.getName());
-
-				// Make the NPC controllable and mount the player
-				ControllableMount trait = jockey.mount.getTrait(ControllableMount.class);
-				trait.mount(jockey.player);
-				trait.setEnabled(true);
-
+				jockey.createMount(mountName, jockey.respawnLocation);
 			}
 
 		}, 2L);
