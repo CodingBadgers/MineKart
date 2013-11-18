@@ -304,10 +304,12 @@ public class Jockey {
 	 */
 	public void onRaceStart() {
 
-		ControllableMount trait = this.mount.getTrait(ControllableMount.class);
-		trait.setEnabled(true);
-		this.startTime = System.currentTimeMillis();
-
+		if (this.mount != null) {
+			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
+			trait.setEnabled(true);
+			this.startTime = System.currentTimeMillis();
+		}
+		
 	}
 
 	/**
@@ -347,8 +349,11 @@ public class Jockey {
 
 		PotionEffect effect = new PotionEffect(PotionEffectType.SPEED, length * 20, speed, false);
 		this.player.addPotionEffect(effect, true);
-		this.mount.getBukkitEntity().addPotionEffect(effect, true);
-
+		
+		if (this.mount != null) {
+			this.mount.getBukkitEntity().addPotionEffect(effect, true);
+		}
+		
 	}
 
 	/**

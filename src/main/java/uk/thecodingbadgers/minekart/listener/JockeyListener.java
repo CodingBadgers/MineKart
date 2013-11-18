@@ -322,7 +322,7 @@ public class JockeyListener implements Listener {
 			
 			if (xDiff + zDiff != 0) {
 				event.setCancelled(true);
-			}			
+			}
 			return;
 		}
 		
