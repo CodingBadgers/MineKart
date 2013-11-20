@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -23,8 +24,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -64,6 +69,9 @@ public abstract class Racecourse {
 
 	/** A map of all registered single point locations */
 	protected Map<String, Location> singlePoints = null;
+	
+	/** A map of all registered point names and their block equivalents */
+	protected Map<String, ItemStack[]> pointMappings = null;
 
 	/** The file configuration used by this racecourse */
 	protected File fileConfiguration = null;
@@ -102,13 +110,14 @@ public abstract class Racecourse {
 
 		this.multiPoints = new HashMap<String, List<Location>>();
 		this.singlePoints = new HashMap<String, Location>();
+		this.pointMappings = new HashMap<String, ItemStack[]>();
 		this.powerupItems = new ArrayList<EntityPowerup>();
 		this.powerupBlacklist = new ArrayList<String>();
 
-		registerWarp(Bukkit.getConsoleSender(), "spawn", "add");
-		registerWarp(Bukkit.getConsoleSender(), "powerup", "add");
-		registerWarp(Bukkit.getConsoleSender(), "lobby", "set");
-		registerWarp(Bukkit.getConsoleSender(), "spectate", "set");
+		registerWarp(Bukkit.getConsoleSender(), "spawn", "add", new ItemStack(Material.DIAMOND_BLOCK));
+		registerWarp(Bukkit.getConsoleSender(), "powerup", "add", new ItemStack(Material.GOLD_BLOCK));
+		registerWarp(Bukkit.getConsoleSender(), "lobby", "set", new ItemStack(Material.IRON_BLOCK));
+		registerWarp(Bukkit.getConsoleSender(), "spectate", "set", new ItemStack(Material.LAPIS_BLOCK));
 	}
 
 	/**
@@ -277,7 +286,12 @@ public abstract class Racecourse {
 
 		// Mount settings
 		file.set("mount.type", this.mountType == EntityType.UNKNOWN ? "none" : this.mountType.getName());
-		file.set("mount.data", this.mountTypeData.getSaveData(file.getConfigurationSection("mount.data")));
+		
+		ConfigurationSection data = file.getConfigurationSection("mount.data");
+		if (data == null) {
+			data = file.createSection("mount.data");
+		}
+		file.set("mount.data", this.mountTypeData.getSaveData(data));
 		
 		// Powerup settings;
 		file.set("powerup.blacklist", this.powerupBlacklist);
@@ -385,6 +399,7 @@ public abstract class Racecourse {
 	 * @return The loaded region.
 	 */
 	protected Region loadRegion(FileConfiguration file, String path) {
+		LocalWorld world = BukkitUtil.getLocalWorld(this.world);
 		Double minX = file.getDouble(path + ".min.x");
 		Double minY = file.getDouble(path + ".min.y");
 		Double minZ = file.getDouble(path + ".min.z");
@@ -392,7 +407,7 @@ public abstract class Racecourse {
 		Double maxY = file.getDouble(path + ".max.y");
 		Double maxZ = file.getDouble(path + ".max.z");
 
-		return new CuboidRegion(new com.sk89q.worldedit.Vector(minX, minY, minZ), new com.sk89q.worldedit.Vector(maxX, maxY, maxZ));
+		return new CuboidRegion(world, new com.sk89q.worldedit.Vector(minX, minY, minZ), new com.sk89q.worldedit.Vector(maxX, maxY, maxZ));
 	}
 
 	/**
@@ -463,9 +478,12 @@ public abstract class Racecourse {
 	 * @param player The player registering the warp
 	 * @param name The name of the warp to register
 	 * @param type The type of warp to register, set or add.
+	 * @param materials the materials to set this warp to in the show warp command
 	 */
-	public void registerWarp(CommandSender player, String name, String type) {
+	public void registerWarp(CommandSender player, String name, String type, ItemStack... materials) {
 
+		this.pointMappings.put(name, materials);
+		
 		if (type.equalsIgnoreCase("set")) {
 			if (this.singlePoints.containsKey(name))
 				return;
@@ -750,5 +768,67 @@ public abstract class Racecourse {
 	 */
 	public MountTypeData getMountData() {
 		return this.mountTypeData;
+	}
+
+	/**
+	 * Shows the player specified all the warps for this racecourse
+	 * 
+	 * @param player the player to show the warps
+	 * @param warptype the warp type to show
+	 */
+	@SuppressWarnings("deprecation")
+	public boolean showWarps(final Player player, String warptype) {
+		
+		final Map<Location, BlockState> changes = new HashMap<Location, BlockState>();
+		
+		ItemStack[] materials = this.pointMappings.get(warptype);
+		
+		if (materials == null) {
+			materials = new ItemStack[] { new ItemStack(Material.WOOL) };
+		}
+		
+		if (this.singlePoints.containsKey(warptype)) {
+			Location loc = this.singlePoints.get(warptype);
+			changes.put(loc, loc.getBlock().getState());
+			
+			ItemStack material = materials[0];
+			player.sendBlockChange(loc, material.getType(), material.getData().getData());
+		} else if (this.multiPoints.containsKey(warptype)) {
+			for (Location loc : this.multiPoints.get(warptype)) {
+				changes.put(loc, loc.getBlock().getState());
+				
+				ItemStack material = materials[0];
+				player.sendBlockChange(loc, material.getType(), material.getData().getData());
+			}
+		} else {
+			return false;
+		}
+		
+		resetBlocks(player, changes, 5 * 20L);
+
+		return true;
+	}
+
+	@SuppressWarnings("deprecation")
+	protected void resetBlocks(final Player player, final Map<Location, BlockState> changes, final long resetTicks) {
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				for (Map.Entry<Location, BlockState> entry : changes.entrySet()) {
+					BlockState state = entry.getValue();
+
+					player.sendBlockChange(entry.getKey(), state.getType(), state.getData() != null ? state.getData().getData() : 0);
+				}
+			}
+		}.runTaskLater(MineKart.getInstance(), resetTicks);
+		
+	}
+	
+	protected Location toBukkit(BlockVector block) {
+		return new Location(world,
+							block.getBlockX(),
+							block.getBlockY(),
+							block.getBlockZ());
 	}
 }

@@ -125,6 +125,49 @@ public class CourseCommand {
 		MineKart.output(sender, " - /mk course <coursename> <enable|disable>");
 
 	}
+	
+	/**
+	 * Handle the /mk course <course> show[warp type] command
+	 * @param sender
+	 * @param args
+	 */
+	public static void handleShowCommand(CommandSender sender, String[] args) {
+
+		if (args.length == 3) {
+
+			String warptype = args[2].substring("show".length());
+			
+			if (!sender.hasPermission("minekart.course.show." + warptype)) {
+				MineKart.output(sender, "You do not have the required permission 'minekart.course.delete'");
+				return;
+			}
+			
+			if (!(sender instanceof Player)) {
+				MineKart.output(sender, "This command can only be used as a player");
+				return;
+			}
+			
+			Player player = (Player) sender;
+
+			final String coursename = args[1];
+			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
+			if (course == null) {
+				MineKart.output(sender, "Could not find a racecourse with the name '" + coursename + "'.");
+				MineKart.output(sender, "Use the command '/mk list' to see all racecourse's.");
+				return;
+			}
+			
+			if (course.showWarps(player, warptype)) {
+				MineKart.output(player, "Warps of type " + warptype + " are now being shown");
+			} else {
+				MineKart.output(player, "Warp type " + warptype + " is not known to MineKart");
+			}
+			return;
+		}
+
+		MineKart.output(sender, "Invalid command usage...");
+		MineKart.output(sender, " - /mk course <course> show[warp type]");
+	}
 
 	/**
 	 * Handle the /mk course <coursename> [command] command
@@ -155,6 +198,11 @@ public class CourseCommand {
 		
 		if (command.equalsIgnoreCase("enable") || command.equalsIgnoreCase("disable")) {
 			handleEnableCommand(sender, args);
+			return;
+		}
+		
+		if (command.startsWith("show")) {
+			handleShowCommand(sender, args);
 			return;
 		}
 		
