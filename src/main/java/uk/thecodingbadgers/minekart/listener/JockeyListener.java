@@ -454,6 +454,10 @@ public class JockeyListener implements Listener {
 
 		ItemStack powerupItem = player.getInventory().getItem(Powerup.POWERUP_SLOT);
 
+		if (powerupItem == null) {
+			return;
+		}
+		
 		if (powerupItem.isSimilar(event.getItemDrop().getItemStack())) {
 			player.getInventory().setItem(Powerup.POWERUP_SLOT, new ItemStack(Material.AIR));
 			player.updateInventory();
