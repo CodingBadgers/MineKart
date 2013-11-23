@@ -10,9 +10,9 @@ import org.bukkit.entity.Horse.Variant;
 
 public class HorseMountData extends DefaultMountData {
 
-	private Color colour;
-	private Style style;
-	private Variant variant;
+	private Color colour = Color.BLACK;
+	private Style style = Style.NONE;
+	private Variant variant = Variant.HORSE;
 
 	protected HorseMountData(EntityType type) {
 		super(type);

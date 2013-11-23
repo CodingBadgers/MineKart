@@ -153,6 +153,7 @@ public abstract class Racecourse {
 
 		this.name = name;
 		this.readyblock = Material.IRON_BLOCK;
+		this.mountTypeData = MineKart.getInstance().getMountDataRegistry().getMountData(mountType);
 
 		this.fileConfiguration = new File(MineKart.getRacecourseFolder() + File.separator + this.name + "." + this.type + ".yml");
 		if (!this.fileConfiguration.exists()) {
@@ -795,7 +796,7 @@ public abstract class Racecourse {
 		ItemStack[] materials = this.pointMappings.get(warptype);
 
 		if (materials == null) {
-			materials = new ItemStack[] {new ItemStack(Material.WOOL) };
+			materials = new ItemStack[] { new ItemStack(Material.WOOL) };
 		}
 
 		if (this.singlePoints.containsKey(warptype)) {

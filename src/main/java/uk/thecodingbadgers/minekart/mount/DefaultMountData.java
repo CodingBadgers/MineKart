@@ -7,7 +7,7 @@ import org.bukkit.entity.LivingEntity;
 
 public class DefaultMountData extends MountTypeData {
 
-	private double health;
+	private double health = 20;
 
 	protected DefaultMountData(EntityType type) {
 		super(type);
