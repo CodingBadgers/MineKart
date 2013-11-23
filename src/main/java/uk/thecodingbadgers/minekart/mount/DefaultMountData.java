@@ -8,7 +8,7 @@ import org.bukkit.entity.LivingEntity;
 public class DefaultMountData extends MountTypeData {
 
 	private double health;
-	
+
 	protected DefaultMountData(EntityType type) {
 		super(type);
 	}
@@ -24,20 +24,20 @@ public class DefaultMountData extends MountTypeData {
 		section.set("health", health);
 		return section;
 	}
-	
+
 	public double getCustomHealth() {
 		return health;
 	}
 
 	@Override
 	public void applyMountData(Entity entity) {
-		
+
 		if (!(entity instanceof LivingEntity)) {
 			return;
 		}
-		
+
 		LivingEntity lentity = (LivingEntity) entity;
-		
+
 		if (health > 0) {
 			System.out.println("Health property applied (" + health + ")");
 			lentity.setMaxHealth(health);

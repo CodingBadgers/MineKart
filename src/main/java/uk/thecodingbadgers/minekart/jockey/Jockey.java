@@ -42,7 +42,7 @@ public class Jockey {
 
 	/** The player which represents this jockey */
 	private Player player = null;
-	
+
 	/** The world edit instance of a player */
 	private LocalPlayer worldEditPlayer = null;
 
@@ -91,7 +91,7 @@ public class Jockey {
 		this.race = race;
 		this.exitLocaiton = oldLocation;
 		this.jockeyColor = getRandomColor();
-		
+
 		WorldEditPlugin worldEdit = MineKart.getInstance().getWorldEditPlugin();
 		this.worldEditPlayer = worldEdit.wrapPlayer(player);
 
@@ -189,12 +189,13 @@ public class Jockey {
 
 	/**
 	 * Get the jockeys color
+	 * 
 	 * @return The color used by the jockey
 	 */
 	public Color getJockeyColor() {
 		return this.jockeyColor;
 	}
-	
+
 	/**
 	 * Get a random color
 	 * 
@@ -263,12 +264,12 @@ public class Jockey {
 			this.mount.addTrait(new ControllableMount(true));
 			this.mount.spawn(spawn);
 			this.race.getCourse().getMountData().applyMountData(this.mount.getEntity());
-	
-			
+
+
 			// Set the owner of the mount to the jockey
 			Owner owner = this.mount.getTrait(Owner.class);
 			owner.setOwner(this.player.getName());
-	
+
 			// Make the NPC controllable and mount the player
 			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
 			trait.mount(this.player);
@@ -309,7 +310,7 @@ public class Jockey {
 			trait.setEnabled(true);
 			this.startTime = System.currentTimeMillis();
 		}
-		
+
 	}
 
 	/**
@@ -349,11 +350,11 @@ public class Jockey {
 
 		PotionEffect effect = new PotionEffect(PotionEffectType.SPEED, length * 20, speed, false);
 		this.player.addPotionEffect(effect, true);
-		
+
 		if (this.mount != null) {
 			this.mount.getBukkitEntity().addPotionEffect(effect, true);
 		}
-		
+
 	}
 
 	/**
@@ -365,14 +366,16 @@ public class Jockey {
 		return this.mount;
 	}
 
-   /**
-    * Get the mount type the jockey is using
-    * @return The entity type that represents the mount being used or Unknown if no mount is uses.
-    */
+	/**
+	 * Get the mount type the jockey is using
+	 * 
+	 * @return The entity type that represents the mount being used or Unknown
+	 *         if no mount is uses.
+	 */
 	public EntityType getMountType() {
 		return this.mountType;
 	}
-	
+
 	/**
 	 * Get the time the player has been in the race
 	 * 
@@ -409,7 +412,7 @@ public class Jockey {
 	public void respawn() {
 
 		final String mountName = this.mount == null ? "" : this.mount.getName();
-		
+
 		if (this.mount != null) {
 			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
 			trait.mount(this.player);
@@ -478,7 +481,7 @@ public class Jockey {
 	public boolean readyUp() {
 		return this.race.readyUp(this);
 	}
-	
+
 	/**
 	 * Get the world edit representation of a players location
 	 * 

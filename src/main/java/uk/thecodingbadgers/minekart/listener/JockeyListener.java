@@ -314,18 +314,18 @@ public class JockeyListener implements Listener {
 
 		Race race = jockey.getRace();
 		if (race.getState() == RaceState.Starting) {
-			
+
 			Location from = event.getFrom();
 			Location to = event.getTo();
 			int xDiff = from.getBlockX() - to.getBlockX();
 			int zDiff = from.getBlockZ() - to.getBlockZ();
-			
+
 			if (xDiff + zDiff != 0) {
 				event.setCancelled(true);
 			}
 			return;
 		}
-		
+
 		if (race.getState() != RaceState.InRace)
 			return;
 
@@ -334,22 +334,23 @@ public class JockeyListener implements Listener {
 
 		race.onJockeyMove(jockey);
 	}
-	
+
 	/**
 	 * Called when a players hunger level changes.
 	 * 
-	 * @param event The player hunger change event containing information on this event
+	 * @param event The player hunger change event containing information on
+	 *            this event
 	 */
 	@EventHandler
 	public void onPlayerHungerChange(FoodLevelChangeEvent event) {
-		
-		Player player = (Player)event.getEntity();
+
+		Player player = (Player) event.getEntity();
 		Jockey jockey = MineKart.getInstance().getJockey(player);
 		if (jockey == null)
 			return;
-		
+
 		event.setCancelled(true);
-		
+
 	}
 
 	/**
@@ -428,7 +429,7 @@ public class JockeyListener implements Listener {
 
 		JockeyPowerupPickupEvent powerupEvent = new JockeyPowerupPickupEvent(jockey, jockey.getRace(), powerup);
 		Bukkit.getPluginManager().callEvent(powerupEvent);
-		
+
 		jockey.getRace().getCourse().removePowerup(item.getLocation());
 		powerupEvent.getPowerup().onPickup(jockey);
 	}
@@ -459,16 +460,17 @@ public class JockeyListener implements Listener {
 			jockey.setPowerup(null);
 		}
 	}
-	
+
 	/**
 	 * Called when a player executes a command.
 	 * 
-	 * @param event The pre-process command event containing information on this event
+	 * @param event The pre-process command event containing information on
+	 *            this event
 	 */
 	@SuppressWarnings("unchecked")
 	@EventHandler
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
-		
+
 		final Player player = event.getPlayer();
 		if (player.hasPermission("minekart.command.override")) {
 			return;
@@ -478,30 +480,29 @@ public class JockeyListener implements Listener {
 		if (jockey == null) {
 			return;
 		}
-		
+
 		MineKart mineKart = MineKart.getInstance();
 		Map<String, Map<String, Object>> commands = mineKart.getDescription().getCommands();
-		
+
 		final String requestedCommand = event.getMessage().substring(1);
 
 		// Is it a command used by this plugin?
-		for (Entry<String, Map<String, Object>> command : commands.entrySet())
-		{
+		for (Entry<String, Map<String, Object>> command : commands.entrySet()) {
 			if (requestedCommand.startsWith(command.getKey())) {
 				return;
 			}
-			
+
 			List<String> allias = (List<String>) command.getValue().get("aliases");
-			for (String alli : (List<String>)allias) {
+			for (String alli : (List<String>) allias) {
 				if (requestedCommand.startsWith(alli)) {
 					return;
 				}
 			}
 		}
-		
+
 		MineKart.output(player, "You can not use that command whilst in MineKart...");
-		event.setCancelled(true);		
+		event.setCancelled(true);
 	}
-	
+
 
 }

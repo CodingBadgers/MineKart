@@ -79,8 +79,8 @@ public final class MineKart extends JavaPlugin {
 
 	/** Racecourse type registry */
 	private RacecourseTypeRegistry racecourseTypeRegistry;
-	
-	/** Mount data registry*/
+
+	/** Mount data registry */
 	private MountDataRegistry mountDataRegistry;
 
 	/**
@@ -92,7 +92,7 @@ public final class MineKart extends JavaPlugin {
 		MineKart.instance = this;
 
 		/* Setup plugin folder */
-		
+
 		// Setup the folder which will hold all the racecourse configs
 		MineKart.racecourseFolderPath = new File(this.getDataFolder() + File.separator + "courses");
 		if (!MineKart.racecourseFolderPath.exists()) {
@@ -129,14 +129,14 @@ public final class MineKart extends JavaPlugin {
 		this.racecourseTypeRegistry = new RacecourseTypeRegistry();
 		this.racecourseTypeRegistry.registerRacecourseType("lap", RacecourseLap.class);
 		this.racecourseTypeRegistry.registerRacecourseType("checkpoint", RacecourseCheckpoint.class);
-		
+
 		this.mountDataRegistry = new MountDataRegistry();
 		this.mountDataRegistry.registerCustomMountData(EntityType.HORSE, HorseMountData.class);
-		
+
 		registerListeners();
 
 		getCommand("minekart").setExecutor(new CommandHandler());
-		
+
 		this.courses = new HashMap<String, Racecourse>();
 
 		loadPowerups();
@@ -160,7 +160,7 @@ public final class MineKart extends JavaPlugin {
 	 * Gets the active instance of the MineKart plugin.
 	 * 
 	 * @return The instance of the MineKart plugin, or null if the plugin
-	 * 			isn't enabled.
+	 *         isn't enabled.
 	 */
 	public static MineKart getInstance() {
 		return MineKart.instance;
@@ -201,7 +201,7 @@ public final class MineKart extends JavaPlugin {
 	public RacecourseTypeRegistry getRacecourseTypeRegistry() {
 		return this.racecourseTypeRegistry;
 	}
-	
+
 	/**
 	 * Get the folder of which all racecourse configs reside
 	 * 
@@ -339,7 +339,7 @@ public final class MineKart extends JavaPlugin {
 		if (MineKart.getInstance() == null) {
 			return;
 		}
-		
+
 		sender.sendMessage(ChatColor.DARK_GREEN + "[MineKart] " + ChatColor.WHITE + message);
 	}
 
@@ -350,7 +350,7 @@ public final class MineKart extends JavaPlugin {
 		if (MineKart.getInstance() == null) {
 			return;
 		}
-		
+
 		to.sendMessage(ChatColor.DARK_GREEN + "[MineKart] " + ChatColor.YELLOW + "[" + from.getName() + "] " + ChatColor.WHITE + message);
 	}
 
@@ -370,13 +370,13 @@ public final class MineKart extends JavaPlugin {
 		}
 
 		Racecourse newCourse = this.racecourseTypeRegistry.createRacecourse(type);
-		
+
 		if (newCourse == null) {
 			MineKart.output(player, "This racecourse type is not yet supported.");
 			MineKart.output(player, "Creation of '" + name + "' failed.");
 			return;
 		}
-		
+
 		if (!newCourse.setup(player, name)) {
 			MineKart.output(player, "Failed to setup new arena.");
 			MineKart.output(player, "Creation of '" + name + "' failed.");
@@ -390,23 +390,24 @@ public final class MineKart extends JavaPlugin {
 		newCourse.outputRequirements(player);
 
 	}
-	
+
 	/**
 	 * Delete a racecourse
+	 * 
 	 * @param sender The thing executing the command
 	 * @param course The course to delete.
 	 */
 	public void deleteCourse(CommandSender sender, Racecourse course) {
-		
+
 		// remove it from memory
 		this.courses.remove(course);
-		
+
 		// remove it from file
 		course.delete();
-			
+
 		sender.sendMessage("The racecourse '" + course.getName() + "' has been deleted...");
 		course = null;
-		
+
 	}
 
 	/**
@@ -459,6 +460,7 @@ public final class MineKart extends JavaPlugin {
 
 	/**
 	 * Converts milliseconds into user friendly time format
+	 * 
 	 * @param raceTime The time to convert
 	 * @return A string representing the time in a nice format
 	 */
@@ -470,6 +472,7 @@ public final class MineKart extends JavaPlugin {
 
 	/**
 	 * Get a random powerup
+	 * 
 	 * @param course The race course the powerup will be long too.
 	 * @return The random powerup instance
 	 */
@@ -484,7 +487,7 @@ public final class MineKart extends JavaPlugin {
 			if (course.getPowerupBlackList().contains(p.getName().toLowerCase())) {
 				continue;
 			}
-			
+
 			allowedPowerups.add(p);
 		}
 

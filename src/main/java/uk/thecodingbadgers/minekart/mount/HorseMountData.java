@@ -13,7 +13,7 @@ public class HorseMountData extends DefaultMountData {
 	private Color colour;
 	private Style style;
 	private Variant variant;
-	
+
 	protected HorseMountData(EntityType type) {
 		super(type);
 	}
@@ -33,25 +33,25 @@ public class HorseMountData extends DefaultMountData {
 		section.set("variant", variant.name());
 		return super.getSaveData(section);
 	}
-	
+
 	@Override
 	public void applyMountData(Entity npc) {
 		super.applyMountData(npc);
-		
+
 		if (!(npc instanceof Horse)) {
 			return;
 		}
-		
+
 		Horse horse = (Horse) npc;
-		
+
 		if (colour != null) {
 			horse.setColor(colour);
 		}
-		
+
 		if (style != null) {
 			horse.setStyle(style);
 		}
-		
+
 		if (variant != null) {
 			horse.setVariant(variant);
 		}
@@ -60,11 +60,11 @@ public class HorseMountData extends DefaultMountData {
 	public Color getHorseColor() {
 		return colour;
 	}
-	
+
 	public Style getHorseStyle() {
 		return style;
 	}
-	
+
 	public Variant getHorseVariant() {
 		return variant;
 	}

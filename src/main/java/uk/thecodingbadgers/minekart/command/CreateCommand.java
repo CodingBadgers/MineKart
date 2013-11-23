@@ -87,15 +87,15 @@ public class CreateCommand {
 			if (setting.equalsIgnoreCase("type")) {
 
 				EntityType mountType = EntityType.UNKNOWN;
-				
+
 				if (!value.equalsIgnoreCase("none")) {
-					
+
 					mountType = EntityType.fromName(value);
 					if (mountType == null) {
 						MineKart.output(sender, "Unknown mount type '" + value + "'");
 						return;
 					}
-	
+
 					if (!mountType.isAlive()) {
 						MineKart.output(sender, "You can only set mounts to be living entities.");
 						return;

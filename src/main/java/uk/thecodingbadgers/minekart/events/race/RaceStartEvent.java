@@ -31,7 +31,7 @@ public class RaceStartEvent extends RaceEvent {
 
 	/**
 	 * Gets the jockeys that are in the race.
-	 *
+	 * 
 	 * @return a immutable set of the jockeys in the race
 	 */
 	public Set<Jockey> getJockeys() {

@@ -21,23 +21,23 @@ public class FakeBlockChangeDelagator implements BlockChangeDelagator {
 
 	private List<BlockState> changes = new ArrayList<BlockState>();
 	private Player player;
-	
+
 	public FakeBlockChangeDelagator(Player player) {
 		this.player = player;
 	}
-	
+
 	@Override
 	public void setBlock(Location loc, Material mat, MaterialData data) {
 		setBlock0(loc, mat, data, true);
 	}
-	
+
 	private void setBlock0(Location loc, Material mat, MaterialData data, boolean log) {
 		Block block = loc.getBlock();
-		
+
 		if (log) {
 			changes.add(block.getState());
 		}
-		
+
 		player.sendBlockChange(loc, mat, data.getData());
 	}
 
@@ -48,7 +48,7 @@ public class FakeBlockChangeDelagator implements BlockChangeDelagator {
 
 	private void setBlock0(Location loc, Material mat, boolean log) {
 		Block block = loc.getBlock();
-		
+
 		if (log) {
 			changes.add(block.getState());
 		}
@@ -77,7 +77,7 @@ public class FakeBlockChangeDelagator implements BlockChangeDelagator {
 			public void run() {
 				resetChanges();
 			}
-			
+
 		}.runTaskLater(MineKart.getInstance(), ticks);
 	}
 

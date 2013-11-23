@@ -12,7 +12,7 @@ public abstract class RaceEvent extends MineKartEvent {
 
 	/**
 	 * Instantiates a new race event.
-	 *
+	 * 
 	 * @param race the race
 	 */
 	public RaceEvent(Race race) {
@@ -21,7 +21,7 @@ public abstract class RaceEvent extends MineKartEvent {
 
 	/**
 	 * Gets the race that was affected.
-	 *
+	 * 
 	 * @return the race that was affected
 	 */
 	public Race getRace() {

@@ -39,7 +39,7 @@ public class CourseCommand {
 				MineKart.output(sender, "Use the command '/mk list' to see all racecourse's.");
 				return;
 			}
-			
+
 			MineKart mineKart = MineKart.getInstance();
 			mineKart.createCourse(player, name, args[3]);
 			return;
@@ -48,7 +48,7 @@ public class CourseCommand {
 		MineKart.output(player, "Invalid command usage...");
 		MineKart.output(player, " - /mk course <coursename> create <type>");
 	}
-	
+
 	/**
 	 * Handle the /mk course <coursename> delete command
 	 * 
@@ -81,7 +81,7 @@ public class CourseCommand {
 		MineKart.output(sender, " - /mk course <coursename> delete");
 
 	}
-	
+
 	/**
 	 * Handle the /mk course <coursename> <enable|disable> command
 	 * 
@@ -125,9 +125,10 @@ public class CourseCommand {
 		MineKart.output(sender, " - /mk course <coursename> <enable|disable>");
 
 	}
-	
+
 	/**
 	 * Handle the /mk course <course> show[warp type] command
+	 * 
 	 * @param sender
 	 * @param args
 	 */
@@ -136,17 +137,17 @@ public class CourseCommand {
 		if (args.length == 3) {
 
 			String warptype = args[2].substring("show".length());
-			
+
 			if (!sender.hasPermission("minekart.course.show." + warptype)) {
 				MineKart.output(sender, "You do not have the required permission 'minekart.course.delete'");
 				return;
 			}
-			
+
 			if (!(sender instanceof Player)) {
 				MineKart.output(sender, "This command can only be used as a player");
 				return;
 			}
-			
+
 			Player player = (Player) sender;
 
 			final String coursename = args[1];
@@ -156,7 +157,7 @@ public class CourseCommand {
 				MineKart.output(sender, "Use the command '/mk list' to see all racecourse's.");
 				return;
 			}
-			
+
 			if (course.showWarps(player, warptype)) {
 				MineKart.output(player, "Warps of type " + warptype + " are now being shown");
 			} else {
@@ -176,39 +177,39 @@ public class CourseCommand {
 	 * @param args The command args
 	 */
 	public static void handleCourseCommand(CommandSender sender, String[] args) {
-		
+
 		if (args.length <= 2) {
 			MineKart.output(sender, "Invalid command usage...");
 			MineKart.output(sender, " - /mk course <coursename> <command>");
 			MineKart.output(sender, "command: create, delete, enable, disable");
 			return;
 		}
-		
+
 		final String command = args[2];
-		
+
 		if (command.equalsIgnoreCase("create")) {
 			handleCreateCommand(sender, args);
 			return;
 		}
-		
+
 		if (command.equalsIgnoreCase("delete")) {
 			handleDeleteCommand(sender, args);
 			return;
 		}
-		
+
 		if (command.equalsIgnoreCase("enable") || command.equalsIgnoreCase("disable")) {
 			handleEnableCommand(sender, args);
 			return;
 		}
-		
+
 		if (command.startsWith("show")) {
 			handleShowCommand(sender, args);
 			return;
 		}
-		
+
 		MineKart.output(sender, "Invalid command usage...");
 		MineKart.output(sender, " - /mk course <coursename> <command>");
-		MineKart.output(sender, "command: create, delete, enable, disable");	
+		MineKart.output(sender, "command: create, delete, enable, disable");
 	}
 
 }

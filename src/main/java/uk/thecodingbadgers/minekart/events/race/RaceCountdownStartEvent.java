@@ -33,25 +33,25 @@ public class RaceCountdownStartEvent extends RaceEvent {
 
 	/**
 	 * Gets the jockeys that are in the race.
-	 *
+	 * 
 	 * @return a immutable set of the jockeys in the race
 	 */
 	public Set<Jockey> getJockeys() {
 		return ImmutableSet.copyOf(race.getJockeys());
 	}
-	
+
 	/**
 	 * Gets the coundown length.
-	 *
+	 * 
 	 * @return the coundown length for the race
 	 */
 	public int getCoundownLength() {
 		return length;
 	}
-	
+
 	/**
 	 * Sets the countdown length.
-	 *
+	 * 
 	 * @param length the new countdown length for the race
 	 */
 	public void setCountdownLength(int length) {

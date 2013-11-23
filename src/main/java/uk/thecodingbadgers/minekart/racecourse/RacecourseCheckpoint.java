@@ -41,13 +41,13 @@ import com.sk89q.worldedit.regions.Region;
  * 
  */
 public class RacecourseCheckpoint extends Racecourse {
-	
+
 	class CheckpointTimeData {
 		public CheckpointTimeData(int checkpoint, long time) {
 			this.checkpoint = checkpoint;
 			this.time = time;
 		}
-		
+
 		public int checkpoint;
 		public long time;
 	}
@@ -57,7 +57,7 @@ public class RacecourseCheckpoint extends Racecourse {
 
 	/** A map of a jockey and their next checkpoint id */
 	protected Map<Jockey, Integer> targetCheckpoints = null;
-	
+
 	/** A map of a jockey and their checkpoint time data */
 	protected Map<Jockey, CheckpointTimeData> checkpointTime = null;
 
@@ -228,7 +228,7 @@ public class RacecourseCheckpoint extends Racecourse {
 
 		if (race.getState() != RaceState.InRace)
 			return false;
-		
+
 		// player has finished the race
 		if (!this.targetCheckpoints.containsKey(jockey))
 			return true;
@@ -239,13 +239,13 @@ public class RacecourseCheckpoint extends Racecourse {
 		com.sk89q.worldedit.Vector position = jockey.getWorldEditLocation();
 
 		if (targetCheckpoint.contains(position)) {
-			
+
 			//
 			CheckpointTimeData data = this.checkpointTime.get(jockey);
 			data.checkpoint = targetCheckpointIndex;
 			data.time = jockey.getRaceTime();
-			updateRankings(race);	
-			
+			updateRankings(race);
+
 			int standing = 1;
 			List<Jockey> rankings = race.getRankings();
 			for (Jockey j : rankings) {
@@ -262,20 +262,20 @@ public class RacecourseCheckpoint extends Racecourse {
 
 			JockeyCheckpointReachedEvent event = new JockeyCheckpointReachedEvent(jockey, race, targetCheckpointIndex);
 			Bukkit.getPluginManager().callEvent(event);
-			
+
 			if (targetCheckpointIndex < this.checkPoints.size() - 1) {
-				
+
 				Player player = jockey.getPlayer();
 				Location location = player.getLocation();
-				
+
 				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);
 				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(data.time));
-			
+
 				player.playSound(location, Sound.ORB_PICKUP, 1.0f, 1.0f);
 
 				float lapComplete = 1.0f / ((float) this.checkPoints.size() / (float) (targetCheckpointIndex + 1.0f));
 				player.setExp(lapComplete);
-			
+
 			} else {
 				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(data.time));
 				this.targetCheckpoints.remove(jockey);
@@ -288,14 +288,15 @@ public class RacecourseCheckpoint extends Racecourse {
 
 	/**
 	 * Update the rankings of the race, based upon checkpoint/time progress
+	 * 
 	 * @param race The race in progress
 	 */
 	private void updateRankings(Race race) {
-		
+
 		List<Jockey> ranks = new ArrayList<Jockey>();
-		
+
 		for (int checkpointIndex = this.checkPoints.size() - 1; checkpointIndex >= 0; --checkpointIndex) {
-			
+
 			// Get all jockeys at this checkpoint
 			Map<Jockey, CheckpointTimeData> checkpointRanks = new HashMap<Jockey, CheckpointTimeData>();
 			for (Jockey jockey : race.getJockeys()) {
@@ -304,29 +305,29 @@ public class RacecourseCheckpoint extends Racecourse {
 					checkpointRanks.put(jockey, data);
 				}
 			}
-			
+
 			// Sort the data by time
 			while (!checkpointRanks.isEmpty()) {
-				
+
 				Entry<Jockey, CheckpointTimeData> fastest = null;
 				for (Entry<Jockey, CheckpointTimeData> jockeyData : checkpointRanks.entrySet()) {
 					if (fastest == null) {
 						fastest = jockeyData;
 						continue;
 					}
-					
+
 					if (jockeyData.getValue().time < fastest.getValue().time) {
 						fastest = jockeyData;
 					}
 				}
-				
+
 				ranks.add(fastest.getKey());
 				checkpointRanks.remove(fastest.getKey());
 			}
 		}
-		
+
 		race.setRankings(ranks);
-		
+
 	}
 
 	/**
@@ -349,40 +350,40 @@ public class RacecourseCheckpoint extends Racecourse {
 	public boolean showWarps(final Player player, String warptype) {
 		return showWarps(BlockDelagatorFactory.createChangeDelagator("fake", player), warptype);
 	}
-	
+
 	@Override
 	protected boolean showWarps(BlockChangeDelagator delagator, String warptype) {
 		if (super.showWarps(delagator, warptype)) {
 			return true;
 		}
-		
+
 		final Map<Location, BlockState> changes = new HashMap<Location, BlockState>();
-		
+
 		if (warptype.startsWith("checkpoint")) {
 			int blockIndex = 0;
 			ItemStack[] materials = this.pointMappings.get("checkpoint");
-			
+
 			for (Region checkpoint : this.checkPoints) {
 				for (BlockVector block : checkpoint) {
 					ItemStack mat = materials[blockIndex];
 					Location loc = toBukkit(block);
-					
+
 					if (loc.getBlock().getType() != Material.AIR) {
 						continue;
 					}
-						
+
 					changes.put(loc, loc.getBlock().getState());
-					
+
 					delagator.setBlock(loc, mat.getType(), mat.getData());
-					
+
 					blockIndex++;
-					
+
 					if (blockIndex >= materials.length) {
 						blockIndex = 0;
 					}
 				}
 			}
-			
+
 		} else {
 			return false;
 		}

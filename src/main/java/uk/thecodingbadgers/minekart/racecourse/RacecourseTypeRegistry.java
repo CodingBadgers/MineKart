@@ -20,12 +20,13 @@ public class RacecourseTypeRegistry {
 	 * Creates a racecourse by its string id.
 	 * 
 	 * @param racecoursetype the string id
-	 * @return the new racecourse instance, or null if the id is not registered
+	 * @return the new racecourse instance, or null if the id is not
+	 *         registered
 	 * @throws NullPointerException if the string id is null
 	 */
 	public Racecourse createRacecourse(String racecoursetype) throws NullPointerException {
 		Validate.notNull(racecoursetype, "Racecourse type id cannot be null");
-		
+
 		try {
 			Class<? extends Racecourse> clazz = racecourseTypes.get(racecoursetype);
 
@@ -50,10 +51,10 @@ public class RacecourseTypeRegistry {
 	 * @param clazz the class to handle the racecourse
 	 * @throws NullPointerException if either argument is null
 	 */
-	public void registerRacecourseType(String id, Class<? extends Racecourse> clazz) throws NullPointerException {		
+	public void registerRacecourseType(String id, Class<? extends Racecourse> clazz) throws NullPointerException {
 		Validate.notNull(id, "Racecourse type id cannot be null");
 		Validate.notNull(clazz, "Racecourse type clazz cannot be null");
-		
+
 		racecourseTypes.put(id, clazz);
 	}
 

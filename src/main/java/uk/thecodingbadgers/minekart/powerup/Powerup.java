@@ -123,7 +123,7 @@ public abstract class Powerup {
 	public int getAmount() {
 		return this.amount;
 	}
-	
+
 	/**
 	 * Gets the name of the powerup
 	 * 

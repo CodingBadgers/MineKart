@@ -39,8 +39,7 @@ public class JockeyCheckpointReachedEvent extends JockeyEvent {
 	}
 
 	/**
-	 * Gets the checkpoint index the jockey reached, not this is zero
-	 * indexed.
+	 * Gets the checkpoint index the jockey reached, not this is zero indexed.
 	 * 
 	 * @return the checkpoint
 	 */

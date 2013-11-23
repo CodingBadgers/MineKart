@@ -66,7 +66,7 @@ public class PowerupRegistry {
 	/**
 	 * Register a new custom powerup type.
 	 * <p>
-	 * Along with abstract methods a powerup must have a public no argument 
+	 * Along with abstract methods a powerup must have a public no argument
 	 * constructor and a public copy constructor.
 	 * 
 	 * @param id the string id of the type, for use in the config file
@@ -76,10 +76,10 @@ public class PowerupRegistry {
 	public void registerPowerupType(String id, Class<? extends Powerup> clazz) throws IllegalArgumentException {
 		checkForConstructor(clazz, "A powerup must have a valid public no arguement constructor");
 		checkForConstructor(clazz, "A powerup must have a valid public copy constructor constructor", clazz);
-		
+
 		powerupTypes.put(id, clazz);
 	}
-	
+
 	private void checkForConstructor(Class<?> clazz, String error, Class<?>... arguements) {
 		try {
 			Validate.isTrue(clazz.getConstructor(arguements) != null, error);

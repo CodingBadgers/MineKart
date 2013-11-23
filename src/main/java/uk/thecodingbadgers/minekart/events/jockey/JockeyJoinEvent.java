@@ -26,10 +26,10 @@ public class JockeyJoinEvent extends JockeyEvent {
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-	
+
 	/**
 	 * Gets the race the jockey has joined.
-	 *
+	 * 
 	 * @return the race the jockey has joined
 	 */
 	public Race getRace() {

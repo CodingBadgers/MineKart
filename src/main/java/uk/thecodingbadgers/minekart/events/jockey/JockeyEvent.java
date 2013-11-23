@@ -13,10 +13,10 @@ public abstract class JockeyEvent extends MineKartEvent {
 	public JockeyEvent(Jockey jockey) {
 		this.jockey = jockey;
 	}
-	
+
 	/**
 	 * Gets the {@link Jockey} that caused this event.
-	 *
+	 * 
 	 * @return the {@link Jockey} that caused the event
 	 */
 	public Jockey getJockey() {

@@ -75,7 +75,7 @@ public abstract class Racecourse {
 
 	/** A map of all registered single point locations */
 	protected Map<String, Location> singlePoints = null;
-	
+
 	/** A map of all registered point names and their block equivalents */
 	protected Map<String, ItemStack[]> pointMappings = null;
 
@@ -93,7 +93,7 @@ public abstract class Racecourse {
 
 	/** All spawned powerupItems */
 	protected List<EntityPowerup> powerupItems = null;
-	
+
 	/** All black listed powerups */
 	protected List<String> powerupBlacklist = null;
 
@@ -175,7 +175,7 @@ public abstract class Racecourse {
 
 		return true;
 	}
-	
+
 	/**
 	 * Delete this racecourse
 	 */
@@ -213,7 +213,7 @@ public abstract class Racecourse {
 
 		// Course name
 		this.name = file.getString("racecourse.name");
-		
+
 		// Enabled State
 		this.enabled = file.getBoolean("racecourse.enabled", this.enabled);
 
@@ -230,15 +230,15 @@ public abstract class Racecourse {
 		if (section != null) {
 			this.mountTypeData.loadData(section);
 		}
-		
+
 		// Powerup settings
 		List<String> blacklistPowerup = file.getStringList("powerup.blacklist");
-		
+
 		this.powerupBlacklist = new ArrayList<String>();
 		for (String powerup : blacklistPowerup) {
 			this.powerupBlacklist.add(powerup.toLowerCase());
 		}
-		
+
 		// Lobby settings
 		this.readyblock = Material.getMaterial(file.getString("lobby.readyblock", "IRON_BLOCK"));
 		this.minimumNoofPlayers = file.getInt("racecourse.minimumJockeys", 2);
@@ -282,7 +282,7 @@ public abstract class Racecourse {
 
 		// Course name
 		file.set("racecourse.name", this.name);
-		
+
 		// Enabled State
 		file.set("racecourse.enabled", this.enabled);
 
@@ -292,13 +292,13 @@ public abstract class Racecourse {
 
 		// Mount settings
 		file.set("mount.type", this.mountType == EntityType.UNKNOWN ? "none" : this.mountType.getName());
-		
+
 		ConfigurationSection data = file.getConfigurationSection("mount.data");
 		if (data == null) {
 			data = file.createSection("mount.data");
 		}
 		file.set("mount.data", this.mountTypeData.getSaveData(data));
-		
+
 		// Powerup settings;
 		file.set("powerup.blacklist", this.powerupBlacklist);
 
@@ -484,12 +484,13 @@ public abstract class Racecourse {
 	 * @param player The player registering the warp
 	 * @param name The name of the warp to register
 	 * @param type The type of warp to register, set or add.
-	 * @param materials the materials to set this warp to in the show warp command
+	 * @param materials the materials to set this warp to in the show warp
+	 *            command
 	 */
 	public void registerWarp(CommandSender player, String name, String type, ItemStack... materials) {
 
 		this.pointMappings.put(name, materials);
-		
+
 		if (type.equalsIgnoreCase("set")) {
 			if (this.singlePoints.containsKey(name))
 				return;
@@ -649,13 +650,13 @@ public abstract class Racecourse {
 		powerup.addUnsafeEnchantment(Enchantment.PROTECTION_FIRE, 0);
 
 		EntityPowerup powerupEntity = new EntityPowerup(location, powerup);
-		CraftWorld world = ((CraftWorld)location.getWorld());
+		CraftWorld world = ((CraftWorld) location.getWorld());
 		world.getHandle().addEntity(powerupEntity);
-		
+
 		this.powerupItems.add(powerupEntity);
 
 		location.getWorld().playSound(location, Sound.FIREWORK_TWINKLE, 1.0f, 1.0f);
-		
+
 		Firework firework = world.spawn(location, Firework.class);
 		FireworkEffect effect = FireworkEffect.builder().withColor(Color.RED).build();
 		FireworkMeta fireworkMeta = firework.getFireworkMeta();
@@ -680,7 +681,8 @@ public abstract class Racecourse {
 	/**
 	 * Get the mount type this race course uses
 	 * 
-	 * @return The EntityType that this course uses as a mount (Unknown means none)
+	 * @return The EntityType that this course uses as a mount (Unknown means
+	 *         none)
 	 */
 	public EntityType getMountType() {
 		return this.mountType;
@@ -718,6 +720,7 @@ public abstract class Racecourse {
 
 	/**
 	 * Remove a powerup at a given location.
+	 * 
 	 * @param location The location of the powerup
 	 */
 	public void removePowerup(Location location) {
@@ -791,33 +794,33 @@ public abstract class Racecourse {
 	public boolean showWarps(final Player player, String warptype) {
 		return showWarps(BlockDelagatorFactory.createChangeDelagator("fake", player), warptype);
 	}
-	
+
 	protected boolean showWarps(BlockChangeDelagator delagator, String warptype) {
 		final Map<Location, BlockState> changes = new HashMap<Location, BlockState>();
-		
+
 		ItemStack[] materials = this.pointMappings.get(warptype);
-		
+
 		if (materials == null) {
-			materials = new ItemStack[] { new ItemStack(Material.WOOL) };
+			materials = new ItemStack[] {new ItemStack(Material.WOOL) };
 		}
-		
+
 		if (this.singlePoints.containsKey(warptype)) {
 			Location loc = this.singlePoints.get(warptype);
 			changes.put(loc, loc.getBlock().getState());
-			
+
 			ItemStack material = materials[0];
 			delagator.setBlock(loc, material.getType(), material.getData());
 		} else if (this.multiPoints.containsKey(warptype)) {
 			for (Location loc : this.multiPoints.get(warptype)) {
 				changes.put(loc, loc.getBlock().getState());
-				
+
 				ItemStack material = materials[0];
 				delagator.setBlock(loc, material.getType(), material.getData());
 			}
 		} else {
 			return false;
 		}
-		
+
 		delagator.delayResetChanges(5 * 20L);
 		return true;
 	}
@@ -835,13 +838,10 @@ public abstract class Racecourse {
 				}
 			}
 		}.runTaskLater(MineKart.getInstance(), resetTicks);
-		
+
 	}
-	
+
 	protected Location toBukkit(BlockVector block) {
-		return new Location(world,
-							block.getBlockX(),
-							block.getBlockY(),
-							block.getBlockZ());
+		return new Location(world, block.getBlockX(), block.getBlockY(), block.getBlockZ());
 	}
 }

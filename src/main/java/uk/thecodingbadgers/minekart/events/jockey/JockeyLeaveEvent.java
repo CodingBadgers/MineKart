@@ -23,6 +23,5 @@ public class JockeyLeaveEvent extends JockeyEvent {
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-	
-}
 
+}

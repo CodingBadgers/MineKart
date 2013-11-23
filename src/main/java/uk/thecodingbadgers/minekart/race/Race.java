@@ -53,19 +53,19 @@ public abstract class Race {
 
 	/** All the jockeys that are marked as ready */
 	protected Set<String> ready = new HashSet<String>();
-	
+
 	/** The winning jockey */
 	protected List<Jockey> winners = null;
-	
+
 	/** The current position of the jockeys in the race */
 	protected List<Jockey> raceRankings = new ArrayList<Jockey>();
-	
+
 	/** The timer used when ending a race */
 	BukkitTask endTimer = null;
-	
+
 	/** Scoreboards for the race */
 	ScoreboardManager scoreboardManager = null;
-	
+
 	/**
 	 * Class constructor
 	 */
@@ -89,7 +89,7 @@ public abstract class Race {
 	 * @param player The player who will become the jockey
 	 */
 	public void addJockey(Player player) {
-		
+
 		if (!this.course.isEnabled()) {
 			MineKart.output(player, "This race course is disabled.");
 			return;
@@ -120,7 +120,7 @@ public abstract class Race {
 
 		JockeyJoinEvent event = new JockeyJoinEvent(newJockey, this);
 		Bukkit.getPluginManager().callEvent(event);
-		
+
 		// autostart if game is full
 		List<Location> spawns = this.course.getMultiWarp("spawn");
 		if (spawns.size() == this.jockeys.size()) {
@@ -139,7 +139,7 @@ public abstract class Race {
 
 		RaceCountdownStartEvent event = new RaceCountdownStartEvent(this, 3);
 		Bukkit.getPluginManager().callEvent(event);
-		
+
 		List<Location> spawns = this.course.getMultiWarp("spawn");
 		int spawnIndex = spawns.size() - 1;
 
@@ -206,7 +206,7 @@ public abstract class Race {
 
 		RaceStartEvent event = new RaceStartEvent(this);
 		Bukkit.getPluginManager().callEvent(event);
-		
+
 		for (Jockey jockey : this.jockeys.values()) {
 			this.raceRankings.add(jockey);
 			jockey.onRaceStart();
@@ -259,7 +259,7 @@ public abstract class Race {
 	 * @param jockey The jockey to remove
 	 */
 	public void removeJockey(Jockey jockey) {
-		
+
 		this.scoreboardManager.onPlayerLeave(jockey);
 
 		this.jockeys.remove(jockey.getPlayer().getName());
@@ -269,7 +269,7 @@ public abstract class Race {
 
 		JockeyLeaveEvent event = new JockeyLeaveEvent(jockey);
 		Bukkit.getPluginManager().callEvent(event);
-		
+
 		LobbySignManager.updateSigns();
 
 		if (this.jockeys.isEmpty()) {
@@ -292,7 +292,7 @@ public abstract class Race {
 		}
 		setState(RaceState.Waiting);
 	}
-	
+
 	/**
 	 * End the race in a given amount of time
 	 */
@@ -302,20 +302,20 @@ public abstract class Race {
 			end();
 			return;
 		}
-		
+
 		outputToRace("The race will end in " + time + " seconds...");
-		
+
 		final int nextRate = time <= 5 ? 1 : rate;
 		final int nextTime = time - nextRate;
-		
+
 		endTimer = Bukkit.getScheduler().runTaskLater(MineKart.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
 				end(nextTime, rate);
 			}
-			
-		}, nextRate * 20L);	
+
+		}, nextRate * 20L);
 	}
 
 	/**
@@ -363,7 +363,7 @@ public abstract class Race {
 	public Set<Jockey> getJockeys() {
 		return ImmutableSet.copyOf(this.jockeys.values());
 	}
-	
+
 	/**
 	 * Set the winner of the race
 	 * 
@@ -374,14 +374,14 @@ public abstract class Race {
 		this.winners.add(jockey);
 		final int position = this.winners.size();
 		if (position != 1) {
-			
+
 			NPC mount = jockey.getMount();
 			if (mount != null) {
 				this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + mount.getName() + ChatColor.WHITE + " came " + RaceHelper.ordinalNo(position) + ".");
 			} else {
 				this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " came " + RaceHelper.ordinalNo(position) + ".");
 			}
-			
+
 			// all players have finished.
 			if (position == this.jockeys.size()) {
 				if (endTimer != null) {
@@ -389,10 +389,10 @@ public abstract class Race {
 				}
 				end(5, 1);
 			}
-			
+
 			return;
 		}
-		
+
 		NPC mount = jockey.getMount();
 		if (mount != null) {
 			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + mount.getName() + ChatColor.WHITE + "are the Winners!");
@@ -401,10 +401,10 @@ public abstract class Race {
 		}
 
 		FireworkFactory.LaunchFirework(jockey.getPlayer().getLocation(), Type.STAR, 2, Color.fromRGB(0xFFDD47));
-		
+
 		RaceEndEvent event = new RaceEndEvent(this, jockey);
 		Bukkit.getPluginManager().callEvent(event);
-		
+
 		end(30, 5);
 	}
 
@@ -437,6 +437,7 @@ public abstract class Race {
 
 	/**
 	 * Set the rankings
+	 * 
 	 * @param ranks The rankings to use
 	 */
 	public void setRankings(List<Jockey> ranks) {
@@ -445,18 +446,20 @@ public abstract class Race {
 
 	/**
 	 * Get the rankings of the race
+	 * 
 	 * @return A list of rankings
 	 */
 	public List<Jockey> getRankings() {
 		return this.raceRankings;
 	}
-	
+
 	/**
 	 * Get the races scoreboard manager
+	 * 
 	 * @return The instance of this races scoreboard manager
 	 */
 	public ScoreboardManager getScoreboardManager() {
 		return this.scoreboardManager;
 	}
-	
+
 }

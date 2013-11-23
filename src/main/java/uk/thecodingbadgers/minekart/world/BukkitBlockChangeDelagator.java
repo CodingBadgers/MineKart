@@ -16,28 +16,28 @@ import uk.thecodingbadgers.minekart.MineKart;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
-@SuppressWarnings({"deprecation", "unused"})
+@SuppressWarnings({"deprecation", "unused" })
 public class BukkitBlockChangeDelagator implements BlockChangeDelagator {
 
 	private List<BlockState> changes = new ArrayList<BlockState>();
 	private Player player;
-	
+
 	public BukkitBlockChangeDelagator(Player player) {
 		this.player = player;
 	}
-	
+
 	@Override
 	public void setBlock(Location loc, Material mat, MaterialData data) {
 		setBlock0(loc, mat, data, true);
 	}
-	
+
 	private void setBlock0(Location loc, Material mat, MaterialData data, boolean log) {
 		Block block = loc.getBlock();
-		
+
 		if (log) {
 			changes.add(block.getState());
 		}
-		
+
 		block.setType(mat);
 		block.setData(data.getData());
 	}
@@ -49,11 +49,11 @@ public class BukkitBlockChangeDelagator implements BlockChangeDelagator {
 
 	private void setBlock0(Location loc, Material mat, boolean log) {
 		Block block = loc.getBlock();
-		
+
 		if (log) {
 			changes.add(block.getState());
 		}
-		
+
 		block.setType(mat);
 	}
 
@@ -78,7 +78,7 @@ public class BukkitBlockChangeDelagator implements BlockChangeDelagator {
 			public void run() {
 				resetChanges();
 			}
-			
+
 		}.runTaskLater(MineKart.getInstance(), ticks);
 	}
 

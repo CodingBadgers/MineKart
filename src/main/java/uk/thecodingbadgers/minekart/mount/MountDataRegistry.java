@@ -32,7 +32,7 @@ public class MountDataRegistry {
 		if (type == null) {
 			// TODO special case for on foot races
 		}
-		
+
 		try {
 			Class<? extends MountTypeData> clazz = mountTypeData.get(type);
 
@@ -41,11 +41,11 @@ public class MountDataRegistry {
 			}
 
 			Constructor<? extends MountTypeData> ctor = clazz.getDeclaredConstructor(EntityType.class);
-			
+
 			if (ctor == null) {
 				return null;
 			}
-			
+
 			ctor.setAccessible(true);
 			return ctor.newInstance(type);
 		} catch (InstantiationException e) {
@@ -70,10 +70,10 @@ public class MountDataRegistry {
 	 * @param clazz the class to handle the custom data for this mount type
 	 * @throws NullPointerException if either argument is null
 	 */
-	public void registerCustomMountData(EntityType type, Class<? extends MountTypeData> clazz) throws NullPointerException {		
+	public void registerCustomMountData(EntityType type, Class<? extends MountTypeData> clazz) throws NullPointerException {
 		Validate.notNull(type, "Mount type cannot be null");
 		Validate.notNull(clazz, "Mount data clazz cannot be null");
-		
+
 		mountTypeData.put(type, clazz);
 	}
 

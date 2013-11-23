@@ -10,13 +10,13 @@ import org.bukkit.material.MaterialData;
 public interface BlockChangeDelagator {
 
 	public void setBlock(Location loc, Material mat, MaterialData data);
-	
+
 	public void setBlock(Location loc, Material mat);
-	
+
 	public List<BlockState> getChangedBlocks();
-	
+
 	public void resetChanges();
-	
+
 	public void delayResetChanges(long ticks);
-	
+
 }

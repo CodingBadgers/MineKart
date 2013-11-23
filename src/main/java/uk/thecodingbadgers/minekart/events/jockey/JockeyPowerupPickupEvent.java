@@ -29,28 +29,28 @@ public class JockeyPowerupPickupEvent extends JockeyEvent {
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-	
+
 	/**
 	 * Gets the race the jockey is in.
-	 *
+	 * 
 	 * @return the race
 	 */
 	public Race getRace() {
 		return race;
 	}
-	
+
 	/**
 	 * Gets the powerup the jockey picked up.
-	 *
+	 * 
 	 * @return the powerup
 	 */
 	public Powerup getPowerup() {
 		return powerup;
 	}
-	
+
 	/**
 	 * Sets the powerup the jockey is going to be given.
-	 *
+	 * 
 	 * @param power the new powerup
 	 */
 	public void setPowerup(Powerup power) {

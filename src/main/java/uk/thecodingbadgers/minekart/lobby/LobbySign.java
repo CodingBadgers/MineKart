@@ -150,27 +150,27 @@ public class LobbySign {
 
 	/**
 	 * Get the color to use for the racing state.
+	 * 
 	 * @param state The state to get the color for
 	 * @return The chatcolor to use
 	 */
 	private String getStateColor(Race race) {
-		
+
 		if (!race.getCourse().isEnabled()) {
 			return ChatColor.DARK_RED + "Disabled";
 		}
-		
-		switch (race.getState())
-		{
-		case Waiting:
-			return ChatColor.GREEN + race.getState().toString();
-		case Starting:
-			return ChatColor.GOLD + race.getState().toString();
-		case InRace:
-			return ChatColor.RED + race.getState().toString();
-		case Unknown:
-			return ChatColor.DARK_RED + race.getState().toString();
+
+		switch (race.getState()) {
+			case Waiting:
+				return ChatColor.GREEN + race.getState().toString();
+			case Starting:
+				return ChatColor.GOLD + race.getState().toString();
+			case InRace:
+				return ChatColor.RED + race.getState().toString();
+			case Unknown:
+				return ChatColor.DARK_RED + race.getState().toString();
 		}
-		
+
 		return ChatColor.DARK_RED + race.getState().toString();
 	}
 
