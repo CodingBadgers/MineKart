@@ -9,21 +9,31 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -32,10 +42,13 @@ import com.sk89q.worldedit.regions.Region;
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
+import uk.thecodingbadgers.minekart.mount.MountTypeData;
 import uk.thecodingbadgers.minekart.powerup.EntityPowerup;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
 import uk.thecodingbadgers.minekart.race.RaceState;
+import uk.thecodingbadgers.minekart.world.BlockChangeDelagator;
+import uk.thecodingbadgers.minekart.world.BlockDelagatorFactory;
 
 /**
  * @author TheCodingBadgers
@@ -62,6 +75,9 @@ public abstract class Racecourse {
 
 	/** A map of all registered single point locations */
 	protected Map<String, Location> singlePoints = null;
+	
+	/** A map of all registered point names and their block equivalents */
+	protected Map<String, ItemStack[]> pointMappings = null;
 
 	/** The file configuration used by this racecourse */
 	protected File fileConfiguration = null;
@@ -90,6 +106,9 @@ public abstract class Racecourse {
 	/** The cooldown between pickuping up powerups **/
 	protected int powerupCooldown = 1000;
 
+	/** The custom mount type data */
+	protected MountTypeData mountTypeData;
+
 	/**
 	 * Class constructor
 	 */
@@ -97,13 +116,14 @@ public abstract class Racecourse {
 
 		this.multiPoints = new HashMap<String, List<Location>>();
 		this.singlePoints = new HashMap<String, Location>();
+		this.pointMappings = new HashMap<String, ItemStack[]>();
 		this.powerupItems = new ArrayList<EntityPowerup>();
 		this.powerupBlacklist = new ArrayList<String>();
 
-		registerWarp(Bukkit.getConsoleSender(), "spawn", "add");
-		registerWarp(Bukkit.getConsoleSender(), "powerup", "add");
-		registerWarp(Bukkit.getConsoleSender(), "lobby", "set");
-		registerWarp(Bukkit.getConsoleSender(), "spectate", "set");
+		registerWarp(Bukkit.getConsoleSender(), "spawn", "add", new ItemStack(Material.DIAMOND_BLOCK));
+		registerWarp(Bukkit.getConsoleSender(), "powerup", "add", new ItemStack(Material.GOLD_BLOCK));
+		registerWarp(Bukkit.getConsoleSender(), "lobby", "set", new ItemStack(Material.IRON_BLOCK));
+		registerWarp(Bukkit.getConsoleSender(), "spectate", "set", new ItemStack(Material.LAPIS_BLOCK));
 	}
 
 	/**
@@ -204,6 +224,12 @@ public abstract class Racecourse {
 		// Mount settings
 		final String loadedMount = file.getString("mount.type", "EntityHorse");
 		this.mountType = loadedMount.equalsIgnoreCase("none") ? EntityType.UNKNOWN : EntityType.fromName(loadedMount);
+		this.mountTypeData = MineKart.getInstance().getMountDataRegistry().getMountData(mountType);
+		ConfigurationSection section = file.getConfigurationSection("mount.data");
+
+		if (section != null) {
+			this.mountTypeData.loadData(section);
+		}
 		
 		// Powerup settings
 		List<String> blacklistPowerup = file.getStringList("powerup.blacklist");
@@ -266,6 +292,12 @@ public abstract class Racecourse {
 
 		// Mount settings
 		file.set("mount.type", this.mountType == EntityType.UNKNOWN ? "none" : this.mountType.getName());
+		
+		ConfigurationSection data = file.getConfigurationSection("mount.data");
+		if (data == null) {
+			data = file.createSection("mount.data");
+		}
+		file.set("mount.data", this.mountTypeData.getSaveData(data));
 		
 		// Powerup settings;
 		file.set("powerup.blacklist", this.powerupBlacklist);
@@ -373,6 +405,7 @@ public abstract class Racecourse {
 	 * @return The loaded region.
 	 */
 	protected Region loadRegion(FileConfiguration file, String path) {
+		LocalWorld world = BukkitUtil.getLocalWorld(this.world);
 		Double minX = file.getDouble(path + ".min.x");
 		Double minY = file.getDouble(path + ".min.y");
 		Double minZ = file.getDouble(path + ".min.z");
@@ -380,7 +413,7 @@ public abstract class Racecourse {
 		Double maxY = file.getDouble(path + ".max.y");
 		Double maxZ = file.getDouble(path + ".max.z");
 
-		return new CuboidRegion(new com.sk89q.worldedit.Vector(minX, minY, minZ), new com.sk89q.worldedit.Vector(maxX, maxY, maxZ));
+		return new CuboidRegion(world, new com.sk89q.worldedit.Vector(minX, minY, minZ), new com.sk89q.worldedit.Vector(maxX, maxY, maxZ));
 	}
 
 	/**
@@ -451,9 +484,12 @@ public abstract class Racecourse {
 	 * @param player The player registering the warp
 	 * @param name The name of the warp to register
 	 * @param type The type of warp to register, set or add.
+	 * @param materials the materials to set this warp to in the show warp command
 	 */
-	public void registerWarp(CommandSender player, String name, String type) {
+	public void registerWarp(CommandSender player, String name, String type, ItemStack... materials) {
 
+		this.pointMappings.put(name, materials);
+		
 		if (type.equalsIgnoreCase("set")) {
 			if (this.singlePoints.containsKey(name))
 				return;
@@ -619,7 +655,13 @@ public abstract class Racecourse {
 		this.powerupItems.add(powerupEntity);
 
 		location.getWorld().playSound(location, Sound.FIREWORK_TWINKLE, 1.0f, 1.0f);
-
+		
+		Firework firework = world.spawn(location, Firework.class);
+		FireworkEffect effect = FireworkEffect.builder().withColor(Color.RED).build();
+		FireworkMeta fireworkMeta = firework.getFireworkMeta();
+		fireworkMeta.setPower(0);
+		fireworkMeta.addEffect(effect);
+		firework.setFireworkMeta(fireworkMeta);
 	}
 
 	/**
@@ -729,5 +771,77 @@ public abstract class Racecourse {
 	 */
 	public List<String> getPowerupBlackList() {
 		return this.powerupBlacklist;
+	}
+
+	/**
+	 * Gets the custom data for the mount type for this racecourse
+	 * 
+	 * @return the custom mount type data
+	 */
+	public MountTypeData getMountData() {
+		return this.mountTypeData;
+	}
+
+	/**
+	 * Shows the player specified all the warps for this racecourse
+	 * 
+	 * @param player the player to show the warps
+	 * @param warptype the warp type to show
+	 */
+	public boolean showWarps(final Player player, String warptype) {
+		return showWarps(BlockDelagatorFactory.createChangeDelagator("fake", player), warptype);
+	}
+	
+	protected boolean showWarps(BlockChangeDelagator delagator, String warptype) {
+		final Map<Location, BlockState> changes = new HashMap<Location, BlockState>();
+		
+		ItemStack[] materials = this.pointMappings.get(warptype);
+		
+		if (materials == null) {
+			materials = new ItemStack[] { new ItemStack(Material.WOOL) };
+		}
+		
+		if (this.singlePoints.containsKey(warptype)) {
+			Location loc = this.singlePoints.get(warptype);
+			changes.put(loc, loc.getBlock().getState());
+			
+			ItemStack material = materials[0];
+			delagator.setBlock(loc, material.getType(), material.getData());
+		} else if (this.multiPoints.containsKey(warptype)) {
+			for (Location loc : this.multiPoints.get(warptype)) {
+				changes.put(loc, loc.getBlock().getState());
+				
+				ItemStack material = materials[0];
+				delagator.setBlock(loc, material.getType(), material.getData());
+			}
+		} else {
+			return false;
+		}
+		
+		delagator.delayResetChanges(5 * 20L);
+		return true;
+	}
+
+	@SuppressWarnings("deprecation")
+	protected void resetBlocks(final Player player, final Map<Location, BlockState> changes, final long resetTicks) {
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				for (Map.Entry<Location, BlockState> entry : changes.entrySet()) {
+					BlockState state = entry.getValue();
+
+					player.sendBlockChange(entry.getKey(), state.getType(), state.getData() != null ? state.getData().getData() : 0);
+				}
+			}
+		}.runTaskLater(MineKart.getInstance(), resetTicks);
+		
+	}
+	
+	protected Location toBukkit(BlockVector block) {
+		return new Location(world,
+							block.getBlockX(),
+							block.getBlockY(),
+							block.getBlockZ());
 	}
 }

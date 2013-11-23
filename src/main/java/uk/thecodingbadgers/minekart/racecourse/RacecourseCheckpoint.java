@@ -10,18 +10,24 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.events.jockey.JockeyCheckpointReachedEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
+import uk.thecodingbadgers.minekart.world.BlockChangeDelagator;
+import uk.thecodingbadgers.minekart.world.BlockDelagatorFactory;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldedit.regions.Region;
@@ -337,6 +343,53 @@ public class RacecourseCheckpoint extends Racecourse {
 			this.checkpointTime.put(jockey, new CheckpointTimeData(-1, -1));
 			jockey.getPlayer().setLevel(0);
 		}
+	}
+
+	@Override
+	public boolean showWarps(final Player player, String warptype) {
+		return showWarps(BlockDelagatorFactory.createChangeDelagator("fake", player), warptype);
+	}
+	
+	@Override
+	protected boolean showWarps(BlockChangeDelagator delagator, String warptype) {
+		if (super.showWarps(delagator, warptype)) {
+			return true;
+		}
+		
+		final Map<Location, BlockState> changes = new HashMap<Location, BlockState>();
+		
+		if (warptype.startsWith("checkpoint")) {
+			int blockIndex = 0;
+			ItemStack[] materials = this.pointMappings.get("checkpoint");
+			
+			for (Region checkpoint : this.checkPoints) {
+				for (BlockVector block : checkpoint) {
+					ItemStack mat = materials[blockIndex];
+					Location loc = toBukkit(block);
+					
+					if (loc.getBlock().getType() != Material.AIR) {
+						continue;
+					}
+						
+					changes.put(loc, loc.getBlock().getState());
+					
+					delagator.setBlock(loc, mat.getType(), mat.getData());
+					
+					blockIndex++;
+					
+					if (blockIndex >= materials.length) {
+						blockIndex = 0;
+					}
+				}
+			}
+			
+		} else {
+			return false;
+		}
+
+		delagator.delayResetChanges(5 * 20L);
+
+		return true;
 	}
 
 }
