@@ -15,6 +15,7 @@ import org.bukkit.scoreboard.Team;
 
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.race.Race;
+import uk.thecodingbadgers.minekart.util.RaceHelper;
 
 public class ScoreboardManager {
 	
@@ -95,6 +96,7 @@ public class ScoreboardManager {
 			Team team = this.scoreboard.getTeam(name);
 			if (team != null) {
 				team.removePlayer(player);
+				this.scoreboard.resetScores(player);
 			}
 		}
 				
@@ -140,6 +142,12 @@ public class ScoreboardManager {
 		Score score = this.sidebarObjective.getScore(jockey.getPlayer());
 		if (score != null) {
 			score.setScore(maxPlayers - standing);
+		}
+		
+		final String name = jockey.getMount() != null ? jockey.getMount().getName() : jockey.getPlayer().getName();
+		Team team = this.scoreboard.getTeam(name);
+		if (team != null) {
+			team.setSuffix(" [" + RaceHelper.ordinalNo(standing) + "]");
 		}
 		
 	}
