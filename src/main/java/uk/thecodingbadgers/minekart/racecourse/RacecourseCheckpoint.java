@@ -24,6 +24,8 @@ import uk.thecodingbadgers.minekart.events.jockey.JockeyCheckpointReachedEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
+import uk.thecodingbadgers.minekart.world.BlockChangeDelagator;
+import uk.thecodingbadgers.minekart.world.BlockDelagatorFactory;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -342,11 +344,15 @@ public class RacecourseCheckpoint extends Racecourse {
 			jockey.getPlayer().setLevel(0);
 		}
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	@Override
 	public boolean showWarps(final Player player, String warptype) {
-		if (super.showWarps(player, warptype)) {
+		return showWarps(BlockDelagatorFactory.createChangeDelagator("fake", player), warptype);
+	}
+	
+	@Override
+	protected boolean showWarps(BlockChangeDelagator delagator, String warptype) {
+		if (super.showWarps(delagator, warptype)) {
 			return true;
 		}
 		
@@ -367,7 +373,7 @@ public class RacecourseCheckpoint extends Racecourse {
 						
 					changes.put(loc, loc.getBlock().getState());
 					
-					player.sendBlockChange(loc, mat.getType(), mat.getData().getData());
+					delagator.setBlock(loc, mat.getType(), mat.getData());
 					
 					blockIndex++;
 					
@@ -381,7 +387,7 @@ public class RacecourseCheckpoint extends Racecourse {
 			return false;
 		}
 
-		resetBlocks(player, changes, 5 * 20L);
+		delagator.delayResetChanges(5 * 20L);
 
 		return true;
 	}

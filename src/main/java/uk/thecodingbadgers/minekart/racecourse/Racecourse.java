@@ -43,6 +43,8 @@ import uk.thecodingbadgers.minekart.powerup.EntityPowerup;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
 import uk.thecodingbadgers.minekart.race.RaceState;
+import uk.thecodingbadgers.minekart.world.BlockChangeDelagator;
+import uk.thecodingbadgers.minekart.world.BlockDelagatorFactory;
 
 /**
  * @author TheCodingBadgers
@@ -649,7 +651,6 @@ public abstract class Racecourse {
 		this.powerupItems.add(powerupEntity);
 
 		location.getWorld().playSound(location, Sound.FIREWORK_TWINKLE, 1.0f, 1.0f);
-
 	}
 
 	/**
@@ -776,9 +777,11 @@ public abstract class Racecourse {
 	 * @param player the player to show the warps
 	 * @param warptype the warp type to show
 	 */
-	@SuppressWarnings("deprecation")
 	public boolean showWarps(final Player player, String warptype) {
-		
+		return showWarps(BlockDelagatorFactory.createChangeDelagator("fake", player), warptype);
+	}
+	
+	protected boolean showWarps(BlockChangeDelagator delagator, String warptype) {
 		final Map<Location, BlockState> changes = new HashMap<Location, BlockState>();
 		
 		ItemStack[] materials = this.pointMappings.get(warptype);
@@ -792,20 +795,19 @@ public abstract class Racecourse {
 			changes.put(loc, loc.getBlock().getState());
 			
 			ItemStack material = materials[0];
-			player.sendBlockChange(loc, material.getType(), material.getData().getData());
+			delagator.setBlock(loc, material.getType(), material.getData());
 		} else if (this.multiPoints.containsKey(warptype)) {
 			for (Location loc : this.multiPoints.get(warptype)) {
 				changes.put(loc, loc.getBlock().getState());
 				
 				ItemStack material = materials[0];
-				player.sendBlockChange(loc, material.getType(), material.getData().getData());
+				delagator.setBlock(loc, material.getType(), material.getData());
 			}
 		} else {
 			return false;
 		}
 		
-		resetBlocks(player, changes, 5 * 20L);
-
+		delagator.delayResetChanges(5 * 20L);
 		return true;
 	}
 
