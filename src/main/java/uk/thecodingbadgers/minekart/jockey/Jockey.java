@@ -256,6 +256,11 @@ public class Jockey {
 		player.getInventory().setHeldItemSlot(0);
 	}
 
+	/**
+	 * Create a mount for the jockey
+	 * @param mountName
+	 * @param spawn
+	 */
 	private void createMount(String mountName, Location spawn) {
 		if (this.mountType != EntityType.UNKNOWN) {
 			// Make their mounts
@@ -264,7 +269,6 @@ public class Jockey {
 			this.mount.addTrait(new ControllableMount(true));
 			this.mount.spawn(spawn);
 			this.race.getCourse().getMountData().applyMountData(this.mount.getEntity());
-
 
 			// Set the owner of the mount to the jockey
 			Owner owner = this.mount.getTrait(Owner.class);
