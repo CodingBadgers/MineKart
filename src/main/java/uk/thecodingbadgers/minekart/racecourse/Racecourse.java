@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect.Type;
@@ -22,6 +25,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -31,6 +35,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -666,9 +671,27 @@ public abstract class Racecourse {
 	 * @param race The race which is ending
 	 */
 	public void onRaceEnd(Race race) {
-
+		
 		for (EntityPowerup powerup : this.powerupItems) {
 			powerup.die();
+		}
+		
+		for (Entity entity : this.world.getEntities()) {
+			if (entity instanceof Player)
+				continue;
+			
+			final Location location = entity.getLocation();
+			final Vector entityLocation = new Vector(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+			if (!this.bounds.contains(entityLocation))
+				continue;
+			
+			if (CitizensAPI.getNPCRegistry().isNPC(entity)) {
+				NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
+				npc.destroy();
+			}
+			else {
+				entity.remove();
+			}
 		}
 
 	}
