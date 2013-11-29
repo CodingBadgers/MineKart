@@ -235,7 +235,7 @@ public class Jockey {
 		this.player.teleport(spawn);
 		this.respawnLocation = spawn;
 
-		createMount(getRadomMountName(this.player.getName()), spawn);
+		createMount(getRadomMountName(this.player.getName()), spawn, false);
 
 		// Give the player a whip
 		ItemStack whip = new ItemStack(Material.STICK);
@@ -261,7 +261,7 @@ public class Jockey {
 	 * @param mountName
 	 * @param spawn
 	 */
-	private void createMount(String mountName, Location spawn) {
+	private void createMount(String mountName, Location spawn, boolean enabled) {
 		if (this.mountType != EntityType.UNKNOWN) {
 			// Make their mounts
 			this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, mountName);
@@ -277,7 +277,7 @@ public class Jockey {
 			// Make the NPC controllable and mount the player
 			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
 			trait.mount(this.player);
-			trait.setEnabled(false); // disable it until the race has started
+			trait.setEnabled(enabled); // disable it until the race has started
 		}
 	}
 
@@ -433,7 +433,7 @@ public class Jockey {
 				jockey.player.setHealth(jockey.player.getMaxHealth());
 				jockey.player.setFireTicks(0);
 
-				jockey.createMount(mountName, jockey.respawnLocation);
+				jockey.createMount(mountName, jockey.respawnLocation, true);
 			}
 
 		}, 2L);
