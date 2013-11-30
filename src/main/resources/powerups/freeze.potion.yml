@@ -1,0 +1,9 @@
+powerup:
+  name: "Freeze"
+  material: ICE
+  amount: 1
+  potion:
+    apply: Others
+    type: None
+    length: 1
+    damageeffect: Freeze

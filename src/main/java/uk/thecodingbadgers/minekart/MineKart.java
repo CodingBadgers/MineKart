@@ -41,6 +41,11 @@ import uk.thecodingbadgers.minekart.powerup.PowerupDrop;
 import uk.thecodingbadgers.minekart.powerup.PowerupPotion;
 import uk.thecodingbadgers.minekart.powerup.PowerupProjectile;
 import uk.thecodingbadgers.minekart.powerup.PowerupRegistry;
+import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffect;
+import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffectFreeze;
+import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffectIgnite;
+import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffectPoison;
+import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffectShrink;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseCheckpoint;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseLap;
@@ -84,6 +89,9 @@ public final class MineKart extends JavaPlugin {
 
 	/** Mount data registry */
 	private MountDataRegistry mountDataRegistry;
+	
+	/** all registered damage effects **/
+	protected Map<String, DamageEffect> damageEffects;
 
 	/**
 	 * Called when the plugin is enabled
@@ -144,6 +152,12 @@ public final class MineKart extends JavaPlugin {
 		this.mountDataRegistry.registerCustomMountData(EntityType.ZOMBIE, AgeableMountData.class);
 		this.mountDataRegistry.registerCustomMountData(EntityType.WOLF, AgeableMountData.class);
 
+		this.damageEffects = new HashMap<String, DamageEffect>();
+		this.damageEffects.put("ignite", new DamageEffectIgnite());
+		this.damageEffects.put("poison", new DamageEffectPoison());
+		this.damageEffects.put("freeze", new DamageEffectFreeze());
+		this.damageEffects.put("shrink", new DamageEffectShrink());
+				
 		registerListeners();
 
 		getCommand("minekart").setExecutor(new CommandHandler());
@@ -165,6 +179,21 @@ public final class MineKart extends JavaPlugin {
 		for (Racecourse course : this.courses.values()) {
 			course.getRace().end();
 		}
+	}
+	
+	/**
+	 * Reload all configs
+	 */
+	public void reload() {
+		
+		for (Racecourse course : this.courses.values()) {
+			course.getRace().end();
+		}
+		this.courses.clear();		
+		this.powerups.clear();
+		
+		this.loadPowerups();
+		this.loadRacecourses();		
 	}
 
 	/**
@@ -320,26 +349,33 @@ public final class MineKart extends JavaPlugin {
 		File[] coursefiles = MineKart.racecourseFolderPath.listFiles();
 
 		for (File file : coursefiles) {
+			
 			final String filename = file.getName();
-
-			if (!filename.endsWith(".yml"))
-				continue;
-
-			final String[] nameparts = filename.split("\\.");
-
-			final String coursename = nameparts[0];
-			final String coursetype = nameparts[1];
-
-			Racecourse course = this.racecourseTypeRegistry.createRacecourse(coursetype);
-
-			if (course == null) {
-				getLogger().log(Level.SEVERE, "Unknown course type '" + coursetype + "' for course '" + coursename + "'.");
-				continue;
+			
+			try {
+				
+				if (!filename.endsWith(".yml"))
+					continue;
+	
+				final String[] nameparts = filename.split("\\.");
+	
+				final String coursename = nameparts[0];
+				final String coursetype = nameparts[1];
+	
+				Racecourse course = this.racecourseTypeRegistry.createRacecourse(coursetype);
+	
+				if (course == null) {
+					getLogger().log(Level.SEVERE, "Unknown course type '" + coursetype + "' for course '" + coursename + "'.");
+					continue;
+				}
+	
+				course.load(file);
+				this.courses.put(coursename.toLowerCase(), course);
+				getLogger().log(Level.INFO, "Loaded racecourse: " + coursename);
+				
+			}  catch (Exception ex) {
+				getLogger().log(Level.WARNING, "The racecourse with the file name '" + filename + "' failed to load correctly.", ex);
 			}
-
-			course.load(file);
-			this.courses.put(coursename.toLowerCase(), course);
-			getLogger().log(Level.INFO, "Loaded racecourse: " + coursename);
 		}
 	}
 
@@ -507,4 +543,13 @@ public final class MineKart extends JavaPlugin {
 
 		return this.powerupRegistry.clonePowerup(powerup);
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Map<String, DamageEffect> getDamageEffects() {
+		return this.damageEffects;
+	}
+	
 }

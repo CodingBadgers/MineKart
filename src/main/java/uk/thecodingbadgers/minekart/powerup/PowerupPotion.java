@@ -1,6 +1,7 @@
 package uk.thecodingbadgers.minekart.powerup;
 
 import java.io.File;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -11,11 +12,15 @@ import org.bukkit.potion.PotionEffectType;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffect;
 
 public class PowerupPotion extends Powerup {
 
 	/** The type of potion to apply **/
 	private PotionEffectType type;
+	
+	/** The type of damage effect to apply **/
+	private String damageEffectType;
 
 	/** The length to apply the effect **/
 	private Long length;
@@ -44,6 +49,7 @@ public class PowerupPotion extends Powerup {
 		this.length = powerup.length;
 		this.level = powerup.level;
 		this.applyMode = powerup.applyMode;
+		this.damageEffectType = powerup.damageEffectType;
 	}
 
 	/**
@@ -67,7 +73,8 @@ public class PowerupPotion extends Powerup {
 
 		this.length = file.getLong("powerup.potion.length");
 		this.level = file.getInt("powerup.potion.level");
-		this.type = PotionEffectType.getByName(file.getString("powerup.potion.type"));
+		this.type = PotionEffectType.getByName(file.getString("powerup.potion.type", "None"));
+		this.damageEffectType = file.getString("powerup.potion.damageeffect", "none").toLowerCase();
 		this.applyMode = PowerupApplyMode.valueOf(file.getString("powerup.potion.apply"));
 
 	}
@@ -83,23 +90,44 @@ public class PowerupPotion extends Powerup {
 
 		this.amount--;
 
-		PotionEffect effect = new PotionEffect(this.type, (int) (this.length * 20), this.level, false);
-
-		if (this.applyMode == PowerupApplyMode.Self) {
-			jockey.getPlayer().addPotionEffect(effect, true);
-			if (jockey.getMount() != null) {
-				jockey.getMount().getBukkitEntity().addPotionEffect(effect, true);
-			}
-		} else if (this.applyMode == PowerupApplyMode.Others) {
-			for (Jockey other : jockey.getRace().getJockeys()) {
-				other.getPlayer().addPotionEffect(effect, true);
-				if (other.getMount() != null) {
-					other.getMount().getBukkitEntity().addPotionEffect(effect, true);
+		if (this.type != null) {
+			PotionEffect effect = new PotionEffect(this.type, (int) (this.length * 20), this.level, false);
+	
+			if (this.applyMode == PowerupApplyMode.Self) {
+				jockey.getPlayer().addPotionEffect(effect, true);
+				if (jockey.getMount() != null) {
+					jockey.getMount().getBukkitEntity().addPotionEffect(effect, true);
+				}
+			} else if (this.applyMode == PowerupApplyMode.Others) {
+				for (Jockey other : jockey.getRace().getJockeys()) {
+					if (other == jockey)
+						continue;					
+					other.getPlayer().addPotionEffect(effect, true);
+					if (other.getMount() != null) {
+						other.getMount().getBukkitEntity().addPotionEffect(effect, true);
+					}
 				}
 			}
+	
+			handleInvisible(jockey);
 		}
+		
+		Map<String, DamageEffect> damageEffects = MineKart.getInstance().getDamageEffects();
+		if (damageEffects.containsKey(this.damageEffectType)) {
 
-		handleInvisible(jockey);
+			DamageEffect effect = damageEffects.get(damageEffectType);
+						
+			if (this.applyMode == PowerupApplyMode.Self) {
+				effect.use(jockey);
+			} else if (this.applyMode == PowerupApplyMode.Others) {
+				for (Jockey other : jockey.getRace().getJockeys()) {
+					if (other == jockey)
+						continue;	
+					effect.use(other);
+				}
+			}
+						
+		}
 
 	}
 

@@ -51,6 +51,10 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 		this();
 		this.enabled = enabled;
 	}
+	
+	public MovementController getController() {
+		return this.controller;
+	}
 
 	@Override
 	public void configure(CommandContext args) {
@@ -266,6 +270,7 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 	public class GroundController implements MovementController {
 		private int jumpTicks = 0;
 		private double speed = 0.07D;
+		private boolean jumping = false;
 
 		@Override
 		public void leftClick(PlayerInteractEvent event) {
@@ -278,6 +283,10 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 		@Override
 		public void rightClickEntity(NPCRightClickEvent event) {
 			enterOrLeaveVehicle(event.getClicker());
+		}
+		
+		public boolean isJumping() {
+			return jumping;
 		}
 
 		@Override
@@ -302,11 +311,15 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 
 					getHandle().motY = JUMP_VELOCITY * jumpPotion;
 					jumpTicks = 10;
+					jumping = true;
 				}
 			} else {
 				jumpTicks = 0;
 			}
 			jumpTicks = Math.max(0, jumpTicks - 1);
+			if (jumpTicks == 0 && onGround) {
+				jumping = false;
+			}
 
 			setMountedYaw(handle);
 		}

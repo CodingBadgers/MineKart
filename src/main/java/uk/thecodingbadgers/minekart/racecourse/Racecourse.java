@@ -862,4 +862,32 @@ public abstract class Racecourse {
 	protected Location toBukkit(BlockVector block) {
 		return new Location(world, block.getBlockX(), block.getBlockY(), block.getBlockZ());
 	}
+
+	/**
+	 * Remove a warp with a given name and id
+	 * @param player The player removing the warp
+	 * @param warpName The name of the warp
+	 * @param id THe id of the warp, or -1 to remove last warp created
+	 * @return
+	 */
+	public boolean removeWarp(Player player, String warpName, int id) {
+		
+		if (this.singlePoints.containsKey(warpName)) {
+			this.singlePoints.remove(warpName);			
+			return true;
+		}
+		
+		if (this.multiPoints.containsKey(warpName)) {
+			List<Location> warps = this.multiPoints.get(warpName);
+			id = id == -1 ? warps.size() - 1 : id;
+			if (id < 0 || id >= warps.size()) {
+				MineKart.output(player, "Could not remove " + warpName + " warp with id " + id);
+				return false;
+			}
+			warps.remove(id);			
+			return true;
+		}
+		
+		return false;
+	}
 }

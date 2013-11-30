@@ -1,0 +1,9 @@
+powerup:
+  name: "Shrink"
+  material: EGG
+  amount: 1
+  potion:
+    apply: Others
+    type: SLOW
+    length: 4
+    damageeffect: Shrink

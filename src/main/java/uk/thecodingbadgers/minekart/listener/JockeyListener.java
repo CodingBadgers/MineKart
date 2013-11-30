@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.citizensnpcs.api.npc.NPC;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,6 +18,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -29,9 +32,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.potion.PotionEffectType;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.events.jockey.JockeyPowerupPickupEvent;
+import uk.thecodingbadgers.minekart.jockey.ControllableMount;
+import uk.thecodingbadgers.minekart.jockey.ControllableMount.GroundController;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySign;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
@@ -372,17 +379,52 @@ public class JockeyListener implements Listener {
 		if (jockey == null)
 			return;
 
+		if (event.getCause() == DamageCause.FALL) {
+			if (player.hasPotionEffect(PotionEffectType.JUMP)) {
+				NPC mount = jockey.getMount();
+				if (mount == null) {
+					event.setCancelled(true);
+					return;
+				}
+				
+				ControllableMount trait = mount.getTrait(ControllableMount.class);
+				if (trait != null && trait.getController() instanceof GroundController) {
+					GroundController controller = (GroundController)trait.getController();
+					if (controller.isJumping()) {
+						event.setCancelled(true);
+						return;
+					}
+				}
+				
+			}
+		}
+		
 		Race race = jockey.getRace();
 		if (race.getState() != RaceState.InRace) {
 			event.setCancelled(true);
 			return;
 		}
-
-		if (event.getCause() == DamageCause.ENTITY_ATTACK) {
-			event.setCancelled(true);
-			return;
+		
+		if (event instanceof EntityDamageByEntityEvent) {
+			EntityDamageByEntityEvent entityAttack = (EntityDamageByEntityEvent)event;
+			Entity damager = entityAttack.getDamager();
+			
+			// Other players can't attack
+			if (damager instanceof Player) {
+				event.setCancelled(true);
+				return;
+			}
+			
+			List<MetadataValue> powerupMetas = damager.getMetadata("powerup");
+			for (MetadataValue meta : powerupMetas) {
+				if (meta.value() instanceof Powerup) {
+					Powerup powerup = (Powerup)meta.value();
+					powerup.onDamageEntity(entityAttack);
+				}
+			}
+			
 		}
-
+		
 		if (event.getDamage() >= player.getHealth()) {
 			event.setCancelled(true);
 			jockey.respawn();

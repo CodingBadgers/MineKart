@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -28,7 +29,7 @@ public abstract class Powerup {
 
 	/** The number of uses **/
 	protected int amount;
-
+	
 	/**
 	 * Class constructor
 	 */
@@ -97,6 +98,14 @@ public abstract class Powerup {
 		player.getInventory().setItem(POWERUP_SLOT, new ItemStack(Material.AIR));
 	}
 
+	/**
+	 * Called when the powerup does damage to another entity
+	 * @param entityAttackEvent The entity damage by entity event 
+	 */
+	public void onDamageEntity(EntityDamageByEntityEvent entityAttackEvent) {
+
+	}
+	
 	/**
 	 * Gets the use mode of the potion
 	 * 

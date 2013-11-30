@@ -5,3 +5,5 @@ powerup:
   projectile:
     type: FIREBALL
     speed: 3
+    damageeffect: Inferno
+    damage: 4

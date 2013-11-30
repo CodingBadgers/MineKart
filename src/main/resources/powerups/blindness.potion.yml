@@ -1,0 +1,8 @@
+powerup:
+  name: "Blindness"
+  material: INK_SACK
+  amount: 1
+  potion:
+    apply: Others
+    type: BLINDNESS
+    length: 4
