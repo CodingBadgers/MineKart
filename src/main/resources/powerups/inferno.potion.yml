@@ -1,0 +1,9 @@
+powerup:
+  name: "Inferno"
+  material: LAVA
+  amount: 1
+  potion:
+    apply: Others
+    type: None
+    length: 4
+    damageeffect: Ignite
