@@ -1,4 +1,4 @@
-# MineKart by The Coding Badgers
+![Plugin overview UML diagram](http://mcbadgercraft.com/images/MineKart-Banner.bmp)
 
 ## What is it
 
@@ -8,19 +8,16 @@ The plugin aims to create a ['Mario Kart'](http://en.wikipedia.org/wiki/Mario_Ka
 
 #### Features
 
-- [x] Multiple course types [Checkpoint and Lap]
-- [ ] Multiple game modes
-- [x] Multiple game running concurrently
-- [x] Customizable pickups and powerups
-- [x] Use any living entity as a mount
-- [x] Live update signs on race progress
-- [ ] User statistics
+- Multiple course types [Checkpoint and Lap]
+- Multiple game running concurrently
+- Customizable pickups and powerups
+- Use any living entity as a mount
+- Live update signs on race progress
 
-## Design
+#### Future Features
 
-#### Diagrams
-
-![Plugin overview UML diagram](http://i.imgur.com/Cr7kCGw.jpg)
+- Multiple game modes (Single Player, Coop)
+- User statistics
 
 ## How to build the source
 
