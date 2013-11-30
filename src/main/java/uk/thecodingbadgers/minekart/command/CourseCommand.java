@@ -24,8 +24,8 @@ public class CourseCommand {
 
 		final Player player = (Player) sender;
 
-		if (!player.hasPermission("minekart.create.course")) {
-			MineKart.output(player, "You do not have the required permission 'minekart.create.course'");
+		if (!player.hasPermission("minekart.course create")) {
+			MineKart.output(player, "You do not have the required permission 'minekart.course create'");
 			return;
 		}
 
@@ -139,7 +139,7 @@ public class CourseCommand {
 			String warptype = args[2].substring("show".length());
 
 			if (!sender.hasPermission("minekart.course.show." + warptype)) {
-				MineKart.output(sender, "You do not have the required permission 'minekart.course.delete'");
+				MineKart.output(sender, "You do not have the required permission 'minekart.course.show." + warptype + " '");
 				return;
 			}
 

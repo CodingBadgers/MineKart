@@ -1,6 +1,7 @@
 <project name="MineKart">
 	<bannerLeft>
 		<name>MineKart</name>
+    	<src>http://mcbadgercraft.com/images/MineKart.png</src>
 		<href>http://mcbadgercraft.com/</href>
 	</bannerLeft>
 	<body>
