@@ -60,6 +60,12 @@ public class CommandHandler implements TabExecutor {
 			HelperCommand.handleInfoCommand(sender, args);
 			return true;
 		}
+		
+		// if the control argument is info, let the helper command handler take care of it
+		if (controlArgument.startsWith("reload")) {
+			HelperCommand.handleReloadCommand(sender, args);
+			return true;
+		}
 
 		// if the control argument is join, let the race command handler take care of it
 		if (controlArgument.startsWith("join") || controlArgument.startsWith("j")) {

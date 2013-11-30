@@ -178,6 +178,21 @@ public final class MineKart extends JavaPlugin {
 			course.getRace().end();
 		}
 	}
+	
+	/**
+	 * Reload all configs
+	 */
+	public void reload() {
+		
+		for (Racecourse course : this.courses.values()) {
+			course.getRace().end();
+		}
+		this.courses.clear();		
+		this.powerups.clear();
+		
+		this.loadPowerups();
+		this.loadRacecourses();		
+	}
 
 	/**
 	 * Gets the active instance of the MineKart plugin.
@@ -534,4 +549,5 @@ public final class MineKart extends JavaPlugin {
 	public Map<String, DamageEffect> getDamageEffects() {
 		return this.damageEffects;
 	}
+	
 }

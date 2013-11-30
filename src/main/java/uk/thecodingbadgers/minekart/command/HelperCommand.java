@@ -5,6 +5,7 @@ import java.util.Map;
 import org.bukkit.command.CommandSender;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 
 public class HelperCommand {
@@ -33,6 +34,26 @@ public class HelperCommand {
 			}
 		}
 
+	}
+	
+	/**
+	 * Handle the /mk reload command
+	 * 
+	 * @param sender The thing that used the command
+	 * @param args The command args
+	 */
+	public static void handleReloadCommand(CommandSender sender, String[] args) {
+
+		if (!sender.hasPermission("minekart.reload")) {
+			MineKart.output(sender, "You do not have the required permission 'minekart.reload'");
+			return;
+		}
+		
+		MineKart.getInstance().reload();
+		
+		LobbySignManager.updateSigns();
+		
+		MineKart.output(sender, "MineKart has been reloaded.");
 	}
 
 	/**
