@@ -313,8 +313,9 @@ public class Jockey {
 		if (this.mount != null) {
 			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
 			trait.setEnabled(true);
-			this.startTime = System.currentTimeMillis();
 		}
+		
+		this.startTime = System.currentTimeMillis();
 
 	}
 
