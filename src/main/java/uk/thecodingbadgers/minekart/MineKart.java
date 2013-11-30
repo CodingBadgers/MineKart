@@ -41,6 +41,9 @@ import uk.thecodingbadgers.minekart.powerup.PowerupDrop;
 import uk.thecodingbadgers.minekart.powerup.PowerupPotion;
 import uk.thecodingbadgers.minekart.powerup.PowerupProjectile;
 import uk.thecodingbadgers.minekart.powerup.PowerupRegistry;
+import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffect;
+import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffectIgnite;
+import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffectPoison;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseCheckpoint;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseLap;
@@ -84,6 +87,9 @@ public final class MineKart extends JavaPlugin {
 
 	/** Mount data registry */
 	private MountDataRegistry mountDataRegistry;
+	
+	/** all registered damage effects **/
+	protected Map<String, DamageEffect> damageEffects;
 
 	/**
 	 * Called when the plugin is enabled
@@ -144,6 +150,10 @@ public final class MineKart extends JavaPlugin {
 		this.mountDataRegistry.registerCustomMountData(EntityType.ZOMBIE, AgeableMountData.class);
 		this.mountDataRegistry.registerCustomMountData(EntityType.WOLF, AgeableMountData.class);
 
+		this.damageEffects = new HashMap<String, DamageEffect>();
+		this.damageEffects.put("ignite", new DamageEffectIgnite());
+		this.damageEffects.put("poison", new DamageEffectPoison());
+		
 		registerListeners();
 
 		getCommand("minekart").setExecutor(new CommandHandler());
@@ -513,5 +523,13 @@ public final class MineKart extends JavaPlugin {
 		Powerup powerup = allowedPowerups.get(random.nextInt(allowedPowerups.size()));
 
 		return this.powerupRegistry.clonePowerup(powerup);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Map<String, DamageEffect> getDamageEffects() {
+		return this.damageEffects;
 	}
 }

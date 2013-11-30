@@ -29,7 +29,7 @@ public abstract class Powerup {
 
 	/** The number of uses **/
 	protected int amount;
-
+	
 	/**
 	 * Class constructor
 	 */

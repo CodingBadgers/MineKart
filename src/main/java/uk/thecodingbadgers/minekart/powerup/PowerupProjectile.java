@@ -1,6 +1,7 @@
 package uk.thecodingbadgers.minekart.powerup;
 
 import java.io.File;
+import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -12,11 +13,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffect;
 
 public class PowerupProjectile extends Powerup {
 
@@ -27,7 +27,7 @@ public class PowerupProjectile extends Powerup {
 	private double speed;
 	
 	/** The effect to be applied on contact with another player **/
-	private DamageEffect damageEffect;
+	private String damageEffectType;
 	
 	/** The number of hearts damage to do on contact with another player **/
 	private double damage;
@@ -49,7 +49,7 @@ public class PowerupProjectile extends Powerup {
 		this.speed = powerup.speed;
 		this.type = powerup.type;
 		this.damage = powerup.damage;
-		this.damageEffect = powerup.damageEffect;
+		this.damageEffectType = powerup.damageEffectType;
 	}
 
 	/**
@@ -64,17 +64,9 @@ public class PowerupProjectile extends Powerup {
 
 		this.speed = file.getDouble("powerup.projectile.speed");
 		this.type = EntityType.valueOf(file.getString("powerup.projectile.type"));
-		this.damage = file.getDouble("powerup.projectile.damage", -1);
-		
-		try {
-			this.damageEffect = DamageEffect.valueOf(file.getString("powerup.projectile.damageeffect", "None"));
-		} catch(Exception ex) {
-			this.damageEffect = DamageEffect.None;
-		} finally {
-			if (this.damageEffect == null) {
-				this.damageEffect = DamageEffect.None;
-			}
-		}
+		this.damage = file.getDouble("powerup.projectile.damage", -1);		
+		this.damageEffectType = file.getString("powerup.projectile.damageeffect", "none").toLowerCase();
+
 	}
 
 	/**
@@ -114,26 +106,15 @@ public class PowerupProjectile extends Powerup {
 			entityAttackEvent.setDamage(0.0);
 		}
 		
-		if (this.damageEffect != DamageEffect.None) {
-						
-			switch (this.damageEffect)
-			{
-			case Inferno:
-				{
-					final int fireLength = 6;
-					entity.setFireTicks(fireLength * 20);
+		Map<String, DamageEffect> damageEffects = MineKart.getInstance().getDamageEffects();
+		if (damageEffects.containsKey(this.damageEffectType)) {
+			DamageEffect effect = damageEffects.get(damageEffectType);
+			
+			if (entity instanceof Player) {		
+				Jockey jockey = MineKart.getInstance().getJockey((Player)entity);
+				if (jockey != null) {
+					effect.use(jockey);
 				}
-				break;
-			case None:
-				break;
-			case Poison:
-				{
-					PotionEffect poisonPotion = new PotionEffect(PotionEffectType.POISON, 3 * 20, 1);
-					entity.addPotionEffect(poisonPotion);
-				}
-				break;
-			default:
-				break;			
 			}
 		}
 		
