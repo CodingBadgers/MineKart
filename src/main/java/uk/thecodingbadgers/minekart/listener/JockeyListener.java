@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.citizensnpcs.api.npc.NPC;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,6 +18,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -29,6 +32,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.potion.PotionEffectType;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.events.jockey.JockeyPowerupPickupEvent;
@@ -377,12 +382,27 @@ public class JockeyListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-
-		if (event.getCause() == DamageCause.ENTITY_ATTACK) {
-			event.setCancelled(true);
-			return;
+		
+		if (event instanceof EntityDamageByEntityEvent) {
+			EntityDamageByEntityEvent entityAttack = (EntityDamageByEntityEvent)event;
+			Entity damager = entityAttack.getDamager();
+			
+			// Other players can't attack
+			if (damager instanceof Player) {
+				event.setCancelled(true);
+				return;
+			}
+			
+			List<MetadataValue> powerupMetas = damager.getMetadata("powerup");
+			for (MetadataValue meta : powerupMetas) {
+				if (meta.value() instanceof Powerup) {
+					Powerup powerup = (Powerup)meta.value();
+					powerup.onDamageEntity(entityAttack);
+				}
+			}
+			
 		}
-
+		
 		if (event.getDamage() >= player.getHealth()) {
 			event.setCancelled(true);
 			jockey.respawn();
