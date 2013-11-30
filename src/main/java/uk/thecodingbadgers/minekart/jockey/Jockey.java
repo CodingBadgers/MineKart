@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -324,15 +325,29 @@ public class Jockey {
 
 		// Unmount and remove the mount
 		if (this.mount != null) {
-			this.mount.getBukkitEntity().eject();
+			LivingEntity entity = this.mount.getBukkitEntity();
+			if (entity != null && entity.getPassenger() != null) {
+				entity.eject();
+			}
 			this.mount.destroy();
 		}
 
 		// Restore the jockeys items
 		restoreInventory(this.player);
 
+		final Player p = this.player;
+		final Location l = this.exitLocaiton;
+		
 		// Teleport the player to their exit location
-		this.player.teleport(this.exitLocaiton);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(MineKart.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				p.teleport(l);
+			}
+			
+		}, 4L);
+				
 	}
 
 	/**
