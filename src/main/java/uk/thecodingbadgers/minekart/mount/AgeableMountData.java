@@ -15,7 +15,7 @@ public class AgeableMountData extends DefaultMountData {
 
 	@Override
 	public void loadData(ConfigurationSection section) {
-		adult = section.getBoolean("adult", false);
+		adult = section.getBoolean("adult", true);
 		super.loadData(section);
 	}
 
