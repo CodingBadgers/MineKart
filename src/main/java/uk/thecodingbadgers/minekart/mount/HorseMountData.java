@@ -8,7 +8,7 @@ import org.bukkit.entity.Horse.Color;
 import org.bukkit.entity.Horse.Style;
 import org.bukkit.entity.Horse.Variant;
 
-public class HorseMountData extends DefaultMountData {
+public class HorseMountData extends AgeableMountData {
 
 	private Color colour = Color.BLACK;
 	private Style style = Style.NONE;
@@ -20,10 +20,10 @@ public class HorseMountData extends DefaultMountData {
 
 	@Override
 	public void loadData(ConfigurationSection section) {
-		super.loadData(section);
 		this.colour = Color.valueOf(section.getString("color", Color.BLACK.name()));
 		this.style = Style.valueOf(section.getString("style", Style.NONE.name()));
 		this.variant = Variant.valueOf(section.getString("variant", Variant.HORSE.name()));
+		super.loadData(section);
 	}
 
 	@Override

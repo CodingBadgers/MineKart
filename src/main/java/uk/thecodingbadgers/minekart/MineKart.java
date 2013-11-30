@@ -32,8 +32,10 @@ import uk.thecodingbadgers.minekart.command.CommandHandler;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.listener.BlockListener;
 import uk.thecodingbadgers.minekart.listener.JockeyListener;
+import uk.thecodingbadgers.minekart.mount.AgeableMountData;
 import uk.thecodingbadgers.minekart.mount.HorseMountData;
 import uk.thecodingbadgers.minekart.mount.MountDataRegistry;
+import uk.thecodingbadgers.minekart.mount.SizeMountData;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.powerup.PowerupDrop;
 import uk.thecodingbadgers.minekart.powerup.PowerupPotion;
@@ -132,6 +134,15 @@ public final class MineKart extends JavaPlugin {
 
 		this.mountDataRegistry = new MountDataRegistry();
 		this.mountDataRegistry.registerCustomMountData(EntityType.HORSE, HorseMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.SLIME, SizeMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.MAGMA_CUBE, SizeMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.COW, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.CHICKEN, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.SHEEP, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.OCELOT, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.PIG, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.ZOMBIE, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.WOLF, AgeableMountData.class);
 
 		registerListeners();
 
