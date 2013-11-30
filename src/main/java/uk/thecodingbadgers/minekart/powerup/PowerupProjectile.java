@@ -102,7 +102,8 @@ public class PowerupProjectile extends Powerup {
 		
 		if (this.damage >= 0) {
 			// We store damage as heart damage. So multiply it by 2.
-			entity.setHealth(entity.getHealth() - (this.damage * 2.0));
+			Double newHealth = entity.getHealth() - (this.damage * 2.0);
+			entity.setHealth(newHealth < 0 ? 0 : newHealth);
 			entityAttackEvent.setDamage(0.0);
 		}
 		

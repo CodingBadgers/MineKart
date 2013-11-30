@@ -34,7 +34,7 @@ public class DamageEffectShrink extends DamageEffect {
 			slime.setSize(1);
 		}
 		
-		final int shrinkLength = 1;
+		final int shrinkLength = 4;
 		final int restoreValue = oldValue;
 		Bukkit.getScheduler().scheduleSyncDelayedTask(MineKart.getInstance(), new Runnable() {
 
