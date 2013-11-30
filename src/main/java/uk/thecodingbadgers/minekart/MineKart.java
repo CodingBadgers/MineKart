@@ -42,6 +42,7 @@ import uk.thecodingbadgers.minekart.powerup.PowerupPotion;
 import uk.thecodingbadgers.minekart.powerup.PowerupProjectile;
 import uk.thecodingbadgers.minekart.powerup.PowerupRegistry;
 import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffect;
+import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffectFreeze;
 import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffectIgnite;
 import uk.thecodingbadgers.minekart.powerup.damageeffect.DamageEffectPoison;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
@@ -153,6 +154,7 @@ public final class MineKart extends JavaPlugin {
 		this.damageEffects = new HashMap<String, DamageEffect>();
 		this.damageEffects.put("ignite", new DamageEffectIgnite());
 		this.damageEffects.put("poison", new DamageEffectPoison());
+		this.damageEffects.put("freeze", new DamageEffectFreeze());
 		
 		registerListeners();
 
