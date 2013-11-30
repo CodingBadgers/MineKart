@@ -127,7 +127,7 @@ public class CourseCommand {
 	}
 
 	/**
-	 * Handle the /mk course <course> show[warp type] command
+	 * Handle the /mk course <coursename> show[warp type] command
 	 * 
 	 * @param sender
 	 * @param args

@@ -3,6 +3,7 @@ package uk.thecodingbadgers.minekart.powerup;
 import java.io.File;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
@@ -15,7 +16,7 @@ public class PowerupProjectile extends Powerup {
 
 	/** Type of projectile to launch **/
 	private EntityType type;
-
+	
 	/** The speed of the projectile **/
 	private double speed;
 
@@ -63,12 +64,13 @@ public class PowerupProjectile extends Powerup {
 		this.amount--;
 
 		final Player player = jockey.getPlayer();
-
-		Location spawnLocation = player.getLocation();
-		Projectile projectile = (Projectile) player.getWorld().spawnEntity(spawnLocation, this.type);
-		projectile.setVelocity(spawnLocation.getDirection().multiply(this.speed));
+		final World world = player.getWorld();
+		final Location location = player.getEyeLocation();		
+		
+		Projectile projectile = (Projectile)world.spawnEntity(location, type);
+		projectile.setVelocity(player.getLocation().getDirection().multiply(this.speed));
 		projectile.setShooter(player);
-
+		
 	}
 
 }
