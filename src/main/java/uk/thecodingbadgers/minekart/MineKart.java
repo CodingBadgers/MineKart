@@ -320,26 +320,33 @@ public final class MineKart extends JavaPlugin {
 		File[] coursefiles = MineKart.racecourseFolderPath.listFiles();
 
 		for (File file : coursefiles) {
+			
 			final String filename = file.getName();
-
-			if (!filename.endsWith(".yml"))
-				continue;
-
-			final String[] nameparts = filename.split("\\.");
-
-			final String coursename = nameparts[0];
-			final String coursetype = nameparts[1];
-
-			Racecourse course = this.racecourseTypeRegistry.createRacecourse(coursetype);
-
-			if (course == null) {
-				getLogger().log(Level.SEVERE, "Unknown course type '" + coursetype + "' for course '" + coursename + "'.");
-				continue;
+			
+			try {
+				
+				if (!filename.endsWith(".yml"))
+					continue;
+	
+				final String[] nameparts = filename.split("\\.");
+	
+				final String coursename = nameparts[0];
+				final String coursetype = nameparts[1];
+	
+				Racecourse course = this.racecourseTypeRegistry.createRacecourse(coursetype);
+	
+				if (course == null) {
+					getLogger().log(Level.SEVERE, "Unknown course type '" + coursetype + "' for course '" + coursename + "'.");
+					continue;
+				}
+	
+				course.load(file);
+				this.courses.put(coursename.toLowerCase(), course);
+				getLogger().log(Level.INFO, "Loaded racecourse: " + coursename);
+				
+			}  catch (Exception ex) {
+				getLogger().log(Level.WARNING, "The racecourse with the file name '" + filename + "' failed to load correctly.", ex);
 			}
-
-			course.load(file);
-			this.courses.put(coursename.toLowerCase(), course);
-			getLogger().log(Level.INFO, "Loaded racecourse: " + coursename);
 		}
 	}
 
