@@ -37,6 +37,8 @@ import org.bukkit.potion.PotionEffectType;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.events.jockey.JockeyPowerupPickupEvent;
+import uk.thecodingbadgers.minekart.jockey.ControllableMount;
+import uk.thecodingbadgers.minekart.jockey.ControllableMount.GroundController;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySign;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
@@ -377,6 +379,26 @@ public class JockeyListener implements Listener {
 		if (jockey == null)
 			return;
 
+		if (event.getCause() == DamageCause.FALL) {
+			if (player.hasPotionEffect(PotionEffectType.JUMP)) {
+				NPC mount = jockey.getMount();
+				if (mount == null) {
+					event.setCancelled(true);
+					return;
+				}
+				
+				ControllableMount trait = mount.getTrait(ControllableMount.class);
+				if (trait != null && trait.getController() instanceof GroundController) {
+					GroundController controller = (GroundController)trait.getController();
+					if (controller.isJumping()) {
+						event.setCancelled(true);
+						return;
+					}
+				}
+				
+			}
+		}
+		
 		Race race = jockey.getRace();
 		if (race.getState() != RaceState.InRace) {
 			event.setCancelled(true);
