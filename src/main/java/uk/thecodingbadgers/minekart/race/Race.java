@@ -395,7 +395,7 @@ public abstract class Race {
 
 		NPC mount = jockey.getMount();
 		if (mount != null) {
-			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + mount.getName() + ChatColor.WHITE + "are the Winners!");
+			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + mount.getName() + ChatColor.WHITE + " are the Winners!");
 		} else {
 			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " has won!");
 		}
