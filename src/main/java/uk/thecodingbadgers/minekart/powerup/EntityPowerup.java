@@ -1,11 +1,11 @@
 package uk.thecodingbadgers.minekart.powerup;
 
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_6_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
 
-import net.minecraft.server.v1_6_R3.DamageSource;
-import net.minecraft.server.v1_6_R3.EntityItem;
+import net.minecraft.server.v1_7_R1.DamageSource;
+import net.minecraft.server.v1_7_R1.EntityItem;
 
 public class EntityPowerup extends EntityItem {
 
@@ -19,8 +19,8 @@ public class EntityPowerup extends EntityItem {
 	}
 
 	@Override
-	public void l_() {
-		this.y();
+	public void h() {
+		this.C();
 	}
 
 	@Override
