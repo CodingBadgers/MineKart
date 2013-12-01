@@ -328,7 +328,7 @@ public class JockeyListener implements Listener {
 			int zDiff = from.getBlockZ() - to.getBlockZ();
 
 			if (xDiff + zDiff != 0) {
-				event.setCancelled(true);
+				event.setTo(from);
 			}
 			return;
 		}
