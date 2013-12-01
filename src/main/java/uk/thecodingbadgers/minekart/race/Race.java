@@ -65,6 +65,9 @@ public abstract class Race {
 
 	/** Scoreboards for the race */
 	ScoreboardManager scoreboardManager = null;
+	
+	/** Timer used for updating all jockey inventorys every second */
+	int updateInventoryHack = -1;
 
 	/**
 	 * Class constructor
@@ -213,6 +216,19 @@ public abstract class Race {
 		}
 
 		setState(RaceState.InRace);
+		
+		this.updateInventoryHack = Bukkit.getScheduler().scheduleSyncRepeatingTask(MineKart.getInstance(), new Runnable() {
+
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				for (Jockey jockey : jockeys.values()) {
+					jockey.getPlayer().updateInventory();
+				}
+			}
+			
+		}, 
+		20L, 20L);
 	}
 
 	/**
@@ -285,6 +301,11 @@ public abstract class Race {
 
 		this.course.onRaceEnd(this);
 		this.endTimer = null;
+		
+		if (this.updateInventoryHack != -1) {
+			Bukkit.getScheduler().cancelTask(updateInventoryHack);
+			this.updateInventoryHack = -1;
+		}
 
 		Map<String, Jockey> tempJockeys = new HashMap<String, Jockey>(this.jockeys);
 		for (Jockey jockey : tempJockeys.values()) {

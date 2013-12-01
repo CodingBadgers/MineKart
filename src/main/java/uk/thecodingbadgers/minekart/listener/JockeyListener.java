@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import net.citizensnpcs.api.npc.NPC;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -31,6 +30,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -229,6 +229,10 @@ public class JockeyListener implements Listener {
 
 		if (player.getInventory().getHeldItemSlot() == Powerup.POWERUP_SLOT) {
 			Powerup powerup = jockey.getPowerup();
+			if (powerup == null) {
+				return;
+			}
+			
 			powerup.onUse(jockey);
 
 			if (powerup.getAmount() <= 0) {
@@ -320,19 +324,6 @@ public class JockeyListener implements Listener {
 			return;
 
 		Race race = jockey.getRace();
-		if (race.getState() == RaceState.Starting) {
-
-			Location from = event.getFrom();
-			Location to = event.getTo();
-			int xDiff = from.getBlockX() - to.getBlockX();
-			int zDiff = from.getBlockZ() - to.getBlockZ();
-
-			if (xDiff + zDiff != 0) {
-				event.setTo(from);
-			}
-			return;
-		}
-
 		if (race.getState() != RaceState.InRace)
 			return;
 
@@ -490,25 +481,24 @@ public class JockeyListener implements Listener {
 	public void onDropItem(PlayerDropItemEvent event) {
 
 		final Player player = event.getPlayer();
-
+		
 		Jockey jockey = MineKart.getInstance().getJockey(player);
 		if (jockey == null) {
 			return;
 		}
 
-		event.setCancelled(true);
-
-		ItemStack powerupItem = player.getInventory().getItem(Powerup.POWERUP_SLOT);
-
-		if (powerupItem == null) {
+		PlayerInventory invent = player.getInventory();
+		
+		if (invent.getHeldItemSlot() == Powerup.POWERUP_SLOT) {
+			player.updateInventory();
+			jockey.setPowerup(null);
+			event.getItemDrop().remove();
+			MineKart.output(player, "You have dropped your powerup...");
 			return;
 		}
 		
-		if (powerupItem.isSimilar(event.getItemDrop().getItemStack())) {
-			player.getInventory().setItem(Powerup.POWERUP_SLOT, new ItemStack(Material.AIR));
-			player.updateInventory();
-			jockey.setPowerup(null);
-		}
+		event.setCancelled(true);
+		player.updateInventory();
 	}
 
 	/**
