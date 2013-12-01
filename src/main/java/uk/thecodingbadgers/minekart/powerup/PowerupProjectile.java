@@ -103,8 +103,8 @@ public class PowerupProjectile extends Powerup {
 		if (this.damage >= 0) {
 			// We store damage as heart damage. So multiply it by 2.
 			Double newHealth = entity.getHealth() - (this.damage * 2.0);
-			entity.setHealth(newHealth < 0 ? 0 : newHealth);
-			entityAttackEvent.setDamage(0.0);
+			entity.setHealth(newHealth < 0.5 ? 0.5 : newHealth);
+			entityAttackEvent.setDamage(newHealth < 0.5 ? 1000.0 : 0.0);
 		}
 		
 		Map<String, DamageEffect> damageEffects = MineKart.getInstance().getDamageEffects();

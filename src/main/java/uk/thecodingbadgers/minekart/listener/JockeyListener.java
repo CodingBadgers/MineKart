@@ -31,6 +31,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -229,6 +230,10 @@ public class JockeyListener implements Listener {
 
 		if (player.getInventory().getHeldItemSlot() == Powerup.POWERUP_SLOT) {
 			Powerup powerup = jockey.getPowerup();
+			if (powerup == null) {
+				return;
+			}
+			
 			powerup.onUse(jockey);
 
 			if (powerup.getAmount() <= 0) {
@@ -322,17 +327,24 @@ public class JockeyListener implements Listener {
 		Race race = jockey.getRace();
 		if (race.getState() == RaceState.Starting) {
 
-			Location from = event.getFrom();
-			Location to = event.getTo();
-			int xDiff = from.getBlockX() - to.getBlockX();
-			int zDiff = from.getBlockZ() - to.getBlockZ();
+        	final double edgeLimit = 0.3;
+        	
+        	final Location from = event.getFrom();
+        	final Location to = event.getTo();
 
-			if (xDiff + zDiff != 0) {
-				event.setCancelled(true);
-			}
+        	final double xDiff = to.getX() - to.getBlockX();
+        	final double zDiff = to.getZ() - to.getBlockZ();
+        	
+            if (xDiff < edgeLimit || xDiff > (1.0 - edgeLimit) ||
+        		zDiff < edgeLimit || zDiff > (1.0 - edgeLimit)) 
+            {
+            	from.setX(from.getBlockX() + 0.5);
+            	from.setZ(from.getBlockZ() + 0.5);
+            	event.setTo(from);
+            }
 			return;
 		}
-
+	
 		if (race.getState() != RaceState.InRace)
 			return;
 
@@ -441,6 +453,19 @@ public class JockeyListener implements Listener {
 	@EventHandler
 	public void onPickupItem(PlayerPickupItemEvent event) {
 
+		final Player player = event.getPlayer();
+		final Jockey jockey = MineKart.getInstance().getJockey(player);
+
+		if (jockey == null) {
+			return;
+		}
+		
+		event.setCancelled(true);
+		
+		if (!jockey.canPickupPowerup()) {
+			return;
+		}
+		
 		final Item item = event.getItem();
 		final ItemMeta meta = item.getItemStack().getItemMeta();
 
@@ -448,16 +473,7 @@ public class JockeyListener implements Listener {
 			return;
 		}
 
-		event.setCancelled(true);
-
-		final Player player = event.getPlayer();
-		final Jockey jockey = MineKart.getInstance().getJockey(player);
-
-		if (jockey == null || !jockey.canPickupPowerup()) {
-			return;
-		}
-
-		ItemStack slotItem = player.getInventory().getItem(1);
+		ItemStack slotItem = player.getInventory().getItem(Powerup.POWERUP_SLOT);
 		if (slotItem != null) {
 			return;
 		}
@@ -486,25 +502,31 @@ public class JockeyListener implements Listener {
 	public void onDropItem(PlayerDropItemEvent event) {
 
 		final Player player = event.getPlayer();
-
+		
 		Jockey jockey = MineKart.getInstance().getJockey(player);
 		if (jockey == null) {
 			return;
 		}
 
-		event.setCancelled(true);
-
-		ItemStack powerupItem = player.getInventory().getItem(Powerup.POWERUP_SLOT);
-
-		if (powerupItem == null) {
+		PlayerInventory invent = player.getInventory();
+		
+		if (invent.getHeldItemSlot() == Powerup.POWERUP_SLOT) {
+			jockey.setPowerup(null);
+			event.getItemDrop().remove();
+			MineKart.output(player, "You have dropped your powerup...");
 			return;
 		}
 		
-		if (powerupItem.isSimilar(event.getItemDrop().getItemStack())) {
-			player.getInventory().setItem(Powerup.POWERUP_SLOT, new ItemStack(Material.AIR));
-			player.updateInventory();
-			jockey.setPowerup(null);
+		final int RESPAWN_SLOT = 8;
+		if (invent.getHeldItemSlot() == RESPAWN_SLOT) {
+			ItemStack stack = event.getItemDrop().getItemStack();
+			event.getItemDrop().remove();
+			invent.setItem(RESPAWN_SLOT, stack);
+			return;
 		}
+		
+		event.setCancelled(true);
+		player.updateInventory();
 	}
 
 	/**

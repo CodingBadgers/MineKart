@@ -1,6 +1,9 @@
 package uk.thecodingbadgers.minekart.powerup.damageeffect;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -9,6 +12,7 @@ import net.citizensnpcs.api.npc.NPC;
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.ControllableMount;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.util.FireworkFactory;
 
 public class DamageEffectFreeze extends DamageEffect {
 
@@ -28,7 +32,8 @@ public class DamageEffectFreeze extends DamageEffect {
 		
 		final ItemStack oldHelmet = player.getInventory().getHelmet();
 		player.getInventory().setHelmet(new ItemStack(Material.ICE));
-		MineKart.output(player, "You have been frozen!");
+		MineKart.output(player, ChatColor.RED + "You have been frozen!");
+		FireworkFactory.SpawnFireworkExplosion(player.getEyeLocation(), FireworkEffect.Type.BALL, Color.BLUE);
 		
 		final int freezeLength = 1;
 		Bukkit.getScheduler().scheduleSyncDelayedTask(MineKart.getInstance(), new Runnable() {
