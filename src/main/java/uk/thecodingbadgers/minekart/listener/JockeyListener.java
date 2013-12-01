@@ -441,6 +441,19 @@ public class JockeyListener implements Listener {
 	@EventHandler
 	public void onPickupItem(PlayerPickupItemEvent event) {
 
+		final Player player = event.getPlayer();
+		final Jockey jockey = MineKart.getInstance().getJockey(player);
+
+		if (jockey == null) {
+			return;
+		}
+		
+		event.setCancelled(true);
+		
+		if (!jockey.canPickupPowerup()) {
+			return;
+		}
+		
 		final Item item = event.getItem();
 		final ItemMeta meta = item.getItemStack().getItemMeta();
 
@@ -448,16 +461,7 @@ public class JockeyListener implements Listener {
 			return;
 		}
 
-		event.setCancelled(true);
-
-		final Player player = event.getPlayer();
-		final Jockey jockey = MineKart.getInstance().getJockey(player);
-
-		if (jockey == null || !jockey.canPickupPowerup()) {
-			return;
-		}
-
-		ItemStack slotItem = player.getInventory().getItem(1);
+		ItemStack slotItem = player.getInventory().getItem(Powerup.POWERUP_SLOT);
 		if (slotItem != null) {
 			return;
 		}
