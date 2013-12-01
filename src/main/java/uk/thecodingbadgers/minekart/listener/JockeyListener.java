@@ -511,10 +511,17 @@ public class JockeyListener implements Listener {
 		PlayerInventory invent = player.getInventory();
 		
 		if (invent.getHeldItemSlot() == Powerup.POWERUP_SLOT) {
-			player.updateInventory();
 			jockey.setPowerup(null);
 			event.getItemDrop().remove();
 			MineKart.output(player, "You have dropped your powerup...");
+			return;
+		}
+		
+		final int RESPAWN_SLOT = 8;
+		if (invent.getHeldItemSlot() == RESPAWN_SLOT) {
+			ItemStack stack = event.getItemDrop().getItemStack();
+			event.getItemDrop().remove();
+			invent.setItem(RESPAWN_SLOT, stack);
 			return;
 		}
 		
