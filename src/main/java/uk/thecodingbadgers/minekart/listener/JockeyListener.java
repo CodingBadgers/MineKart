@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import net.citizensnpcs.api.npc.NPC;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -324,6 +325,26 @@ public class JockeyListener implements Listener {
 			return;
 
 		Race race = jockey.getRace();
+		if (race.getState() == RaceState.Starting) {
+
+        	final double edgeLimit = 0.3;
+        	
+        	final Location from = event.getFrom();
+        	final Location to = event.getTo();
+
+        	final double xDiff = to.getX() - to.getBlockX();
+        	final double zDiff = to.getZ() - to.getBlockZ();
+        	
+            if (xDiff < edgeLimit || xDiff > (1.0 - edgeLimit) ||
+        		zDiff < edgeLimit || zDiff > (1.0 - edgeLimit)) 
+            {
+            	from.setX(from.getBlockX() + 0.5);
+            	from.setZ(from.getBlockZ() + 0.5);
+            	event.setTo(from);
+            }
+			return;
+		}
+	
 		if (race.getState() != RaceState.InRace)
 			return;
 
