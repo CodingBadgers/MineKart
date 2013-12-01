@@ -23,8 +23,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.WorldVector;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
@@ -43,9 +43,6 @@ public class Jockey {
 
 	/** The player which represents this jockey */
 	private Player player = null;
-
-	/** The world edit instance of a player */
-	private LocalPlayer worldEditPlayer = null;
 
 	/** The type of mount the jockey will use */
 	private EntityType mountType = EntityType.UNKNOWN;
@@ -92,9 +89,6 @@ public class Jockey {
 		this.race = race;
 		this.exitLocaiton = oldLocation;
 		this.jockeyColor = getRandomColor();
-
-		WorldEditPlugin worldEdit = MineKart.getInstance().getWorldEditPlugin();
-		this.worldEditPlayer = worldEdit.wrapPlayer(player);
 
 		this.backup = new PlayerBackup();
 		backupInventory(this.player);
@@ -490,6 +484,11 @@ public class Jockey {
 	 * @return true if the jockey can pickup the powerup, false othewise
 	 */
 	public boolean canPickupPowerup() {
+		
+		if (this.race.hasJockeyFinished(this)) {
+			return false;
+		}
+		
 		return System.currentTimeMillis() - lastpowerup >= this.race.getCourse().getPowerupCooldown();
 	}
 
@@ -508,7 +507,9 @@ public class Jockey {
 	 * @return A world edit vector representation of a players location
 	 */
 	public com.sk89q.worldedit.Vector getWorldEditLocation() {
-		return this.worldEditPlayer.getPosition();
+		Location loc = player.getEyeLocation();
+        return new WorldVector(BukkitUtil.getLocalWorld(loc.getWorld()), 
+        		loc.getX(), loc.getY(), loc.getZ());
 	}
 
 }
