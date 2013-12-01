@@ -7,7 +7,7 @@ import org.bukkit.entity.EntityType;
 
 public class AgeableMountData extends DefaultMountData {
 
-	private boolean adult;
+	private boolean adult = true;
 	
 	protected AgeableMountData(EntityType type) {
 		super(type);
