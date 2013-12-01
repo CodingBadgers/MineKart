@@ -482,5 +482,14 @@ public abstract class Race {
 	public ScoreboardManager getScoreboardManager() {
 		return this.scoreboardManager;
 	}
+	
+	/**
+	 * See if a jockey has finished the race
+	 * @param jockey The jockey to test
+	 * @return True if they have finished, false otherwise
+	 */
+	public boolean hasJockeyFinished(Jockey jockey) {
+		return this.winners.contains(jockey);
+	}
 
 }

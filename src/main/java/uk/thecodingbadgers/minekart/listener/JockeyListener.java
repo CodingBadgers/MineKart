@@ -197,6 +197,11 @@ public class JockeyListener implements Listener {
 	@SuppressWarnings("deprecation")
 	private void onJockeyInteractInGame(Jockey jockey, PlayerInteractEvent event) {
 
+		if (jockey.getRace().hasJockeyFinished(jockey)) {
+			event.setCancelled(true);
+			return;
+		}
+		
 		Player player = event.getPlayer();
 
 		ItemStack item = player.getItemInHand();
