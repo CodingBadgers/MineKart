@@ -1,5 +1,6 @@
 package uk.thecodingbadgers.minekart;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -324,8 +325,8 @@ public final class MineKart extends JavaPlugin {
 						OutputStream out = new FileOutputStream(powerupFile);
 						
 						ByteStreams.copy(inStream, out);
-						inStream.close();
-						out.close();
+						close(inStream);
+						close(out);
 					}
 				}
 			}
@@ -333,11 +334,20 @@ public final class MineKart extends JavaPlugin {
 		} catch (IOException e) {
 			getLogger().log(Level.SEVERE, "Error copying default configs from jar", e);
 		} finally {
-			if (file != null) {
+			if (file != null) { // Doesn't implement Closeable :(
 				try {
 					file.close();
 				} catch (IOException e) {
 				}
+			}
+		}
+	}
+	
+	private void close(Closeable close) {
+		if (close != null) {
+			try {
+				close.close();
+			} catch (Exception ex) {
 			}
 		}
 	}
