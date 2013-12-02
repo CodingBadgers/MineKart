@@ -11,8 +11,8 @@
 	</organization>
 
 	<properties>
-		<bukkit.version>1.6.4-R2.0</bukkit.version>
-		<citizens.version>2.0.10-SNAPSHOT</citizens.version>
+		<bukkit.version>1.7.2-R0.1-SNAPSHOT</bukkit.version>
+		<citizens.version>2.0.11-SNAPSHOT</citizens.version>
 	</properties>
 
 	<scm>
@@ -76,26 +76,37 @@
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
 			<version>${bukkit.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>craftbukkit</artifactId>
 			<version>${bukkit.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q</groupId>
 			<artifactId>worldedit</artifactId>
 			<version>5.5.8-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<artifactId>citizensapi</artifactId>
 			<groupId>net.citizensnpcs</groupId>
 			<version>${citizens.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<artifactId>citizens</artifactId>
 			<groupId>net.citizensnpcs</groupId>
 			<version>${citizens.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<artifactId>guava</artifactId>
+			<groupId>com.google.guava</groupId>
+			<version>10.0.1</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

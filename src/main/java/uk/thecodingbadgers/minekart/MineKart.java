@@ -1,5 +1,6 @@
 package uk.thecodingbadgers.minekart;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,7 +19,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 
-import org.apache.commons.io.IOUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.google.common.io.ByteStreams;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 import uk.thecodingbadgers.minekart.command.CommandHandler;
@@ -322,10 +323,10 @@ public final class MineKart extends JavaPlugin {
 						File powerupFile = new File(powerupFolderPath, fileName);
 						InputStream inStream = file.getInputStream(entry);
 						OutputStream out = new FileOutputStream(powerupFile);
-
-						IOUtils.copy(inStream, out);
-						IOUtils.closeQuietly(inStream);
-						IOUtils.closeQuietly(out);
+						
+						ByteStreams.copy(inStream, out);
+						close(inStream);
+						close(out);
 					}
 				}
 			}
@@ -333,11 +334,20 @@ public final class MineKart extends JavaPlugin {
 		} catch (IOException e) {
 			getLogger().log(Level.SEVERE, "Error copying default configs from jar", e);
 		} finally {
-			if (file != null) {
+			if (file != null) { // Doesn't implement Closeable :(
 				try {
 					file.close();
 				} catch (IOException e) {
 				}
+			}
+		}
+	}
+	
+	private void close(Closeable close) {
+		if (close != null) {
+			try {
+				close.close();
+			} catch (Exception ex) {
 			}
 		}
 	}
