@@ -168,6 +168,7 @@
 				<directory>${basedir}/src/main/resources</directory>
 				<includes>
 					<include>*.yml</include>
+					<include>*.json</include>
 				</includes>
 			</resource>
 			<resource>

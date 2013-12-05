@@ -3,6 +3,7 @@ package uk.thecodingbadgers.minekart;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,6 +22,7 @@ import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -31,6 +33,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 import uk.thecodingbadgers.minekart.command.CommandHandler;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.jockey.JockeyDataManager;
 import uk.thecodingbadgers.minekart.listener.BlockListener;
 import uk.thecodingbadgers.minekart.listener.JockeyListener;
 import uk.thecodingbadgers.minekart.mount.AgeableMountData;
@@ -93,6 +96,9 @@ public final class MineKart extends JavaPlugin {
 	
 	/** all registered damage effects **/
 	protected Map<String, DamageEffect> damageEffects;
+	
+	/** The manager for all custom jockey data */
+	protected JockeyDataManager jockeyDataManager;
 
 	/**
 	 * Called when the plugin is enabled
@@ -165,6 +171,7 @@ public final class MineKart extends JavaPlugin {
 
 		this.courses = new HashMap<String, Racecourse>();
 
+		loadJockeyData();
 		loadPowerups();
 		loadRacecourses();
 		loadSigns();
@@ -193,8 +200,11 @@ public final class MineKart extends JavaPlugin {
 		this.courses.clear();		
 		this.powerups.clear();
 		
+		this.jockeyDataManager = null;
+		
 		this.loadPowerups();
 		this.loadRacecourses();		
+		this.loadJockeyData();
 	}
 
 	/**
@@ -259,6 +269,15 @@ public final class MineKart extends JavaPlugin {
 	 */
 	public static File getLobbyFolder() {
 		return MineKart.lobbyFolderPath;
+	}
+
+	/**
+	 * Get the jockey data manager
+	 * 
+	 * @return The jockey data manager
+	 */
+	public JockeyDataManager getJockeyDataManager() {
+		return this.jockeyDataManager;
 	}
 
 	/**
@@ -386,6 +405,33 @@ public final class MineKart extends JavaPlugin {
 			}  catch (Exception ex) {
 				getLogger().log(Level.WARNING, "The racecourse with the file name '" + filename + "' failed to load correctly.", ex);
 			}
+		}
+	}
+	
+	private void loadJockeyData() {
+		File file = new File(this.getDataFolder(), "data.json");
+		
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+				InputStream inStream = getResource("data.json");
+				OutputStream out = new FileOutputStream(file);
+				
+				ByteStreams.copy(inStream, out);
+				close(inStream);
+				close(out);
+			} catch (IOException ex) {
+				getLogger().log(Level.SEVERE, "Could not load jockey data.", ex);
+				return;
+			}
+		}
+		
+		try {
+			Gson gson = new Gson();
+			jockeyDataManager = gson.fromJson(new FileReader(file), JockeyDataManager.class);
+			System.out.println(jockeyDataManager.toString());
+		} catch (Exception e) {
+			getLogger().log(Level.SEVERE, "Could not load jockey data.", e);
 		}
 	}
 

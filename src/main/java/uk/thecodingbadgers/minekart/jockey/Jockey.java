@@ -77,6 +77,9 @@ public class Jockey {
 	/** The time the player picked up their last powerup */
 	private long lastpowerup;
 
+	/** The special jockey data accociated with this jockey */
+	private JockeySpecialData specialData;
+	
 	/**
 	 * 
 	 * @param player
@@ -89,6 +92,7 @@ public class Jockey {
 		this.race = race;
 		this.exitLocaiton = oldLocation;
 		this.jockeyColor = getRandomColor();
+		this.specialData = MineKart.getInstance().getJockeyDataManager().getJockeyData(this);
 
 		this.backup = new PlayerBackup();
 		backupInventory(this.player);
@@ -199,14 +203,10 @@ public class Jockey {
 	private Color getRandomColor() {
 		Random random = new Random();
 
-		if (player.getName().equalsIgnoreCase("tdc_hodgy") || player.getName().equalsIgnoreCase("tilly_lala")) {
-			return Color.fromRGB(85, 85, 255);
+		if (specialData != null && specialData.hasCustomColour()) {
+			return specialData.getJockeyColour();
 		}
-
-		if (player.getName().equalsIgnoreCase("thefish97") || player.getName().equalsIgnoreCase("n3wton")) {
-			return Color.fromRGB(0, 170, 0);
-		}
-
+		
 		return Color.fromRGB(random.nextInt(256), random.nextInt(256), random.nextInt(256));
 	}
 
@@ -288,6 +288,10 @@ public class Jockey {
 
 		Random random = new Random();
 
+		if (specialData != null && specialData.hasCustomName()) {
+			return specialData.getHorseName();
+		}
+		
 		if (jockeyName.equalsIgnoreCase("itstolate") && random.nextInt(4) == 0) {
 			return "Canada Smells";
 		}
