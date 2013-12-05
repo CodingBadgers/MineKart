@@ -230,7 +230,7 @@ public class Jockey {
 		this.player.teleport(spawn);
 		this.respawnLocation = spawn;
 
-		createMount(getRadomMountName(this.player.getName()), spawn, false);
+		createMount(getRandomMountName(), spawn, false);
 
 		// Give the player a whip
 		ItemStack whip = new ItemStack(Material.STICK);
@@ -281,26 +281,13 @@ public class Jockey {
 	 * 
 	 * @return A string to be used as the mount name
 	 */
-	private String getRadomMountName(String jockeyName) {
-
-		// TODO move to external file
-		String[] allNames = {"Mental Boy", "Nervous Sparxx", "OAP Money", "Clean Smoke", "Gnashing Panic", "Near Pride", "Bringing Action", "Nefarious Dusty", "Tornado Fall", "Jim's Depression", "Caramel Comedy", "Wally's Maiden", "Dirty Underwear", "Romantic Apple", "Wisby's Revenge", "Rabid Ruler", "Scared Sally", "Prancers Dream", "Tidy's Teen", "Losing Hope", "Whisky Galore", "Who's Dr", "Nintendon't", "Glue Factory", "Hooves McCoy", "Red Lightning", "Lazy Susan", "Woolly Toque", "Granola Bar", "Bloody Harvest", "Wet Blanket", "Actually Fast", "Horse IV", "See Spot Fly", "Fox in Socks", "One Way", "Beans", "To The Moon", "Bitter Blue", "Black Cadillac", "Landing Gear", "Not American", "Ringo Star", "Mystery Man", "Spits-A-Lot", "Hungry Hippo", "Chapter 13", "Almost Pearls", "The Lady", "Graceling", "Lockpick", "Pants", "Gold Pilot", "Fire's Star", "Simply Food", "Scrap Paper", "Scrap Paper X", "Doomsday Kettle", "Vygotsky's Plan", "German Tank", "Horse-Bear", "Steroids Galore", "Blindsight", "The Scientist", "Robo Horse", "Lightning Hoof", "Robo Horse II", "Robo Horse III", "Added Calcium", "Gnasty Gnorc", "Dream Weaver", "French Toast", "Sun Seeker", "El Horso", "My Little Pony", "Guy in a Suit", "Almost Dead", "Big Mac", "Gravity's Foe", "George", "Applesauce", "Iron Knight", "In the Morning", "Cleverfoot", "Peggy", "TDC Pizza", "Princess Tilly", "Emmerica" };
-
-		Random random = new Random();
+	private String getRandomMountName() {
 
 		if (specialData != null && specialData.hasCustomName()) {
 			return specialData.getHorseName();
 		}
-		
-		if (jockeyName.equalsIgnoreCase("itstolate") && random.nextInt(4) == 0) {
-			return "Canada Smells";
-		}
 
-		if (jockeyName.equalsIgnoreCase("tilly_lala")) {
-			return random.nextBoolean() ? "George" : "Peggy";
-		}
-
-		return allNames[random.nextInt(allNames.length)];
+		return MineKart.getInstance().getJockeyDataManager().getRandomHorsename();
 	}
 
 	/**
