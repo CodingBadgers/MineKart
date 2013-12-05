@@ -429,7 +429,6 @@ public final class MineKart extends JavaPlugin {
 		try {
 			Gson gson = new Gson();
 			jockeyDataManager = gson.fromJson(new FileReader(file), JockeyDataManager.class);
-			System.out.println(jockeyDataManager.toString());
 		} catch (Exception e) {
 			getLogger().log(Level.SEVERE, "Could not load jockey data.", e);
 		}
