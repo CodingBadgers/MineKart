@@ -391,12 +391,21 @@ public abstract class Race {
 	 * @param jockey The jockey who is the winner
 	 */
 	public void setWinner(Jockey jockey) {
+		
+		NPC mount = jockey.getMount();
+		
+		MineKart.getInstance().getStatsManager().logCourseTime(
+				this.course.getName(),
+				mount == null ? "" : mount.getName(), 
+				jockey.getPlayer().getName(), 
+				jockey.getRaceTime()
+			);
 
 		this.winners.add(jockey);
 		final int position = this.winners.size();
 		if (position != 1) {
 
-			NPC mount = jockey.getMount();
+			
 			if (mount != null) {
 				this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + mount.getName() + ChatColor.WHITE + " came " + RaceHelper.ordinalNo(position) + ".");
 			} else {
@@ -414,7 +423,6 @@ public abstract class Race {
 			return;
 		}
 
-		NPC mount = jockey.getMount();
 		if (mount != null) {
 			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + mount.getName() + ChatColor.WHITE + " are the Winners!");
 		} else {

@@ -24,8 +24,8 @@ public class CourseCommand {
 
 		final Player player = (Player) sender;
 
-		if (!player.hasPermission("minekart.course create")) {
-			MineKart.output(player, "You do not have the required permission 'minekart.course create'");
+		if (!player.hasPermission("minekart.course.create")) {
+			MineKart.output(player, "You do not have the required permission 'minekart.course.create'");
 			return;
 		}
 

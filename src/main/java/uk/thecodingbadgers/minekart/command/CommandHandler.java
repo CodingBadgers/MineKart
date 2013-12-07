@@ -36,6 +36,12 @@ public class CommandHandler implements TabExecutor {
 			CourseCommand.handleCourseCommand(sender, args);
 			return true;
 		}
+		
+		// if the control argument is create, let the create command handler take care of it
+		if (controlArgument.startsWith("times")) {
+			StatsCommand.handleTimesCommand(sender, args);
+			return true;
+		}
 
 		// if the control argument is set or add, let the setwarp command handler take care of it
 		if (controlArgument.startsWith("set") || controlArgument.startsWith("add")) {

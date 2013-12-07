@@ -54,6 +54,7 @@ import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseCheckpoint;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseLap;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseTypeRegistry;
+import uk.thecodingbadgers.minekart.userstats.StatsManager;
 import static uk.thecodingbadgers.minekart.lobby.LobbySignManager.loadSigns;
 
 /**
@@ -95,10 +96,13 @@ public final class MineKart extends JavaPlugin {
 	private MountDataRegistry mountDataRegistry;
 	
 	/** all registered damage effects **/
-	protected Map<String, DamageEffect> damageEffects;
+	private Map<String, DamageEffect> damageEffects;
 	
 	/** The manager for all custom jockey data */
-	protected JockeyDataManager jockeyDataManager;
+	private JockeyDataManager jockeyDataManager;
+	
+	/** The Stats Manager instance */
+	private StatsManager statsManager;
 
 	/**
 	 * Called when the plugin is enabled
@@ -170,6 +174,8 @@ public final class MineKart extends JavaPlugin {
 		getCommand("minekart").setExecutor(new CommandHandler());
 
 		this.courses = new HashMap<String, Racecourse>();
+		
+		this.statsManager = new StatsManager();
 
 		loadJockeyData();
 		loadPowerups();
@@ -600,11 +606,19 @@ public final class MineKart extends JavaPlugin {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Get the damage effect map
+	 * @return The damage effect map
 	 */
 	public Map<String, DamageEffect> getDamageEffects() {
 		return this.damageEffects;
+	}
+	
+	/**
+	 * Get the stats manager instance
+	 * @return The instance of the stats manager
+	 */
+	public StatsManager getStatsManager() {
+		return this.statsManager;
 	}
 	
 }
