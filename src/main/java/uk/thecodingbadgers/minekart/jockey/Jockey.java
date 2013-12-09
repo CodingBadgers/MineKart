@@ -260,7 +260,7 @@ public class Jockey {
 	private void createMount(String mountName, Location spawn, boolean enabled) {
 		if (this.mountType != EntityType.UNKNOWN) {
 			// Make their mounts
-			this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, mountName);
+			this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, mountName == null ? "Error" : mountName);
 			this.mount.setProtected(true);
 			this.mount.addTrait(new ControllableMount(true));
 			this.mount.spawn(spawn);
