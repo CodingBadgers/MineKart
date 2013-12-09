@@ -3,9 +3,12 @@ package uk.thecodingbadgers.minekart.jockey;
 import java.util.List;
 import java.util.Random;
 
+import static org.apache.commons.lang.builder.HashCodeBuilder.reflectionHashCode;
+import static org.apache.commons.lang.builder.ToStringBuilder.reflectionToString;
+
 import org.bukkit.Color;
 
-public class JockeySpecialData {
+public class JockeySpecialData implements Cloneable {
 
 	private String username;
 	private List<String> horsenames = null;
@@ -20,7 +23,7 @@ public class JockeySpecialData {
 	}
 
 	public String getHorseName() {
-		if (horsenames == null) {
+		if (hasCustomName()) {
 			return null;
 		}
 
@@ -34,8 +37,23 @@ public class JockeySpecialData {
 	public boolean hasCustomName() {
 		return horsenames != null;
 	}
+
+	@Override
+	public int hashCode() {
+		return reflectionHashCode(this);
+	}
 	
+	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "{Username:" + username + ";Names:" + horsenames + ";Colour:" + colour + "}";
+		return reflectionToString(this);
+	}
+	
+	@Override
+	public JockeySpecialData clone() {
+		JockeySpecialData data = new JockeySpecialData();
+		data.username = username;
+		data.horsenames = horsenames;
+		data.colour = colour;
+		return data;
 	}
 }
