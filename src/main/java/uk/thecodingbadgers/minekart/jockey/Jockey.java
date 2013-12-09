@@ -242,13 +242,14 @@ public class Jockey {
 		player.getInventory().setItem(0, whip);
 
 		// Give the player a respawn skull
-		ItemStack respawnSkull = new ItemStack(Material.SKULL);
+		ItemStack respawnSkull = new ItemStack(Material.SKULL_ITEM);
 		ItemMeta skullMeta = respawnSkull.getItemMeta();
 		skullMeta.setDisplayName("Respawn");
 		respawnSkull.setItemMeta(skullMeta);
 		player.getInventory().setItem(8, respawnSkull);
 
 		player.getInventory().setHeldItemSlot(0);
+		player.updateInventory();
 	}
 
 	/**
