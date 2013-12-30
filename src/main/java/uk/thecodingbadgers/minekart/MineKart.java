@@ -180,7 +180,7 @@ public final class MineKart extends JavaPlugin {
 		loadJockeyData();
 		loadPowerups();
 		loadRacecourses();
-		loadSigns();
+		loadSigns(MineKart.getLobbyFolder());
 	}
 
 	/**

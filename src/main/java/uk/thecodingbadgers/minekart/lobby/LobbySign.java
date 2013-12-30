@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.race.Race;
@@ -24,16 +25,16 @@ import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 public class LobbySign {
 
 	/** The block this sign is occupying. */
-	private Block block;
+	protected Block block;
 
 	/** The racecourse associated with this join sign. */
-	private Racecourse course;
+	protected Racecourse course;
 
 	/** If this sign is enabled. */
-	private boolean enabled = false;
+	protected boolean enabled = false;
 
 	/** The config file for this sign */
-	private File file;
+	protected File file;
 
 	/**
 	 * Instantiates a new lobby sign, with the given information.
@@ -235,4 +236,14 @@ public class LobbySign {
 
 		file = null;
 	}
+
+    /**
+     * 
+     * @param player 
+     */
+    public void onInteract(Player player) {
+        
+        getCourse().getRace().addJockey(player);
+        
+    }
 }

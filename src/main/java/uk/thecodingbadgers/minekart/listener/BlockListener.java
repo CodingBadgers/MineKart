@@ -14,6 +14,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.lobby.LobbySign;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
+import uk.thecodingbadgers.minekart.lobby.TimesSign;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 
 /**
@@ -104,27 +105,49 @@ public class BlockListener implements Listener {
 			return;
 		}
 
-		if (!event.getLine(0).equalsIgnoreCase("[MineKart]")) {
-			return;
+		if (event.getLine(0).equalsIgnoreCase("[MineKart]")) {
+			String coursename = event.getLine(1);
+            Racecourse course = MineKart.getInstance().getRacecourse(coursename);
+
+            if (course == null) {
+                return;
+            }
+
+            LobbySign sign = new LobbySign(event.getBlock(), course);
+            LobbySignManager.addSign(sign);
+
+            String[] lines = sign.getSignContent();
+
+            for (int i = 0; i < 4; i++) {
+                event.setLine(i, lines[i]);
+            }
+
+            MineKart.output(player, "You have created a lobby sign for " + course.getName());
+            return;
+		}
+        
+        if (event.getLine(0).equalsIgnoreCase("[MKTimes]")) {
+			String coursename = event.getLine(1);
+            Racecourse course = MineKart.getInstance().getRacecourse(coursename);
+
+            if (course == null) {
+                return;
+            }
+
+            TimesSign sign = new TimesSign(event.getBlock(), course);
+            LobbySignManager.addTimesSign(sign);
+
+            String[] lines = sign.getSignContent();
+
+            for (int i = 0; i < 4; i++) {
+                event.setLine(i, lines[i]);
+            }
+
+            MineKart.output(player, "You have created a lobby times sign for " + course.getName());
+            return;
 		}
 
-		String coursename = event.getLine(1);
-		Racecourse course = MineKart.getInstance().getRacecourse(coursename);
-
-		if (course == null) {
-			return;
-		}
-
-		LobbySign sign = new LobbySign(event.getBlock(), course);
-		LobbySignManager.addSign(sign);
-
-		String[] lines = sign.getSignContent();
-
-		for (int i = 0; i < 4; i++) {
-			event.setLine(i, lines[i]);
-		}
-
-		MineKart.output(player, "You have created a lobby sign for " + course.getName());
+		
 	}
 
 }

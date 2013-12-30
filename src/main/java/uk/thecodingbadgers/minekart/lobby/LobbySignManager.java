@@ -28,14 +28,24 @@ public class LobbySignManager {
 	/**
 	 * Load signs.
 	 */
-	public static void loadSigns() {
-		File lobby = MineKart.getLobbyFolder();
+	public static void loadSigns(File folder) {
 
-		File[] files = lobby.listFiles();
+        File[] files = folder.listFiles();
 
 		for (File file : files) {
+            
+            if (file.isDirectory()) {
+                loadSigns(file);
+                continue;
+            }
+            
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-			LobbySign sign = new LobbySign();
+			LobbySign sign = null;
+            if (folder.getName().equalsIgnoreCase("times")) {
+                sign = new TimesSign();
+            } else {
+                sign = new LobbySign();
+            }
 			sign.load(file, config);
 			signs.add(sign);
 		}
@@ -67,6 +77,34 @@ public class LobbySignManager {
 			config.save(file);
 		} catch (IOException e) {
 			MineKart.getInstance().getLogger().log(Level.SEVERE, "A error has occured whilst creating a lobby sign.", e);
+			return;
+		}
+	}
+    
+    	/**
+	 * Adds a sign to the internal store.
+	 * 
+	 * @param sign the lobby sign to add
+	 */
+	public static void addTimesSign(TimesSign sign) {
+		signs.add(sign);
+
+		File file;
+
+		int i = 0;
+
+		do {
+			file = new File(MineKart.getLobbyFolder() + File.separator + "times", sign.getCourse().getName() + "-" + i++ + ".yml");
+		} while (file.exists());
+
+		try {
+			file.createNewFile();
+
+			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+			sign.save(file, config);
+			config.save(file);
+		} catch (IOException e) {
+			MineKart.getInstance().getLogger().log(Level.SEVERE, "A error has occured whilst creating a lobby times sign.", e);
 			return;
 		}
 	}

@@ -167,7 +167,7 @@ public class JockeyListener implements Listener {
 			return;
 		}
 
-		sign.getCourse().getRace().addJockey(player);
+        sign.onInteract(player);
 	}
 
 	/**
