@@ -312,7 +312,7 @@ public class JockeyListener implements Listener {
 			case ZOMBIE:
 				return Sound.ZOMBIE_DEATH;
 			default:
-				return Sound.HURT;
+				return Sound.HURT_FLESH;
 		}
 	}
 
