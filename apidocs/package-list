@@ -1,0 +1,17 @@
+uk.thecodingbadgers.minekart
+uk.thecodingbadgers.minekart.command
+uk.thecodingbadgers.minekart.events
+uk.thecodingbadgers.minekart.events.jockey
+uk.thecodingbadgers.minekart.events.race
+uk.thecodingbadgers.minekart.jockey
+uk.thecodingbadgers.minekart.listener
+uk.thecodingbadgers.minekart.lobby
+uk.thecodingbadgers.minekart.mount
+uk.thecodingbadgers.minekart.powerup
+uk.thecodingbadgers.minekart.powerup.damageeffect
+uk.thecodingbadgers.minekart.race
+uk.thecodingbadgers.minekart.racecourse
+uk.thecodingbadgers.minekart.scoreboard
+uk.thecodingbadgers.minekart.userstats
+uk.thecodingbadgers.minekart.util
+uk.thecodingbadgers.minekart.world
