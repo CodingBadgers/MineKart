@@ -74,7 +74,14 @@
             <url>http://repository-codingbadgers.forge.cloudbees.com/snapshot/</url>
         </repository>
 	</repositories>
-
+	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>thefishlive-repo</id>
+			<url>https://raw.github.com/thefishlive/maven-repository/</url>
+		</pluginRepository>
+	</pluginRepositories>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.bukkit</groupId>
@@ -151,25 +158,25 @@
 				<artifactId>maven-site-plugin</artifactId>
 				<version>3.3</version>
 			</plugin>
+			
+			<plugin>
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>0.8</version>
+				<configuration>
+					<message>Updating site for ${project.version}</message>
+				</configuration>
+				<executions>
+					<execution>
+						<id>site</id>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<phase>site</phase>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
-
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.scm</groupId>
-				<artifactId>maven-scm-provider-gitexe</artifactId>
-				<version>1.3</version>
-			</extension>
-			<extension>
-				<groupId>org.apache.maven.scm</groupId>
-				<artifactId>maven-scm-manager-plexus</artifactId>
-				<version>1.3</version>
-			</extension>
-			<extension>
-				<groupId>org.kathrynhuxtable.maven.wagon</groupId>
-				<artifactId>wagon-gitsite</artifactId>
-				<version>0.3.1</version>
-			</extension>
-		</extensions>
 
 		<resources>
 			<resource>
@@ -213,6 +220,13 @@
 					<javadocVersion>1.7</javadocVersion>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<groupId>io.github.thefishlive</groupId>
+				<artifactId>changelog-maven-report</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</plugin>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
@@ -230,13 +244,6 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
-	<distributionManagement>
-		<site>
-			<id>github.minekart.site</id>
-			<url>gitsite:github.com/CodingBadgers/MineKart.git</url>
-		</site>
-	</distributionManagement>
 	
 	<profiles>
 	    <profile>
