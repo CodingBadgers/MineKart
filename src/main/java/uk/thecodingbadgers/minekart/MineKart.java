@@ -187,12 +187,13 @@ public final class MineKart extends JavaPlugin {
 	 * Called when the plugin is disabled
 	 */
 	public void onDisable() {
-		// Reset the instance on disable
-		MineKart.instance = null;
-
+        // End all races
 		for (Racecourse course : this.courses.values()) {
 			course.getRace().end();
 		}
+        
+        // Reset the instance on disable
+		MineKart.instance = null;
 	}
 	
 	/**
