@@ -16,14 +16,14 @@ import net.citizensnpcs.api.util.DataKey;
 import net.citizensnpcs.trait.Toggleable;
 import net.citizensnpcs.util.NMS;
 import net.citizensnpcs.util.Util;
-import net.minecraft.server.v1_7_R1.EntityEnderDragon;
-import net.minecraft.server.v1_7_R1.EntityLiving;
-import net.minecraft.server.v1_7_R1.EntityPlayer;
-import net.minecraft.server.v1_7_R1.MobEffect;
-import net.minecraft.server.v1_7_R1.MobEffectList;
+import net.minecraft.server.v1_7_R2.EntityEnderDragon;
+import net.minecraft.server.v1_7_R2.EntityLiving;
+import net.minecraft.server.v1_7_R2.EntityPlayer;
+import net.minecraft.server.v1_7_R2.MobEffect;
+import net.minecraft.server.v1_7_R2.MobEffectList;
 
-import org.bukkit.craftbukkit.v1_7_R1.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -242,7 +242,7 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 		}
 
 		double oldSpeed = Math.sqrt(handle.motX * handle.motX + handle.motZ * handle.motZ);
-		double horizontal = ((EntityLiving) handle.passenger).bf;
+		double horizontal = ((EntityLiving) handle.passenger).be;
 		if (horizontal > 0.0D) {
 			double dXcos = -Math.sin(handle.passenger.yaw * Math.PI / 180.0F);
 			double dXsin = Math.cos(handle.passenger.yaw * Math.PI / 180.0F);
