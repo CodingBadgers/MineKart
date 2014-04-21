@@ -843,22 +843,6 @@ public abstract class Racecourse {
 		return true;
 	}
 
-	@SuppressWarnings("deprecation")
-	protected void resetBlocks(final Player player, final Map<Location, BlockState> changes, final long resetTicks) {
-
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				for (Map.Entry<Location, BlockState> entry : changes.entrySet()) {
-					BlockState state = entry.getValue();
-
-					player.sendBlockChange(entry.getKey(), state.getType(), state.getData() != null ? state.getData().getData() : 0);
-				}
-			}
-		}.runTaskLater(MineKart.getInstance(), resetTicks);
-
-	}
-
 	protected Location toBukkit(BlockVector block) {
 		return new Location(world, block.getBlockX(), block.getBlockY(), block.getBlockZ());
 	}
