@@ -38,7 +38,7 @@
 								<manifestEntries>
 									<Version>${nms.handler.version}</Version>
 									<Nms-Version>v${nms.version}</Nms-Version>
-									<Main-Class>uk.thecodingbadgers.minekart.version.v1_7_R3.NMSHandler</Main-Class>
+									<Main-Class>uk.thecodingbadgers.minekart.version.v${nms.version}.NMSHandler</Main-Class>
 								</manifestEntries>
 							</manifestSection>
 						</manifestSections>

@@ -66,12 +66,18 @@ public class NmsHandler {
 		
 		for (File file : handlers) {
 			try {
+				MineKart.getInstance().getLogger().log(Level.INFO, "Checking {0} for nms handler", new Object[] { file.getName() });
+				
 				current = new JarFile(file);
 				Manifest manifest = current.getManifest();
 				Attributes attr = manifest.getAttributes(MANIFEST_SECTION);
 				
+				if (attr == null) {
+					continue;
+				}
+				
 				if (CURRENT_VERSION != Integer.parseInt(attr.getValue(MANIFEST_VERSION))) {
-					MineKart.getInstance().getLogger().log(Level.WARNING, "Outdated nms handler {0} (Handler designed for {1} on version {2}", new Object[] { file.getName(), attr.getValue(MANIFEST_VERSION), CURRENT_VERSION });
+					MineKart.getInstance().getLogger().log(Level.WARNING, "Outdated nms handler {0} (Handler designed for {1} on version {2})", new Object[] { file.getName(), attr.getValue(MANIFEST_VERSION), CURRENT_VERSION });
 					continue;
 				}
 				

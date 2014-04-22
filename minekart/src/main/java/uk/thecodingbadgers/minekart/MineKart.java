@@ -306,7 +306,7 @@ public final class MineKart extends JavaPlugin {
 	 * @return The folder where the nms handler jars should be
 	 */
 	public static File getNmsFolder() {
-		return MineKart.lobbyFolderPath;
+		return MineKart.nmsHandlersPath;
 	}
 	
 	/**
