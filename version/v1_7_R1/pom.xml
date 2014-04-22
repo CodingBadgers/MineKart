@@ -10,9 +10,9 @@
     </parent>
 
 	<properties>
-		<bukkit.version>1.7.8-R0.1-SNAPSHOT</bukkit.version>
-		<citizens.version>2.0.13-SNAPSHOT</citizens.version>
-		<nms.version>1_7_R3</nms.version>
+		<bukkit.version>1.7.2-R0.4-SNAPSHOT</bukkit.version>
+		<citizens.version>2.0.11-SNAPSHOT</citizens.version>
+		<nms.version>1_7_R1</nms.version>
 	</properties>
 
     <artifactId>minekart-v${nms.version}</artifactId>

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -229,10 +230,11 @@ public final class MineKart extends JavaPlugin {
 				try {
 					current = new JarFile(file);
 					Manifest manifest = current.getManifest();
+					Attributes attr = manifest.getAttributes("MineKart");
 					
-					if (nmsVersion.equalsIgnoreCase(manifest.getMainAttributes().getValue("NMS-VERSION"))) {
+					if (nmsVersion.equalsIgnoreCase(attr.getValue("Nms-Version"))) {
 						handler = file;
-						mainclass = manifest.getMainAttributes().getValue("NMS-MAIN-CLASS");
+						mainclass = attr.getValue("Main-Class");
 						break;
 					}
 				} catch (IOException e) {
@@ -257,26 +259,26 @@ public final class MineKart extends JavaPlugin {
 				System.out.println(Version.class);
 				System.out.println(clazz.getInterfaces());
 				
-				if (false && !clazz.isAssignableFrom(Version.class)) {
-					getLogger().log(Level.SEVERE, "Main class {0} for version {1} is not a subclass of Version", new Object[] { mainclass, nmsVersion });
-				} else {
-					Class<? extends Version> main = clazz.asSubclass(Version.class);
-					version = main.newInstance();
+				Class<? extends Version> main = clazz.asSubclass(Version.class);
+				version = main.newInstance();
+			} catch (Throwable e) { // Exception handling
+				String message = "An unexpected exception occured whilst trying to setup version handler for " + nmsVersion;
+				
+				if (e instanceof InstantiationException) {
+					e = e.getCause();
+				} 
+				
+				if (e instanceof ClassNotFoundException) {
+					message = String.format("Could not find class %2$s for version %2$s", e.getMessage(), nmsVersion);
+				} else if (e instanceof ClassCastException) {
+					message = String.format("Main class for version %1$s (%2$s) is not a subclass of Version", nmsVersion, mainclass);
+					e = null;
 				}
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-				version = null;
-			} catch (ClassNotFoundException e) {
-				getLogger().log(Level.SEVERE, "Could not find class {0} for version {1}", new Object[] { e.getMessage(), nmsVersion });
-				version = null;
-			} catch (InstantiationException e) {
-				getLogger().log(Level.SEVERE, "There was a unhandled exception trying to setup version handler for {0}", new Object[] { nmsVersion });
-				getLogger().log(Level.SEVERE, "Exception: ", e.getCause());
-				version = null;
-			} catch (IllegalAccessException e) {
-				getLogger().log(Level.SEVERE, "There was a unhandled exception trying to setup version handler for {0}", new Object[] { nmsVersion });
-				getLogger().log(Level.SEVERE, "Exception: ", e);
-				version = null;
+				
+				getLogger().log(Level.SEVERE, message);
+				if (e != null) getLogger().log(Level.SEVERE, "Exception: ", e.getCause());
+				
+				version = null; // Fallback on internal handling
 			}
 		}
 		
