@@ -214,85 +214,91 @@ public final class MineKart extends JavaPlugin {
 		String nmsVersion = getNmsVersion();
 
 		if (nmsVersion != null) {
-			File[] handlers = MineKart.nmsHandlersPath.listFiles(new FileFilter() {
-				@Override
-				public boolean accept(File pathname) {
-					return pathname.getName().endsWith(".jar");
-				}
-			});
+			version = loadNmsHandler(nmsVersion);
+			
+			if (version == null) {
+				getLogger().log(Level.WARNING, "Could not load specific nms handling for {0} using internal handling", nmsVersion);
+				MineKart.version = new InternalVersion(); // Fallback on internal version
+			}
+			
+			getLogger().log(Level.INFO, "Loaded nms handling for version {0}", nmsVersion);
+		} else {
+			setEnabled(false);
+		}
+	}
 
-			File handler = null;
-			String mainclass = "";
-			
-			JarFile current = null;
-			
-			for (File file : handlers) {
-				try {
-					current = new JarFile(file);
-					Manifest manifest = current.getManifest();
-					Attributes attr = manifest.getAttributes("MineKart");
-					
-					if (!getDescription().getVersion().equalsIgnoreCase(attr.getValue("Version"))) {
-						getLogger().log(Level.WARNING, "Outdated nms handler {0}", file.getName());
-						continue;
-					}
-					
-					if (nmsVersion.equalsIgnoreCase(attr.getValue("Nms-Version"))) {
-						handler = file;
-						mainclass = attr.getValue("Main-Class");
-						break;
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					if (current != null) {
-						try {
-							current.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
+	private Version loadNmsHandler(String nmsVersion) {
+		File[] handlers = MineKart.nmsHandlersPath.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File pathname) {
+				return pathname.getName().endsWith(".jar");
 			}
-			
+		});
+
+		File handler = null;
+		String mainclass = "";
+		
+		JarFile current = null;
+		
+		for (File file : handlers) {
 			try {
-				@SuppressWarnings("resource")
-				NmsHandlerClassLoader loader = new NmsHandlerClassLoader(new URL[] { handler.toURI().toURL() }, this.getClassLoader());
-				Class<?> clazz = loader.loadClass(mainclass);
+				current = new JarFile(file);
+				Manifest manifest = current.getManifest();
+				Attributes attr = manifest.getAttributes("MineKart");
 				
-				System.out.println(clazz);
-				System.out.println(Version.class);
-				System.out.println(clazz.getInterfaces());
-				
-				Class<? extends Version> main = clazz.asSubclass(Version.class);
-				version = main.newInstance();
-			} catch (Throwable e) { // Exception handling
-				String message = "An unexpected exception occured whilst trying to setup version handler for " + nmsVersion;
-				
-				if (e instanceof InstantiationException) {
-					e = e.getCause();
-				} 
-				
-				if (e instanceof ClassNotFoundException) {
-					message = String.format("Could not find class %2$s for version %2$s", e.getMessage(), nmsVersion);
-				} else if (e instanceof ClassCastException) {
-					message = String.format("Main class for version %1$s (%2$s) is not a subclass of Version", nmsVersion, mainclass);
-					e = null;
+				if (!getDescription().getVersion().equalsIgnoreCase(attr.getValue("Version"))) {
+					getLogger().log(Level.WARNING, "Outdated nms handler {0} (Handler designed for {1} on version {2}", new Object[] { file.getName(), attr.getValue("Version"), getDescription().getVersion() });
+					continue;
 				}
 				
-				getLogger().log(Level.SEVERE, message);
-				if (e != null) getLogger().log(Level.SEVERE, "Exception: ", e.getCause());
-				
-				version = null; // Fallback on internal handling
+				if (nmsVersion.equalsIgnoreCase(attr.getValue("Nms-Version"))) {
+					handler = file;
+					mainclass = attr.getValue("Main-Class");
+					break;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (current != null) {
+					try {
+						current.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 		
-		if (version == null) {
-			getLogger().log(Level.WARNING, "Could not load specific nms handling for {0} using internal handling", nmsVersion);
-			MineKart.version = new InternalVersion(); // Fallback on internal version
-			return;
+		if (handler == null) {
+			return null;
 		}
 		
+		try {
+			@SuppressWarnings("resource")
+			NmsHandlerClassLoader loader = new NmsHandlerClassLoader(new URL[] { handler.toURI().toURL() }, this.getClassLoader());
+			Class<?> clazz = loader.loadClass(mainclass);
+			
+			Class<? extends Version> main = clazz.asSubclass(Version.class);
+			return main.newInstance();
+		} catch (Throwable e) { // Exception handling
+			String message = "An unexpected exception occured whilst trying to setup version handler for " + nmsVersion;
+			
+			if (e instanceof InstantiationException) {
+				e = e.getCause();
+			} 
+			
+			if (e instanceof ClassNotFoundException) {
+				message = String.format("Could not find class %2$s for version %2$s", e.getMessage(), nmsVersion);
+			} else if (e instanceof ClassCastException) {
+				message = String.format("Main class for version %1$s (%2$s) is not a subclass of Version", nmsVersion, mainclass);
+				e = null;
+			}
+			
+			getLogger().log(Level.SEVERE, message);
+			if (e != null) getLogger().log(Level.SEVERE, "Exception: ", e);
+			
+			return null; // Fallback on internal handling
+		}
 	}
 
 	private String getNmsVersion() {
@@ -301,7 +307,8 @@ public final class MineKart extends JavaPlugin {
 
 		if (!matcher.matches()) {
 			getLogger().log(Level.SEVERE, "Server class did not match Craftbukkit package, are you running CraftBukkit?");
-			getLogger().log(Level.SEVERE, "Class: {0}", obcPackage);
+			getLogger().log(Level.SEVERE, "Package: {0}", obcPackage);
+			getLogger().log(Level.SEVERE, "NMS handling could not be setup, disabling plugin");
 			return null;
 		}
 		
@@ -313,8 +320,10 @@ public final class MineKart extends JavaPlugin {
 	 */
 	public void onDisable() {
         // End all races
-		for (Racecourse course : this.courses.values()) {
-			course.getRace().end();
+		if (this.courses != null) {
+			for (Racecourse course : this.courses.values()) {
+				course.getRace().end();
+			}
 		}
         
         // Reset the instance on disable

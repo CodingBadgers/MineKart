@@ -1,5 +1,5 @@
-name: MineKart
-version: 1.0.0
+name: ${project.name}
+version: ${project.version}
 main: uk.thecodingbadgers.minekart.MineKart
 authors: [n3wton, TheFish97]
 description: Fully Automated MineCraft Racing Plugin

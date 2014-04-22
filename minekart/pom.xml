@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>minekart</artifactId>
+	<name>MineKart</name>
 
 	<properties>
 		<bukkit.version>1.7.8-R0.1-SNAPSHOT</bukkit.version>
