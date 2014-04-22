@@ -49,6 +49,7 @@ import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
 import uk.thecodingbadgers.minekart.race.RaceState;
 import uk.thecodingbadgers.minekart.util.FireworkFactory;
+import uk.thecodingbadgers.minekart.version.NmsHandler;
 import uk.thecodingbadgers.minekart.world.BlockChangeDelagator;
 import uk.thecodingbadgers.minekart.world.BlockDelagatorFactory;
 
@@ -652,7 +653,7 @@ public abstract class Racecourse {
 		powerup.setItemMeta(meta);
 		powerup.addUnsafeEnchantment(Enchantment.PROTECTION_FIRE, 0);
 
-		PowerupEntity entity = MineKart.getNMSHandler().newPowerup(location, powerup);
+		PowerupEntity entity = NmsHandler.getNmsHandler().newPowerup(location, powerup);
 		entity.spawn();
 		this.powerupItems.add(entity);
 

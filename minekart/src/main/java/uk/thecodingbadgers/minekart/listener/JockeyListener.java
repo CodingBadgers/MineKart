@@ -45,6 +45,7 @@ import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
+import uk.thecodingbadgers.minekart.version.NmsHandler;
 
 public class JockeyListener implements Listener {
 
@@ -403,7 +404,7 @@ public class JockeyListener implements Listener {
 					return;
 				}
 				
-				Mount trait = mount.getTrait(MineKart.getNMSHandler().getMountClass());
+				Mount trait = mount.getTrait(NmsHandler.getNmsHandler().getMountClass());
 				if (trait != null && trait.getController().isJumping()){
 					event.setCancelled(true);
 					return;

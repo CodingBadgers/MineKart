@@ -16,6 +16,7 @@
 	
 	<properties>
 		<citizens.version>2.0.13-SNAPSHOT</citizens.version>
+		<nms.handler.version>1</nms.handler.version>
 	</properties>
 	
 	<organization>

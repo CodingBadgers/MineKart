@@ -29,6 +29,7 @@ import com.sk89q.worldedit.bukkit.BukkitUtil;
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.race.Race;
+import uk.thecodingbadgers.minekart.version.NmsHandler;
 
 /**
  * @author TheCodingBadgers
@@ -262,7 +263,7 @@ public class Jockey {
 			// Make their mounts
 			this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, mountName == null ? "Error" : mountName);
 			this.mount.setProtected(true);
-			this.mount.addTrait(MineKart.getNMSHandler().newMount(true));
+			this.mount.addTrait(NmsHandler.getNmsHandler().newMount(true));
 			this.mount.spawn(spawn);
 			this.race.getCourse().getMountData().applyMountData(this.mount.getEntity());
 
@@ -271,7 +272,7 @@ public class Jockey {
 			owner.setOwner(this.player.getName());
 
 			// Make the NPC controllable and mount the player
-			Mount trait = this.mount.getTrait(MineKart.getNMSHandler().getMountClass());
+			Mount trait = this.mount.getTrait(NmsHandler.getNmsHandler().getMountClass());
 			trait.mount(this.player);
 			trait.setEnabled(enabled); // disable it until the race has started
 		}
@@ -297,7 +298,7 @@ public class Jockey {
 	public void onRaceStart() {
 
 		if (this.mount != null) {
-			Mount trait = this.mount.getTrait(MineKart.getNMSHandler().getMountClass());
+			Mount trait = this.mount.getTrait(NmsHandler.getNmsHandler().getMountClass());
 			trait.setEnabled(true);
 		}
 		
@@ -420,7 +421,7 @@ public class Jockey {
 		final String mountName = this.mount == null ? "" : this.mount.getName();
 
 		if (this.mount != null) {
-			Mount trait = this.mount.getTrait(MineKart.getNMSHandler().getMountClass());
+			Mount trait = this.mount.getTrait(NmsHandler.getNmsHandler().getMountClass());
 			trait.mount(this.player);
 			this.mount.destroy();
 		}

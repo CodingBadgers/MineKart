@@ -13,6 +13,7 @@ import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.jockey.Mount;
 import uk.thecodingbadgers.minekart.util.FireworkFactory;
+import uk.thecodingbadgers.minekart.version.NmsHandler;
 
 public class DamageEffectFreeze extends DamageEffect {
 
@@ -23,7 +24,7 @@ public class DamageEffectFreeze extends DamageEffect {
 		final NPC mount = jockey.getMount();
 		
 		if (mount != null) {
-			Mount trait = mount.getTrait(MineKart.getNMSHandler().getMountClass());
+			Mount trait = mount.getTrait(NmsHandler.getNmsHandler().getMountClass());
 			trait.setEnabled(false); 
 		}
 		else {
@@ -41,7 +42,7 @@ public class DamageEffectFreeze extends DamageEffect {
 			@Override
 			public void run() {
 				if (mount != null) {
-					Mount trait = mount.getTrait(MineKart.getNMSHandler().getMountClass());
+					Mount trait = mount.getTrait(NmsHandler.getNmsHandler().getMountClass());
 					trait.setEnabled(true); 
 				}
 				else {

@@ -36,7 +36,7 @@
 							<manifestSection>
 								<name>MineKart</name>
 								<manifestEntries>
-									<Version>${project.version}</Version>
+									<Version>${nms.handler.version}</Version>
 									<Nms-Version>v${nms.version}</Nms-Version>
 									<Main-Class>uk.thecodingbadgers.minekart.version.v1_7_R3.NMSHandler</Main-Class>
 								</manifestEntries>
