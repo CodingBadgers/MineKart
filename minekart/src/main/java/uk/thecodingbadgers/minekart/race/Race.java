@@ -434,7 +434,11 @@ public abstract class Race {
 		RaceEndEvent event = new RaceEndEvent(this, jockey);
 		Bukkit.getPluginManager().callEvent(event);
 
-		end(30, 5);
+		if (this.jockeys.size() == 1) {
+			end(5, 1);
+		} else {
+			end(30, 5);
+		}
 	}
 
 	/**

@@ -248,7 +248,6 @@ public class RacecourseLap extends Racecourse {
 	 * @param jockey The jockey who moved
 	 * @param race The race the jockeys are in
 	 */
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onJockeyMove(Jockey jockey, Race race) {
 
@@ -285,7 +284,7 @@ public class RacecourseLap extends Racecourse {
 
 			Location respawnLocation = jockey.getPlayer().getLocation();
 			if (jockey.getMount() != null) {
-				respawnLocation = jockey.getMount().getBukkitEntity().getLocation();
+				respawnLocation = jockey.getMount().getEntity().getLocation();
 			}
 			jockey.updateRespawnLocation(respawnLocation);
 
