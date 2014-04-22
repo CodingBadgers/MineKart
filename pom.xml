@@ -1,19 +1,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>uk.thecodingbaders</groupId>
-	<artifactId>minekart</artifactId>
+	<groupId>uk.thecodingbadgers</groupId>
+	<artifactId>minekart-parent</artifactId>
 	<version>1.1.2-SNAPSHOT</version>
 	<name>MineKart</name>
+	<packaging>pom</packaging>
+	
+	<modules>
+		<module>minekart</module>
+		<module>version/v1_7_R3</module>
+	</modules>
+	
+	<properties>
+		<citizens.version>2.0.13-SNAPSHOT</citizens.version>
+	</properties>
 	
 	<organization>
 	    <name>CodingBadgers</name>
 	</organization>
-
-	<properties>
-		<bukkit.version>1.7.5-R0.1-SNAPSHOT</bukkit.version>
-		<citizens.version>2.0.12-SNAPSHOT</citizens.version>
-	</properties>
 
 	<scm>
 	    <connection>scm:git:https://github.com/CodingBadgers/MineKart.git</connection>
@@ -84,33 +89,9 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>${bukkit.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>craftbukkit</artifactId>
-			<version>${bukkit.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.sk89q</groupId>
 			<artifactId>worldedit</artifactId>
 			<version>5.5.8-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<artifactId>citizensapi</artifactId>
-			<groupId>net.citizensnpcs</groupId>
-			<version>${citizens.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<artifactId>citizens</artifactId>
-			<groupId>net.citizensnpcs</groupId>
-			<version>${citizens.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

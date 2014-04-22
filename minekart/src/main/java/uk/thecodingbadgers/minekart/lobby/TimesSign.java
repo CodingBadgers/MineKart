@@ -1,26 +1,16 @@
 package uk.thecodingbadgers.minekart.lobby;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
-import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.userstats.StatsManager;
-import uk.thecodingbadgers.minekart.util.RaceHelper;
 
 /**
  * @author TheCodingBadgers

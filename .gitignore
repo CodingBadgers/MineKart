@@ -7,8 +7,8 @@
 
 .classpath
 .project
-.settings/*
-target/*
+.settings
+target
 
 /src/main/java/uk/thecodingbadgers/minekart/gui
 

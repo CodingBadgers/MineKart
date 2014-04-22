@@ -1,4 +1,4 @@
-package uk.thecodingbadgers.minekart.jockey;
+package uk.thecodingbadgers.minekart.version.internal;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
@@ -10,20 +10,19 @@ import net.citizensnpcs.api.command.CommandContext;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.exception.NPCLoadException;
 import net.citizensnpcs.api.persistence.Persist;
-import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.trait.Owner;
 import net.citizensnpcs.api.util.DataKey;
 import net.citizensnpcs.trait.Toggleable;
 import net.citizensnpcs.util.NMS;
 import net.citizensnpcs.util.Util;
-import net.minecraft.server.v1_7_R2.EntityEnderDragon;
-import net.minecraft.server.v1_7_R2.EntityLiving;
-import net.minecraft.server.v1_7_R2.EntityPlayer;
-import net.minecraft.server.v1_7_R2.MobEffect;
-import net.minecraft.server.v1_7_R2.MobEffectList;
+import net.minecraft.server.v1_7_R3.EntityEnderDragon;
+import net.minecraft.server.v1_7_R3.EntityLiving;
+import net.minecraft.server.v1_7_R3.EntityPlayer;
+import net.minecraft.server.v1_7_R3.MobEffect;
+import net.minecraft.server.v1_7_R3.MobEffectList;
 
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -33,23 +32,23 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
+import uk.thecodingbadgers.minekart.jockey.Mount;
+
 import com.google.common.collect.Maps;
 
-public class ControllableMount extends Trait implements Toggleable, CommandConfigurable {
+public class ControllableMount extends Mount implements Toggleable, CommandConfigurable {
 
 	private MovementController controller = new GroundController();
 	@Persist
-	private boolean enabled = true;
 	private EntityType explicitType;
 	private LivingEntity passenger = null;
 
 	public ControllableMount() {
-		super("controllablemount");
+		super();
 	}
 
 	public ControllableMount(boolean enabled) {
-		this();
-		this.enabled = enabled;
+		super(enabled);
 	}
 	
 	public MovementController getController() {
@@ -87,13 +86,8 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private EntityLiving getHandle() {
-		return ((CraftLivingEntity) npc.getBukkitEntity()).getHandle();
-	}
-
-	public boolean isEnabled() {
-		return enabled;
+		return ((CraftLivingEntity) npc.getEntity()).getHandle();
 	}
 
 	@Override
@@ -102,9 +96,8 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 			explicitType = Util.matchEntityType(key.getString("explicittype"));
 	}
 
-	@SuppressWarnings("deprecation")
 	private void loadController() {
-		EntityType type = npc.getBukkitEntity().getType();
+		EntityType type = npc.getEntity().getType();
 		if (explicitType != null)
 			type = explicitType;
 		Class<? extends MovementController> clazz = controllerTypes.get(type);
@@ -131,9 +124,8 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public boolean mount(Player toMount) {
-		Entity passenger = npc.getBukkitEntity().getPassenger();
+		Entity passenger = npc.getEntity().getPassenger();
 		if (passenger != null && passenger != toMount) {
 			return false;
 		}
@@ -143,7 +135,7 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (!npc.isSpawned() || !enabled)
+		if (!npc.isSpawned() || !isEnabled())
 			return;
 		EntityPlayer handle = ((CraftPlayer) event.getPlayer()).getHandle();
 		Action performed = event.getAction();
@@ -165,7 +157,7 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 
 	@EventHandler
 	public void onRightClick(NPCRightClickEvent event) {
-		if (!enabled || !npc.isSpawned() || !event.getNPC().equals(npc))
+		if (!isEnabled() || !npc.isSpawned() || !event.getNPC().equals(npc))
 			return;
 		controller.rightClickEntity(event);
 	}
@@ -178,7 +170,7 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 	@Override
 	public void run() {
 
-		if (!enabled || !npc.isSpawned())
+		if (!isEnabled() || !npc.isSpawned())
 			return;
 
 		if (getHandle().passenger == null && this.passenger != null) {
@@ -200,11 +192,6 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 		}
 	}
 
-	public boolean setEnabled(boolean enabled) {
-		this.enabled = enabled;
-		return enabled;
-	}
-
 	private void setMountedYaw(EntityLiving handle) {
 		if (handle instanceof EntityEnderDragon || !Setting.USE_BOAT_CONTROLS.asBoolean())
 			return; // EnderDragon handles this separately
@@ -220,11 +207,11 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 
 	@Override
 	public boolean toggle() {
-		enabled = !enabled;
-		if (!enabled && getHandle().passenger != null) {
+		setEnabled(!isEnabled());
+		if (!isEnabled() && getHandle().passenger != null) {
 			getHandle().passenger.getBukkitEntity().leaveVehicle();
 		}
-		return enabled;
+		return isEnabled();
 	}
 
 	private double updateHorizontralSpeed(EntityLiving handle, double speed, float speedMod) {
@@ -361,16 +348,11 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 			handle.motZ = dir.getZ();
 			setMountedYaw(handle);
 		}
-	}
 
-	public static interface MovementController {
-		void leftClick(PlayerInteractEvent event);
-
-		void rightClick(PlayerInteractEvent event);
-
-		void rightClickEntity(NPCRightClickEvent event);
-
-		void run(Player rider);
+		@Override
+		public boolean isJumping() {
+			return false;
+		}
 	}
 
 	public class PlayerInputAirController implements MovementController {
@@ -405,6 +387,11 @@ public class ControllableMount extends Trait implements Toggleable, CommandConfi
 				handle.motY = 0.3F;
 			}
 			handle.motY *= 0.98F;
+		}
+
+		@Override
+		public boolean isJumping() {
+			return false;
 		}
 	}
 

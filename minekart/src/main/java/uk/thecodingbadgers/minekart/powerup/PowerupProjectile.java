@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.projectiles.ProjectileSource;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
@@ -85,7 +86,7 @@ public class PowerupProjectile extends Powerup {
 		
 		Projectile projectile = (Projectile)world.spawnEntity(location, type);
 		projectile.setVelocity(player.getLocation().getDirection().multiply(this.speed));
-		projectile.setShooter(player);
+		projectile.setShooter((ProjectileSource) player);
 		
 		projectile.setMetadata("powerup", new FixedMetadataValue(MineKart.getInstance(), this));
 		

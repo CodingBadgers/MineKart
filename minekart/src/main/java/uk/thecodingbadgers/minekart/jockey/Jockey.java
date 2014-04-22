@@ -12,8 +12,8 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -262,7 +262,7 @@ public class Jockey {
 			// Make their mounts
 			this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, mountName == null ? "Error" : mountName);
 			this.mount.setProtected(true);
-			this.mount.addTrait(new ControllableMount(true));
+			this.mount.addTrait(MineKart.getNMSHandler().newMount(true));
 			this.mount.spawn(spawn);
 			this.race.getCourse().getMountData().applyMountData(this.mount.getEntity());
 
@@ -271,7 +271,7 @@ public class Jockey {
 			owner.setOwner(this.player.getName());
 
 			// Make the NPC controllable and mount the player
-			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
+			Mount trait = this.mount.getTrait(MineKart.getNMSHandler().getMountClass());
 			trait.mount(this.player);
 			trait.setEnabled(enabled); // disable it until the race has started
 		}
@@ -297,7 +297,7 @@ public class Jockey {
 	public void onRaceStart() {
 
 		if (this.mount != null) {
-			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
+			Mount trait = this.mount.getTrait(MineKart.getNMSHandler().getMountClass());
 			trait.setEnabled(true);
 		}
 		
@@ -312,7 +312,7 @@ public class Jockey {
 
 		// Unmount and remove the mount
 		if (this.mount != null) {
-			LivingEntity entity = this.mount.getBukkitEntity();
+			Entity entity = this.mount.getEntity();
 			if (entity != null && entity.getPassenger() != null) {
 				entity.eject();
 			}
@@ -420,7 +420,7 @@ public class Jockey {
 		final String mountName = this.mount == null ? "" : this.mount.getName();
 
 		if (this.mount != null) {
-			ControllableMount trait = this.mount.getTrait(ControllableMount.class);
+			Mount trait = this.mount.getTrait(MineKart.getNMSHandler().getMountClass());
 			trait.mount(this.player);
 			this.mount.destroy();
 		}

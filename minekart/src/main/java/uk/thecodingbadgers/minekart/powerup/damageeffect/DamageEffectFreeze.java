@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack;
 
 import net.citizensnpcs.api.npc.NPC;
 import uk.thecodingbadgers.minekart.MineKart;
-import uk.thecodingbadgers.minekart.jockey.ControllableMount;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.jockey.Mount;
 import uk.thecodingbadgers.minekart.util.FireworkFactory;
 
 public class DamageEffectFreeze extends DamageEffect {
@@ -23,7 +23,7 @@ public class DamageEffectFreeze extends DamageEffect {
 		final NPC mount = jockey.getMount();
 		
 		if (mount != null) {
-			ControllableMount trait = mount.getTrait(ControllableMount.class);
+			Mount trait = mount.getTrait(MineKart.getNMSHandler().getMountClass());
 			trait.setEnabled(false); 
 		}
 		else {
@@ -41,7 +41,7 @@ public class DamageEffectFreeze extends DamageEffect {
 			@Override
 			public void run() {
 				if (mount != null) {
-					ControllableMount trait = mount.getTrait(ControllableMount.class);
+					Mount trait = mount.getTrait(MineKart.getNMSHandler().getMountClass());
 					trait.setEnabled(true); 
 				}
 				else {

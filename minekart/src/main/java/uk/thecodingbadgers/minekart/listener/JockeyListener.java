@@ -38,9 +38,8 @@ import org.bukkit.potion.PotionEffectType;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.events.jockey.JockeyPowerupPickupEvent;
-import uk.thecodingbadgers.minekart.jockey.ControllableMount;
-import uk.thecodingbadgers.minekart.jockey.ControllableMount.GroundController;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.jockey.Mount;
 import uk.thecodingbadgers.minekart.lobby.LobbySign;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
@@ -404,13 +403,10 @@ public class JockeyListener implements Listener {
 					return;
 				}
 				
-				ControllableMount trait = mount.getTrait(ControllableMount.class);
-				if (trait != null && trait.getController() instanceof GroundController) {
-					GroundController controller = (GroundController)trait.getController();
-					if (controller.isJumping()) {
-						event.setCancelled(true);
-						return;
-					}
+				Mount trait = mount.getTrait(MineKart.getNMSHandler().getMountClass());
+				if (trait != null && trait.getController().isJumping()){
+					event.setCancelled(true);
+					return;
 				}
 				
 			}

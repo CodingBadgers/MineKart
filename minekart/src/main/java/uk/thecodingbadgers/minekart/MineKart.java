@@ -2,11 +2,14 @@ package uk.thecodingbadgers.minekart;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,8 +21,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
@@ -55,6 +62,9 @@ import uk.thecodingbadgers.minekart.racecourse.RacecourseCheckpoint;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseLap;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseTypeRegistry;
 import uk.thecodingbadgers.minekart.userstats.StatsManager;
+import uk.thecodingbadgers.minekart.version.NmsHandlerClassLoader;
+import uk.thecodingbadgers.minekart.version.Version;
+import uk.thecodingbadgers.minekart.version.internal.InternalVersion;
 import static uk.thecodingbadgers.minekart.lobby.LobbySignManager.loadSigns;
 
 /**
@@ -65,8 +75,14 @@ import static uk.thecodingbadgers.minekart.lobby.LobbySignManager.loadSigns;
  */
 public final class MineKart extends JavaPlugin {
 
+	/** Format of the OBC package to extract the current nms version from it */
+	private static final Pattern OBC_FORMAT = Pattern.compile("org.bukkit.craftbukkit.([vR0-9_]+)");
+	
 	/** The instance of the MineKart plugin */
 	private static MineKart instance = null;
+	
+	/** The NMS version used */
+	private static Version version;
 
 	/** Access to the world edit plugin */
 	private WorldEditPlugin worldEdit = null;
@@ -82,6 +98,9 @@ public final class MineKart extends JavaPlugin {
 
 	/** The path to the folder where all lobby signs reside */
 	private static File lobbyFolderPath = null;
+
+	/** The path to the folder where all nms handlers reside */
+	private static File nmsHandlersPath = null;
 
 	/** All available powerups */
 	private List<Powerup> powerups = null;
@@ -133,6 +152,13 @@ public final class MineKart extends JavaPlugin {
 			MineKart.lobbyFolderPath.mkdirs();
 		}
 
+		// Setup the folder which will hold all the lobby signs configs
+		MineKart.nmsHandlersPath = new File(this.getDataFolder() + File.separator + "nms");
+		if (!MineKart.nmsHandlersPath.exists()) {
+			MineKart.nmsHandlersPath.mkdirs();
+		}
+
+		setupNMSHandling();
 		PluginManager pluginManager = this.getServer().getPluginManager();
 
 		// Get the world edit plugin instance
@@ -183,6 +209,98 @@ public final class MineKart extends JavaPlugin {
 		loadSigns(MineKart.getLobbyFolder());
 	}
 
+	private void setupNMSHandling() {
+		String nmsVersion = getNmsVersion();
+
+		if (nmsVersion != null) {
+			File[] handlers = MineKart.nmsHandlersPath.listFiles(new FileFilter() {
+				@Override
+				public boolean accept(File pathname) {
+					return pathname.getName().endsWith(".jar");
+				}
+			});
+
+			File handler = null;
+			String mainclass = "";
+			
+			JarFile current = null;
+			
+			for (File file : handlers) {
+				try {
+					current = new JarFile(file);
+					Manifest manifest = current.getManifest();
+					
+					if (nmsVersion.equalsIgnoreCase(manifest.getMainAttributes().getValue("NMS-VERSION"))) {
+						handler = file;
+						mainclass = manifest.getMainAttributes().getValue("NMS-MAIN-CLASS");
+						break;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (current != null) {
+						try {
+							current.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			
+			try {
+				@SuppressWarnings("resource")
+				NmsHandlerClassLoader loader = new NmsHandlerClassLoader(new URL[] { handler.toURI().toURL() }, this.getClassLoader());
+				Class<?> clazz = loader.loadClass(mainclass);
+				
+				System.out.println(clazz);
+				System.out.println(Version.class);
+				System.out.println(clazz.getInterfaces());
+				
+				if (false && !clazz.isAssignableFrom(Version.class)) {
+					getLogger().log(Level.SEVERE, "Main class {0} for version {1} is not a subclass of Version", new Object[] { mainclass, nmsVersion });
+				} else {
+					Class<? extends Version> main = clazz.asSubclass(Version.class);
+					version = main.newInstance();
+				}
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+				version = null;
+			} catch (ClassNotFoundException e) {
+				getLogger().log(Level.SEVERE, "Could not find class {0} for version {1}", new Object[] { e.getMessage(), nmsVersion });
+				version = null;
+			} catch (InstantiationException e) {
+				getLogger().log(Level.SEVERE, "There was a unhandled exception trying to setup version handler for {0}", new Object[] { nmsVersion });
+				getLogger().log(Level.SEVERE, "Exception: ", e.getCause());
+				version = null;
+			} catch (IllegalAccessException e) {
+				getLogger().log(Level.SEVERE, "There was a unhandled exception trying to setup version handler for {0}", new Object[] { nmsVersion });
+				getLogger().log(Level.SEVERE, "Exception: ", e);
+				version = null;
+			}
+		}
+		
+		if (version == null) {
+			getLogger().log(Level.WARNING, "Could not load specific nms handling for {0} using internal handling", nmsVersion);
+			MineKart.version = new InternalVersion(); // Fallback on internal version
+			return;
+		}
+		
+	}
+
+	private String getNmsVersion() {
+		String obcPackage = Bukkit.getServer().getClass().getPackage().getName();
+		Matcher matcher = OBC_FORMAT.matcher(obcPackage);
+
+		if (!matcher.matches()) {
+			getLogger().log(Level.SEVERE, "Server class did not match Craftbukkit package, are you running CraftBukkit?");
+			getLogger().log(Level.SEVERE, "Class: {0}", obcPackage);
+			return null;
+		}
+		
+		return matcher.group(1);
+	}
+
 	/**
 	 * Called when the plugin is disabled
 	 */
@@ -194,6 +312,7 @@ public final class MineKart extends JavaPlugin {
         
         // Reset the instance on disable
 		MineKart.instance = null;
+		MineKart.version = null;
 	}
 	
 	/**
@@ -204,11 +323,14 @@ public final class MineKart extends JavaPlugin {
 		for (Racecourse course : this.courses.values()) {
 			course.getRace().end();
 		}
+		
 		this.courses.clear();		
 		this.powerups.clear();
 		
+		MineKart.version = null;
 		this.jockeyDataManager = null;
 		
+		this.setupNMSHandling();
 		this.loadPowerups();
 		this.loadRacecourses();		
 		this.loadJockeyData();
@@ -278,6 +400,15 @@ public final class MineKart extends JavaPlugin {
 		return MineKart.lobbyFolderPath;
 	}
 
+	/**
+	 * Gets the backend NMS Handler
+	 * 
+	 * @return the nms handler
+	 */
+	public static Version getNMSHandler() {
+		return MineKart.version;
+	}
+	
 	/**
 	 * Get the jockey data manager
 	 * 

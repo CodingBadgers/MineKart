@@ -23,14 +23,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.IncompleteRegionException;
@@ -46,7 +44,7 @@ import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.mount.MountTypeData;
-import uk.thecodingbadgers.minekart.powerup.EntityPowerup;
+import uk.thecodingbadgers.minekart.powerup.PowerupEntity;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
 import uk.thecodingbadgers.minekart.race.RaceState;
@@ -96,7 +94,7 @@ public abstract class Racecourse {
 	protected boolean enabled = true;
 
 	/** All spawned powerupItems */
-	protected List<EntityPowerup> powerupItems = null;
+	protected List<PowerupEntity> powerupItems = null;
 
 	/** All black listed powerups */
 	protected List<String> powerupBlacklist = null;
@@ -121,7 +119,7 @@ public abstract class Racecourse {
 		this.multiPoints = new HashMap<String, List<Location>>();
 		this.singlePoints = new HashMap<String, Location>();
 		this.pointMappings = new HashMap<String, ItemStack[]>();
-		this.powerupItems = new ArrayList<EntityPowerup>();
+		this.powerupItems = new ArrayList<PowerupEntity>();
 		this.powerupBlacklist = new ArrayList<String>();
 
 		registerWarp(Bukkit.getConsoleSender(), "spawn", "add", new ItemStack(Material.DIAMOND_BLOCK));
@@ -654,11 +652,9 @@ public abstract class Racecourse {
 		powerup.setItemMeta(meta);
 		powerup.addUnsafeEnchantment(Enchantment.PROTECTION_FIRE, 0);
 
-		EntityPowerup powerupEntity = new EntityPowerup(location, powerup);
-		CraftWorld world = ((CraftWorld) location.getWorld());
-		world.getHandle().addEntity(powerupEntity);
-
-		this.powerupItems.add(powerupEntity);
+		PowerupEntity entity = MineKart.getNMSHandler().newPowerup(location, powerup);
+		entity.spawn();
+		this.powerupItems.add(entity);
 
 		location.getWorld().playSound(location, Sound.FIREWORK_TWINKLE, 1.0f, 1.0f);
 
@@ -672,8 +668,8 @@ public abstract class Racecourse {
 	 */
 	public void onRaceEnd(Race race) {
 		
-		for (EntityPowerup powerup : this.powerupItems) {
-			powerup.die();
+		for (PowerupEntity powerup : this.powerupItems) {
+			powerup.remove();
 		}
 		
 		for (Entity entity : this.world.getEntities()) {

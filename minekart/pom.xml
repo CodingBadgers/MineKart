@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>uk.thecodingbadgers</groupId>
+		<artifactId>minekart-parent</artifactId>
+		<version>1.1.2-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>minekart</artifactId>
+
+	<properties>
+		<bukkit.version>1.7.8-R0.1-SNAPSHOT</bukkit.version>
+		<citizens.version>2.0.13-SNAPSHOT</citizens.version>
+	</properties>
+
+	<build>
+		<defaultGoal>clean package</defaultGoal>
+		
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+                    <outputDirectory>../target/</outputDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.bukkit</groupId>
+			<artifactId>bukkit</artifactId>
+			<version>${bukkit.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.bukkit</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>${bukkit.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<artifactId>citizensapi</artifactId>
+			<groupId>net.citizensnpcs</groupId>
+			<version>${citizens.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<artifactId>citizens</artifactId>
+			<groupId>net.citizensnpcs</groupId>
+			<version>${citizens.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>
