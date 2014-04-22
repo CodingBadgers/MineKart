@@ -232,6 +232,11 @@ public final class MineKart extends JavaPlugin {
 					Manifest manifest = current.getManifest();
 					Attributes attr = manifest.getAttributes("MineKart");
 					
+					if (!getDescription().getVersion().equalsIgnoreCase(attr.getValue("Version"))) {
+						getLogger().log(Level.WARNING, "Outdated nms handler {0}", file.getName());
+						continue;
+					}
+					
 					if (nmsVersion.equalsIgnoreCase(attr.getValue("Nms-Version"))) {
 						handler = file;
 						mainclass = attr.getValue("Main-Class");
