@@ -36,6 +36,11 @@ public class RaceCommand {
 				MineKart.output(player, "Use the command '/mk list' to see all racecourse's.");
 				return;
 			}
+			
+			if (!player.hasPermission("minekart.join." + course.getName().toLowerCase())) {
+				MineKart.output(player, "You do not have the required permission 'minekart.join." + course.getName().toLowerCase() + "'");
+				return;
+			}
 
 
 			if (MineKart.getInstance().getJockey(player) != null) {

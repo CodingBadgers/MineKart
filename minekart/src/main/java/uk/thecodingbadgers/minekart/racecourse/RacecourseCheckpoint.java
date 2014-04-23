@@ -65,8 +65,8 @@ public class RacecourseCheckpoint extends Racecourse {
 	 * Class constructor
 	 */
 	public RacecourseCheckpoint() {
-                this.pointMappings.put("checkpoint", new ItemStack[] {new ItemStack(Material.WOOL), new ItemStack(Material.WOOL, 0, (short) 15) });
-            
+        this.pointMappings.put("checkpoint", new ItemStack[] {new ItemStack(Material.WOOL), new ItemStack(Material.WOOL, 0, (short) 15) });
+        
 		this.type = "checkpoint";
 	}
 
