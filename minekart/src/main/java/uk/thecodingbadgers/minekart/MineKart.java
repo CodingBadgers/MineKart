@@ -34,6 +34,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import uk.thecodingbadgers.minekart.command.CommandHandler;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.jockey.JockeyDataManager;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.listener.BlockListener;
 import uk.thecodingbadgers.minekart.listener.JockeyListener;
 import uk.thecodingbadgers.minekart.mount.AgeableMountData;
@@ -74,6 +75,7 @@ public final class MineKart extends JavaPlugin {
 	private static File powerupFolderPath = null;
 	private static File lobbyFolderPath = null;
 	private static File nmsHandlersPath = null;
+	private static File langFolderPath = null;
 
 	private List<Powerup> powerups = null;
 	private Map<String, DamageEffect> damageEffects;
@@ -102,6 +104,7 @@ public final class MineKart extends JavaPlugin {
 			return;
 		}
 		
+		LangUtils.setupLanguages();
 
 		// Setup registries
 		this.powerupRegistry = new PowerupRegistry();
@@ -189,6 +192,12 @@ public final class MineKart extends JavaPlugin {
 			MineKart.nmsHandlersPath.mkdirs();
 		}
 
+		// Setup the folder which will hold all the lobby signs configs
+		MineKart.langFolderPath  = new File(this.getDataFolder() + File.separator + "lang");
+		if (!MineKart.langFolderPath.exists()) {
+			MineKart.langFolderPath.mkdirs();
+			copyDefaultLanguages(); // extract default lang files from jar
+		}
 	}
 
 	/**
@@ -275,6 +284,15 @@ public final class MineKart extends JavaPlugin {
 	}
 	
 	/**
+	 * Get the jockey data manager
+	 * 
+	 * @return The jockey data manager
+	 */
+	public JockeyDataManager getJockeyDataManager() {
+		return this.jockeyDataManager;
+	}
+	
+	/**
 	 * Get the stats manager instance
 	 * @return The instance of the stats manager
 	 */
@@ -310,12 +328,12 @@ public final class MineKart extends JavaPlugin {
 	}
 
 	/**
-	 * Get the jockey data manager
+	 * Get the folder of which all language files reside
 	 * 
-	 * @return The jockey data manager
+	 * @return The folder where the language files should be
 	 */
-	public JockeyDataManager getJockeyDataManager() {
-		return this.jockeyDataManager;
+	public static File getLangFolder() {
+		return MineKart.langFolderPath;
 	}
 	
 	/**
@@ -392,8 +410,42 @@ public final class MineKart extends JavaPlugin {
 			getLogger().log(Level.SEVERE, "Error copying default configs from jar", e);
 		} finally {
 			close(file);
+		}
+	}
+
+	/**
+	 * Copy the default powerups out of the jar and into the powerups
+	 * directory.
+	 */
+	private void copyDefaultLanguages() {
+		JarFile file = null;
+		JarEntry entry = null;
+
+		try {
+			file = new JarFile(getFile());
+
+			for (Enumeration<JarEntry> em = file.entries(); em.hasMoreElements();) {
+				entry = em.nextElement();
+				String s = entry.toString();
+
+				if (s.startsWith(("lang/"))) {
+					String fileName = s.substring(s.lastIndexOf("/") + 1, s.length());
+					if (fileName.endsWith(".lang")) {
+						File langFile = new File(langFolderPath, fileName);
+						InputStream inStream = file.getInputStream(entry);
+						OutputStream out = new FileOutputStream(langFile);
+						
+						ByteStreams.copy(inStream, out);
+						close(inStream);
+						close(out);
+					}
 				}
 			}
+
+		} catch (IOException e) {
+			getLogger().log(Level.SEVERE, "Error copying default configs from jar", e);
+		} finally {
+			close(file);
 		}
 	}
 	
@@ -471,6 +523,8 @@ public final class MineKart extends JavaPlugin {
 
 	/**
 	 * Output a message to a given command sender
+	 * 
+	 * @deprecated {@link LangUtils#sendMessage(CommandSender, uk.thecodingbadgers.minekart.lang.Lang, String, Object...)}
 	 */
 	public static void output(CommandSender sender, String message) {
 		if (MineKart.getInstance() == null) {
@@ -482,6 +536,8 @@ public final class MineKart extends JavaPlugin {
 
 	/**
 	 * Output a message to a given command sender from a given player
+	 * 
+	 * @deprecated {@link LangUtils#sendMessage(CommandSender, uk.thecodingbadgers.minekart.lang.Lang, String, Object...)}
 	 */
 	public static void output(CommandSender to, CommandSender from, String message) {
 		if (MineKart.getInstance() == null) {
