@@ -26,6 +26,7 @@ public class NmsHandler {
 	private static final Pattern OBC_FORMAT = Pattern.compile("org.bukkit.craftbukkit.([vR0-9_]+)");
 	
 	private static final int CURRENT_VERSION = 1;
+	private static final String INTERNAL_NMS_VERSION = "v1_7_R3";
 	
 	private static Version version;
 
@@ -40,8 +41,13 @@ public class NmsHandler {
 			version = loadNmsHandler(nmsVersion);
 			
 			if (version == null) {
-				MineKart.getInstance().getLogger().log(Level.WARNING, "Could not load specific nms handling for {0} using internal handling", nmsVersion);
-				version = new InternalVersion(); // Fallback on internal version
+				MineKart.getInstance().getLogger().log(Level.WARNING, "Could not load specific nms handling for {0} falling back to internal handling", nmsVersion);
+				
+				if (INTERNAL_NMS_VERSION.equalsIgnoreCase(nmsVersion)) { // Check to see if the internall fallback is appropriate
+					version = new InternalVersion(); // Fallback on internal version
+				} else {
+					MineKart.getInstance().getLogger().log(Level.WARNING, "NMS version {0} is not support by MineKart {1} check dev.bukkit.org for a update.", new Object[] {  nmsVersion, MineKart.getInstance().getDescription().getVersion() });
+				}
 			}
 			
 			MineKart.getInstance().getLogger().log(Level.INFO, "Loaded nms handling for version {0}", nmsVersion);
