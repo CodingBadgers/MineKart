@@ -61,55 +61,25 @@ import uk.thecodingbadgers.minekart.world.BlockDelagatorFactory;
  */
 public abstract class Racecourse {
 
-	/** The world that the racecouse resides in */
 	protected World world = null;
-
-	/** The bounds of the racecourse */
 	protected Region bounds = null;
-
-	/** The name of the racecourse */
 	protected String name = null;
-
-	/** The string representation of this course type */
 	protected String type = null;
-
-	/** A map of all registered multi point location sets */
+	
+	protected Map<String, Integer> minimums = null;
 	protected Map<String, List<Location>> multiPoints = null;
-
-	/** A map of all registered single point locations */
 	protected Map<String, Location> singlePoints = null;
-
-	/** A map of all registered point names and their block equivalents */
 	protected Map<String, ItemStack[]> pointMappings = null;
-
-	/** The file configuration used by this racecourse */
+	
 	protected File fileConfiguration = null;
-
-	/** The race which uses this course */
 	protected Race race = null;
-
-	/** The entity type to use as a mount */
 	protected EntityType mountType = EntityType.HORSE;
-
-	/** Is the course enabled */
 	protected boolean enabled = true;
-
-	/** All spawned powerupItems */
 	protected List<PowerupEntity> powerupItems = null;
-
-	/** All black listed powerups */
 	protected List<String> powerupBlacklist = null;
-
-	/** The block the jockeys have to hit to ready up */
 	protected Material readyblock;
-
-	/** The minimum number of jockeys required for a race to take place **/
 	protected int minimumNoofPlayers = 2;
-
-	/** The cooldown between pickuping up powerups **/
 	protected int powerupCooldown = 1000;
-
-	/** The custom mount type data */
 	protected MountTypeData mountTypeData;
 
 	/**
@@ -123,10 +93,10 @@ public abstract class Racecourse {
 		this.powerupItems = new ArrayList<PowerupEntity>();
 		this.powerupBlacklist = new ArrayList<String>();
 
-		registerWarp(Bukkit.getConsoleSender(), "spawn", "add", new ItemStack(Material.DIAMOND_BLOCK));
-		registerWarp(Bukkit.getConsoleSender(), "powerup", "add", new ItemStack(Material.GOLD_BLOCK));
-		registerWarp(Bukkit.getConsoleSender(), "lobby", "set", new ItemStack(Material.IRON_BLOCK));
-		registerWarp(Bukkit.getConsoleSender(), "spectate", "set", new ItemStack(Material.LAPIS_BLOCK));
+		registerWarp(Bukkit.getConsoleSender(), "spawn", "add", 2, new ItemStack(Material.DIAMOND_BLOCK));
+		registerWarp(Bukkit.getConsoleSender(), "powerup", "add", 0, new ItemStack(Material.GOLD_BLOCK));
+		registerWarp(Bukkit.getConsoleSender(), "lobby", "set", 1, new ItemStack(Material.IRON_BLOCK));
+		registerWarp(Bukkit.getConsoleSender(), "spectate", "set", 1, new ItemStack(Material.LAPIS_BLOCK));
 	}
 
 	/**
@@ -440,8 +410,8 @@ public abstract class Racecourse {
 
 		// multi-points
 		for (Entry<String, List<Location>> point : this.multiPoints.entrySet()) {
-			if (point.getValue() == null || point.getValue().size() < 2) {
-				MineKart.output(sender, " - Add " + point.getKey() + "s (minimum of 2 required) [/mk add" + point.getKey() + " <coursename>]");
+			if (point.getValue() == null || point.getValue().size() < this.minimums.get(point.getValue())) {
+				MineKart.output(sender, " - Add " + point.getKey() + "s (minimum of " + this.minimums.get(point.getValue()) + "  required) [/mk add" + point.getKey() + " <coursename>]");
 				fullySetup = false;
 			}
 		}
@@ -491,7 +461,7 @@ public abstract class Racecourse {
 	 * @param materials the materials to set this warp to in the show warp
 	 *            command
 	 */
-	public void registerWarp(CommandSender player, String name, String type, ItemStack... materials) {
+	public void registerWarp(CommandSender player, String name, String type, int min, ItemStack... materials) {
 
 		this.pointMappings.put(name, materials);
 
@@ -504,6 +474,7 @@ public abstract class Racecourse {
 			if (this.multiPoints.containsKey(name))
 				return;
 
+			this.minimums.put(name,  min);
 			this.multiPoints.put(name, new ArrayList<Location>());
 		} else {
 			MineKart.output(player, "Unknown warp type '" + type + "', please use 'set' or 'add'");
