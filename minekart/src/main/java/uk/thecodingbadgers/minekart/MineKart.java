@@ -56,6 +56,7 @@ import uk.thecodingbadgers.minekart.racecourse.RacecourseLap;
 import uk.thecodingbadgers.minekart.racecourse.RacecourseTypeRegistry;
 import uk.thecodingbadgers.minekart.userstats.StatsManager;
 import uk.thecodingbadgers.minekart.version.NmsHandler;
+import static uk.thecodingbadgers.minekart.version.NmsHandler.setupNMSHandling;
 import static uk.thecodingbadgers.minekart.lobby.LobbySignManager.loadSigns;
 
 /**
@@ -66,58 +67,103 @@ import static uk.thecodingbadgers.minekart.lobby.LobbySignManager.loadSigns;
  */
 public final class MineKart extends JavaPlugin {
 
-	/** The instance of the MineKart plugin */
 	private static MineKart instance = null;
-	
-	/** Access to the world edit plugin */
 	private WorldEditPlugin worldEdit = null;
-
-	/** Map of all known racecourses where the key is the course name */
-	private Map<String, Racecourse> courses = null;
-
-	/** The path to the folder where all racecourses reside */
+	
 	private static File racecourseFolderPath = null;
-
-	/** The path to the folder where all powerups reside */
 	private static File powerupFolderPath = null;
-
-	/** The path to the folder where all lobby signs reside */
 	private static File lobbyFolderPath = null;
-
-	/** The path to the folder where all nms handlers reside */
 	private static File nmsHandlersPath = null;
 
-	/** All available powerups */
 	private List<Powerup> powerups = null;
-
-	/** Powerup type registry */
+	private Map<String, DamageEffect> damageEffects;
+	private StatsManager statsManager;
+	private Map<String, Racecourse> courses = null;
+	
+	private RacecourseTypeRegistry racecourseTypeRegistry;
+	private MountDataRegistry mountDataRegistry;
+	private JockeyDataManager jockeyDataManager;
 	private PowerupRegistry powerupRegistry;
 
-	/** Racecourse type registry */
-	private RacecourseTypeRegistry racecourseTypeRegistry;
+	/**
+	 * Called when the plugin is being loaded
+	 */
+	public void onLoad() {
+		// Store the instance of the plugin
+		MineKart.instance = this;
 
-	/** Mount data registry */
-	private MountDataRegistry mountDataRegistry;
-	
-	/** all registered damage effects **/
-	private Map<String, DamageEffect> damageEffects;
-	
-	/** The manager for all custom jockey data */
-	private JockeyDataManager jockeyDataManager;
-	
-	/** The Stats Manager instance */
-	private StatsManager statsManager;
+		// Setup plugin data folder
+		setupDataFolder();
 
+		// Setup Bukkit versioned calls handling
+		if (!setupNMSHandling()) {
+			MineKart.getInstance().getLogger().log(Level.SEVERE, "NMS handling could not be setup, disabling plugin");
+			setEnabled(false);
+			return;
+		}
+		
+
+		// Setup registries
+		this.powerupRegistry = new PowerupRegistry();
+		this.racecourseTypeRegistry = new RacecourseTypeRegistry();
+		this.mountDataRegistry = new MountDataRegistry();
+		this.damageEffects = new HashMap<String, DamageEffect>();
+
+		this.courses = new HashMap<String, Racecourse>();
+		this.statsManager = new StatsManager();
+	}
+	
 	/**
 	 * Called when the plugin is enabled
 	 */
 	public void onEnable() {
+		// Get the world edit plugin instance
+		this.worldEdit = (WorldEditPlugin) this.getServer().getPluginManager().getPlugin("WorldEdit");
+		if (this.worldEdit == null) {
+			getLogger().log(Level.SEVERE, "Could not find the WorldEdit plugin.");
+		}
 
-		// Store the instance of the plugin
-		MineKart.instance = this;
+		// Register powerup types
+		this.powerupRegistry.registerPowerupType("potion", PowerupPotion.class);
+		this.powerupRegistry.registerPowerupType("projectile", PowerupProjectile.class);
+		this.powerupRegistry.registerPowerupType("drop", PowerupDrop.class);
 
-		/* Setup plugin folder */
+		// Register racecourse types
+		this.racecourseTypeRegistry.registerRacecourseType("lap", RacecourseLap.class);
+		this.racecourseTypeRegistry.registerRacecourseType("checkpoint", RacecourseCheckpoint.class);
 
+		// Register mount data types
+		this.mountDataRegistry.registerCustomMountData(EntityType.HORSE, HorseMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.SLIME, SizeMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.MAGMA_CUBE, SizeMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.COW, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.CHICKEN, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.SHEEP, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.OCELOT, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.PIG, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.ZOMBIE, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(EntityType.WOLF, AgeableMountData.class);
+
+		// Register damage effects
+		this.damageEffects.put("ignite", new DamageEffectIgnite());
+		this.damageEffects.put("poison", new DamageEffectPoison());
+		this.damageEffects.put("freeze", new DamageEffectFreeze());
+		this.damageEffects.put("shrink", new DamageEffectShrink());
+				
+		// Register listeners
+		registerListeners();
+
+		// Setup command handling
+		getCommand("minekart").setExecutor(new CommandHandler());
+
+		// Load data from disk
+		loadJockeyData();
+		loadPowerups();
+		loadRacecourses();
+		loadSigns(MineKart.getLobbyFolder());
+	}
+
+	private void setupDataFolder() {
 		// Setup the folder which will hold all the racecourse configs
 		MineKart.racecourseFolderPath = new File(this.getDataFolder() + File.separator + "courses");
 		if (!MineKart.racecourseFolderPath.exists()) {
@@ -143,60 +189,6 @@ public final class MineKart extends JavaPlugin {
 			MineKart.nmsHandlersPath.mkdirs();
 		}
 
-		if (!NmsHandler.setupNMSHandling()) {
-			MineKart.getInstance().getLogger().log(Level.SEVERE, "NMS handling could not be setup, disabling plugin");
-			setEnabled(false);
-			return;
-		}
-		
-		PluginManager pluginManager = this.getServer().getPluginManager();
-
-		// Get the world edit plugin instance
-		this.worldEdit = (WorldEditPlugin) pluginManager.getPlugin("WorldEdit");
-		if (this.worldEdit == null) {
-			getLogger().log(Level.SEVERE, "Could not find the WorldEdit plugin.");
-		}
-
-		// Register powerup types
-		this.powerupRegistry = new PowerupRegistry();
-		this.powerupRegistry.registerPowerupType("potion", PowerupPotion.class);
-		this.powerupRegistry.registerPowerupType("projectile", PowerupProjectile.class);
-		this.powerupRegistry.registerPowerupType("drop", PowerupDrop.class);
-
-		this.racecourseTypeRegistry = new RacecourseTypeRegistry();
-		this.racecourseTypeRegistry.registerRacecourseType("lap", RacecourseLap.class);
-		this.racecourseTypeRegistry.registerRacecourseType("checkpoint", RacecourseCheckpoint.class);
-
-		this.mountDataRegistry = new MountDataRegistry();
-		this.mountDataRegistry.registerCustomMountData(EntityType.HORSE, HorseMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.SLIME, SizeMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.MAGMA_CUBE, SizeMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.COW, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.CHICKEN, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.SHEEP, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.OCELOT, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.PIG, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.ZOMBIE, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.WOLF, AgeableMountData.class);
-
-		this.damageEffects = new HashMap<String, DamageEffect>();
-		this.damageEffects.put("ignite", new DamageEffectIgnite());
-		this.damageEffects.put("poison", new DamageEffectPoison());
-		this.damageEffects.put("freeze", new DamageEffectFreeze());
-		this.damageEffects.put("shrink", new DamageEffectShrink());
-				
-		registerListeners();
-
-		getCommand("minekart").setExecutor(new CommandHandler());
-
-		this.courses = new HashMap<String, Racecourse>();
-		
-		this.statsManager = new StatsManager();
-
-		loadJockeyData();
-		loadPowerups();
-		loadRacecourses();
-		loadSigns(MineKart.getLobbyFolder());
 	}
 
 	/**
@@ -281,6 +273,14 @@ public final class MineKart extends JavaPlugin {
 	public RacecourseTypeRegistry getRacecourseTypeRegistry() {
 		return this.racecourseTypeRegistry;
 	}
+	
+	/**
+	 * Get the stats manager instance
+	 * @return The instance of the stats manager
+	 */
+	public StatsManager getStatsManager() {
+		return this.statsManager;
+	}
 
 	/**
 	 * Get the folder of which all racecourse configs reside
@@ -308,7 +308,7 @@ public final class MineKart extends JavaPlugin {
 	public static File getNmsFolder() {
 		return MineKart.nmsHandlersPath;
 	}
-	
+
 	/**
 	 * Get the jockey data manager
 	 * 
@@ -317,7 +317,7 @@ public final class MineKart extends JavaPlugin {
 	public JockeyDataManager getJockeyDataManager() {
 		return this.jockeyDataManager;
 	}
-
+	
 	/**
 	 * Registers all listeners used by the plugin
 	 */
@@ -391,10 +391,7 @@ public final class MineKart extends JavaPlugin {
 		} catch (IOException e) {
 			getLogger().log(Level.SEVERE, "Error copying default configs from jar", e);
 		} finally {
-			if (file != null) { // Doesn't implement Closeable :(
-				try {
-					file.close();
-				} catch (IOException e) {
+			close(file);
 				}
 			}
 		}
@@ -545,13 +542,14 @@ public final class MineKart extends JavaPlugin {
 		// remove it from file
 		course.delete();
 
-		sender.sendMessage("The racecourse '" + course.getName() + "' has been deleted...");
+		MineKart.output(sender, "The racecourse '" + course.getName() + "' has been deleted...");
 		course = null;
 
 	}
 
 	/**
-	 * Get a course from a given name
+	 * Get a course from a given name will auto complete the name if only the
+	 * first part of a course name is input.
 	 * 
 	 * @param courseName The name of the course to get
 	 * @return The course represented by the given name, or null if a course
@@ -643,14 +641,6 @@ public final class MineKart extends JavaPlugin {
 	 */
 	public Map<String, DamageEffect> getDamageEffects() {
 		return this.damageEffects;
-	}
-	
-	/**
-	 * Get the stats manager instance
-	 * @return The instance of the stats manager
-	 */
-	public StatsManager getStatsManager() {
-		return this.statsManager;
 	}
 	
 }
