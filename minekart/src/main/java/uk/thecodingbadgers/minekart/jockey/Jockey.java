@@ -7,6 +7,7 @@ import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Owner;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -27,6 +28,9 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.lang.Lang;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
+import uk.thecodingbadgers.minekart.lang.Messageable;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.version.NmsHandler;
@@ -40,7 +44,7 @@ import uk.thecodingbadgers.minekart.version.NmsHandler;
  * 
  */
 @SuppressWarnings("deprecation")
-public class Jockey {
+public class Jockey implements Messageable {
 
 	/** The player which represents this jockey */
 	private Player player = null;
@@ -99,6 +103,16 @@ public class Jockey {
 		backupInventory(this.player);
 
 		equipGear();
+	}
+
+	@Override
+	public void sendMessage(String message) {
+		this.player.sendMessage(ChatColor.DARK_GREEN + "[MineKart] " + ChatColor.WHITE + message);
+	}
+
+	@Override
+	public Lang getLanguage() {
+		return LangUtils.getLang(); // TODO load from user settings
 	}
 
 	/**
