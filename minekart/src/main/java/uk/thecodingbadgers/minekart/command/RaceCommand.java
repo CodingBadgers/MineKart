@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.lang.Lang;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 
@@ -16,14 +18,14 @@ public class RaceCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleJoinCommand(CommandSender sender, String[] args) {
+	public static void handleJoinCommand(Lang lang, CommandSender sender, String[] args) {
 
 		if (!(sender instanceof Player))
 			return;
 
 		Player player = (Player) sender;
 		if (!player.hasPermission("minekart.join")) {
-			MineKart.output(player, "You do not have the required permission 'minekart.join'");
+			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.join");
 			return;
 		}
 
@@ -32,19 +34,19 @@ public class RaceCommand {
 			final String coursename = args[1];
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				MineKart.output(player, "Could not find a racecourse with the name '" + coursename + "'.");
-				MineKart.output(player, "Use the command '/mk list' to see all racecourse's.");
+				LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
+				LangUtils.sendMessage(sender, lang, "command.error.list");
 				return;
 			}
 			
 			if (!player.hasPermission("minekart.join." + course.getName().toLowerCase())) {
-				MineKart.output(player, "You do not have the required permission 'minekart.join." + course.getName().toLowerCase() + "'");
+				LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.join" + course.getName().toLowerCase());
 				return;
 			}
 
 
 			if (MineKart.getInstance().getJockey(player) != null) {
-				MineKart.output(player, "You are already in a race, please leave your current race before joining a new one.");
+				LangUtils.sendMessage(sender, lang, "command.join.inrace");
 				return;
 			}
 
@@ -53,8 +55,8 @@ public class RaceCommand {
 			return;
 		}
 
-		MineKart.output(sender, "Invalid command usage...");
-		MineKart.output(sender, " - /mk join <coursename>");
+		LangUtils.sendMessage(sender, lang, "command.error.usage");
+		LangUtils.sendMessage(sender, lang, "command.join.usage");
 
 	}
 
@@ -64,10 +66,10 @@ public class RaceCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleForceStartCommand(CommandSender sender, String[] args) {
+	public static void handleForceStartCommand(Lang lang, CommandSender sender, String[] args) {
 
 		if (!sender.hasPermission("minekart.forcestart")) {
-			MineKart.output(sender, "You do not have the required permission 'minekart.forcestart'");
+			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.forcestart");
 			return;
 		}
 
@@ -76,8 +78,8 @@ public class RaceCommand {
 			final String coursename = args[1];
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				MineKart.output(sender, "Could not find a racecourse with the name '" + coursename + "'.");
-				MineKart.output(sender, "Use the command '/mk list' to see all racecourse's.");
+				LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
+				LangUtils.sendMessage(sender, lang, "command.error.list");
 				return;
 			}
 
@@ -85,8 +87,8 @@ public class RaceCommand {
 			return;
 		}
 
-		MineKart.output(sender, "Invalid command usage...");
-		MineKart.output(sender, " - /mk forcestart <coursename>");
+		LangUtils.sendMessage(sender, lang, "command.error.usage");
+		LangUtils.sendMessage(sender, lang, "command.start.usage");
 
 	}
 
@@ -96,25 +98,25 @@ public class RaceCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleLeaveCommand(CommandSender sender, String[] args) {
+	public static void handleLeaveCommand(Lang lang, CommandSender sender, String[] args) {
 
 		if (!(sender instanceof Player))
 			return;
 
 		Player player = (Player) sender;
 		if (!player.hasPermission("minekart.join")) {
-			MineKart.output(player, "You do not have the required permission 'minekart.join'");
+			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.join");
 			return;
 		}
 
 		Jockey jockey = MineKart.getInstance().getJockey(player);
 		if (jockey == null) {
-			MineKart.output(player, "You are not in a race. To join a race use '/mk join <coursename>'.");
+			LangUtils.sendMessage(sender, lang, "command.leave.norace");
 			return;
 		}
 
 		jockey.getRace().removeJockey(jockey);
-		MineKart.output(player, "You have left the race.");
+		LangUtils.sendMessage(sender, lang, "command.leave.sucess");
 	}
 
 }

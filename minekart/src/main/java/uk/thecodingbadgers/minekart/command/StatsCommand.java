@@ -4,11 +4,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.lang.Lang;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.userstats.StatsManager;
 import uk.thecodingbadgers.minekart.userstats.StatsManager.TimeResult;
@@ -21,31 +22,31 @@ public class StatsCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleTimesCommand(CommandSender sender, String[] args) {
+	public static void handleTimesCommand(Lang lang, CommandSender sender, String[] args) {
 		
 		if (!(sender instanceof Player)) {
-			MineKart.output(sender, "This command can not be executed from the console.");
+			LangUtils.sendMessage(sender, lang, "command.error.console");
 			return;
 		}
 
 		final Player player = (Player) sender;
 		
 		if (!player.hasPermission("minekart.stats.times")) {
-			MineKart.output(player, "You do not have the required permission 'minekart.stats.times'");
+			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.stats.times");
 			return;
 		}
 		
 		if (args.length < 2) {
-			MineKart.output(player, "Invalid command usage...");
-			MineKart.output(player, " - /mk times <coursename> [best]");
+			LangUtils.sendMessage(sender, lang, "command.error.usage");
+			LangUtils.sendMessage(sender, lang, "command.times.usage");
 			return;
 		}
 		
 		final String name = args[1];
 		Racecourse course = MineKart.getInstance().getRacecourse(name);
 		if (course == null) {
-			MineKart.output(sender, "Could not find a course by the name '" + name + "'");
-			MineKart.output(sender, "Use the command '/mk list' to see all racecourse's.");
+			LangUtils.sendMessage(sender, lang, "command.error.notfound");
+			LangUtils.sendMessage(sender, lang, "command.error.list");
 			return;
 		}
 		
@@ -57,9 +58,10 @@ public class StatsCommand {
 			Collections.sort(times);
 			
 			int toShow = Math.min(times.size(), 3);
-			MineKart.output(player, "Your personal times for " + course.getName() + " are...");
+
+			LangUtils.sendMessage(sender, lang, "command.times.personal", course.getName());
 			for (int index = 0; index < toShow; ++index) {
-				MineKart.output(player, "[" + index + "] - " + ChatColor.YELLOW + MineKart.formatTime(times.get(index)));
+				LangUtils.sendMessage(sender, lang, "command.times.entry", index, MineKart.formatTime(times.get(index)));
 			}
 			return;
 		}
@@ -77,18 +79,17 @@ public class StatsCommand {
 			});
 			
 			int toShow = Math.min(times.size(), 3);
-			MineKart.output(player, "The top times for " + course.getName() + " are...");
+			LangUtils.sendMessage(sender, lang, "command.times.personal", course.getName());
 			for (int index = 0; index < toShow; ++index) {
 				TimeResult time = times.get(index);
-				MineKart.output(player, "[" + index + "] - " + ChatColor.GOLD + time.player + " - " + ChatColor.YELLOW + MineKart.formatTime(time.time));
+				LangUtils.sendMessage(sender, lang, "command.times.entry", index, MineKart.formatTime(time.time));
 			}
 			
 			return;
 		}
 		
-		
-		MineKart.output(player, "Invalid command usage...");
-		MineKart.output(player, " - /mk times <coursename> [best]");
+		LangUtils.sendMessage(sender, lang, "command.error.usage");
+		LangUtils.sendMessage(sender, lang, "command.times.usage");
 	}
 	
 }

@@ -5,6 +5,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.lang.Lang;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 
 public class CreateCommand {
@@ -15,15 +17,17 @@ public class CreateCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleSetWarpCommand(CommandSender sender, String[] args) {
+	public static void handleSetWarpCommand(Lang lang, CommandSender sender, String[] args) {
 
-		if (!(sender instanceof Player))
+		if (!(sender instanceof Player)) {
+			LangUtils.sendMessage(sender, lang, "command.error.console");
 			return;
+		}
 
 		final Player player = (Player) sender;
 
 		if (!player.hasPermission("minekart.create.warp")) {
-			MineKart.output(player, "You do not have the required permission 'minekart.create.warp'");
+			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.create.warp");
 			return;
 		}
 
@@ -35,7 +39,8 @@ public class CreateCommand {
 			final String coursename = args[1].toLowerCase();
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				MineKart.output(player, "Could not find a racecourse with the name '" + coursename + "'.");
+				LangUtils.sendMessage(sender, lang, "command.error.notfound");
+				LangUtils.sendMessage(sender, lang, "command.error.list");
 				return;
 			}
 
@@ -52,9 +57,9 @@ public class CreateCommand {
 
 		}
 
-		MineKart.output(player, "Invalid command usage...");
-		MineKart.output(player, " - /mk add[warpname] <coursename>");
-		MineKart.output(player, " - /mk set[warpname] <coursename>");
+		LangUtils.sendMessage(sender, lang, "command.error.usage");
+		LangUtils.sendMessage(sender, lang, "command.add.usage");
+		LangUtils.sendMessage(sender, lang, "command.set.usage");
 	}
 	
 	/**
@@ -63,7 +68,7 @@ public class CreateCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleDeleteWarpCommand(CommandSender sender, String[] args) {
+	public static void handleDeleteWarpCommand(CommandSender sender, Lang lang, String[] args) { // FIXME Command isn't referanced anywhere
 
 		if (!(sender instanceof Player))
 			return;
@@ -71,26 +76,26 @@ public class CreateCommand {
 		final Player player = (Player) sender;
 
 		if (!player.hasPermission("minekart.delete.warp")) {
-			MineKart.output(player, "You do not have the required permission 'minekart.delete.warp'");
+			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.delete.warp");
 			return;
 		}
 		
 		final String coursename = args[1];
 		Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 		if (course == null) {
-			MineKart.output(sender, "Could not find a racecourse with the name '" + coursename + "'.");
-			MineKart.output(sender, "Use the command '/mk list' to see all racecourse's.");
+			LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
+			LangUtils.sendMessage(sender, lang, "command.error.list");
 			return;
 		}
 		
 		final String warpName = args[0].substring("delete".length());
 		final int id = args.length == 3 ? Integer.parseInt(args[2]) : -1;
 		if (course.removeWarp(player, warpName, id)) {
-			MineKart.output(player, "Warp removed.");
+			LangUtils.sendMessage(sender, lang, "command.delete.fail", warpName);
 			return;
 		}
-		
-		MineKart.output(player, "Failed to remove warp.");		
+
+		LangUtils.sendMessage(sender, lang, "command.delete.success", warpName);
 	}
 
 	/**
@@ -100,10 +105,10 @@ public class CreateCommand {
 	 * @param args The command args
 	 */
 	@SuppressWarnings("deprecation")
-	public static void handleMountCommand(CommandSender sender, String[] args) {
+	public static void handleMountCommand(Lang lang, CommandSender sender, String[] args) {
 
 		if (!sender.hasPermission("minekart.mount")) {
-			MineKart.output(sender, "You do not have the required permission 'minekart.mount'");
+			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.mount");
 			return;
 		}
 
@@ -112,8 +117,8 @@ public class CreateCommand {
 			final String coursename = args[2];
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				MineKart.output(sender, "Could not find a racecourse with the name '" + coursename + "'.");
-				MineKart.output(sender, "Use the command '/mk list' to see all racecourse's.");
+				LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
+				LangUtils.sendMessage(sender, lang, "command.error.list");
 				return;
 			}
 
@@ -128,20 +133,20 @@ public class CreateCommand {
 
 					mountType = EntityType.fromName(value);
 					if (mountType == null) {
-						MineKart.output(sender, "Unknown mount type '" + value + "'");
+						LangUtils.sendMessage(sender, lang, "command.mount.unknown", value);
 						return;
 					}
 
 					if (!mountType.isAlive()) {
-						MineKart.output(sender, "You can only set mounts to be living entities.");
+						LangUtils.sendMessage(sender, lang, "command.mount.error.living");
 						return;
 					}
 				}
 
-				MineKart.output(sender, "The mount type for '" + course.getName() + "' has been set to '" + value + "'.");
+				LangUtils.sendMessage(sender, lang, "command.mount.success", course.getName(), value);
 				course.setMountType(mountType);
 				return;
-			}
+			} // TODO add speed setting
 
 			return;
 		}

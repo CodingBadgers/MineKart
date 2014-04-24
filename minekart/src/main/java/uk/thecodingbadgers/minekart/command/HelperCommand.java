@@ -5,6 +5,8 @@ import java.util.Map;
 import org.bukkit.command.CommandSender;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.lang.Lang;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 
@@ -16,21 +18,21 @@ public class HelperCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleListCommand(CommandSender sender, String[] args) {
+	public static void handleListCommand(Lang lang, CommandSender sender, String[] args) {
 
 		if (!sender.hasPermission("minekart.course.list")) {
-			MineKart.output(sender, "You do not have the required permission 'minekart.course.list'");
+			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.course.list");
 			return;
 		}
 
 		Map<String, Racecourse> courses = MineKart.getInstance().getAllRacecourses();
 
 		if (courses.isEmpty()) {
-			MineKart.output(sender, "No racecourses exists.");
+			LangUtils.sendMessage(sender, lang, "command.list.nocourses");
 		} else {
-			MineKart.output(sender, "The following racecourses exists...");
+			LangUtils.sendMessage(sender, lang, "command.list.header");
 			for (Racecourse course : courses.values()) {
-				MineKart.output(sender, " - " + course.getName());
+				LangUtils.sendMessage(sender, lang, "command.list.entry", course.getName());
 			}
 		}
 
@@ -42,18 +44,17 @@ public class HelperCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleReloadCommand(CommandSender sender, String[] args) {
+	public static void handleReloadCommand(Lang lang, CommandSender sender, String[] args) {
 
 		if (!sender.hasPermission("minekart.reload")) {
-			MineKart.output(sender, "You do not have the required permission 'minekart.reload'");
+			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.reload");
 			return;
 		}
 		
 		MineKart.getInstance().reload();
-		
 		LobbySignManager.updateSigns();
 		
-		MineKart.output(sender, "MineKart has been reloaded.");
+		LangUtils.sendMessage(sender, lang, "command.reload.success");
 	}
 
 	/**
@@ -62,10 +63,10 @@ public class HelperCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleInfoCommand(CommandSender sender, String[] args) {
+	public static void handleInfoCommand(Lang lang, CommandSender sender, String[] args) {
 
 		if (!sender.hasPermission("minekart.course.info")) {
-			MineKart.output(sender, "You do not have the required permission 'minekart.course.info'");
+			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.course.info");
 			return;
 		}
 
@@ -73,7 +74,8 @@ public class HelperCommand {
 			final String coursename = args[1];
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				MineKart.output(sender, "Could not find a racecourse with the name '" + coursename + "'.");
+				LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
+				LangUtils.sendMessage(sender, lang, "command.error.list");
 				return;
 			}
 
@@ -81,8 +83,9 @@ public class HelperCommand {
 			return;
 		}
 
-		MineKart.output(sender, "Invalid command usage...");
-		MineKart.output(sender, " - /mk info <coursename>");
+
+		LangUtils.sendMessage(sender, lang, "command.error.usage");
+		LangUtils.sendMessage(sender, lang, "command.info.usage");
 	}
 
 }

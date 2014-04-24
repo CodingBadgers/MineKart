@@ -6,14 +6,30 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.util.ChatPaginator;
+
+import com.google.common.base.Splitter;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.lang.Lang;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 
 public class CommandHandler implements TabExecutor {
 
+	private static final char NEW_LINE = '\n';
+	private static String seperator;
+
+	static {
+		StringBuilder seperator = new StringBuilder();
+		for (int i = 0; i < ChatPaginator.AVERAGE_CHAT_PAGE_WIDTH; i++) {
+			seperator.append(LangUtils.getLang().getTranslation("command.help.header.sepeartor"));
+		}
+		CommandHandler.seperator = seperator.toString();
+	}
+	
 	@Override
 	public List<String> onTabComplete(CommandSender arg0, Command arg1, String arg2, String[] arg3) {
-		return null;
+		return null; // TODO tab completion
 	}
 
 	@Override
@@ -23,9 +39,11 @@ public class CommandHandler implements TabExecutor {
 			return false;
 		}
 
+		Lang lang = LangUtils.getLang(); // TODO per user language
+		
 		// If no arguments are passed show the info and help
 		if (args.length == 0) {
-			showPluginHelp(sender);
+			showPluginHelp(lang, sender);
 			return true;
 		}
 
@@ -33,80 +51,87 @@ public class CommandHandler implements TabExecutor {
 
 		// if the control argument is create, let the create command handler take care of it
 		if (controlArgument.startsWith("course")) {
-			CourseCommand.handleCourseCommand(sender, args);
+			CourseCommand.handleCourseCommand(lang, sender, args);
 			return true;
 		}
 		
 		// if the control argument is create, let the create command handler take care of it
 		if (controlArgument.startsWith("times")) {
-			StatsCommand.handleTimesCommand(sender, args);
+			StatsCommand.handleTimesCommand(lang, sender, args);
 			return true;
 		}
 
 		// if the control argument is set or add, let the setwarp command handler take care of it
 		if (controlArgument.startsWith("set") || controlArgument.startsWith("add")) {
-			CreateCommand.handleSetWarpCommand(sender, args);
+			CreateCommand.handleSetWarpCommand(lang, sender, args);
 			return true;
 		}
 
 		// if the control argument is mount, let the setwarp command handler take care of it
 		if (controlArgument.startsWith("mount")) {
-			CreateCommand.handleMountCommand(sender, args);
+			CreateCommand.handleMountCommand(lang, sender, args);
 			return true;
 		}
 
 		// if the control argument is list, let the helper command handler take care of it
 		if (controlArgument.startsWith("list")) {
-			HelperCommand.handleListCommand(sender, args);
+			HelperCommand.handleListCommand(lang, sender, args);
 			return true;
 		}
 
 		// if the control argument is info, let the helper command handler take care of it
 		if (controlArgument.startsWith("info")) {
-			HelperCommand.handleInfoCommand(sender, args);
+			HelperCommand.handleInfoCommand(lang, sender, args);
 			return true;
 		}
 		
 		// if the control argument is info, let the helper command handler take care of it
 		if (controlArgument.startsWith("reload")) {
-			HelperCommand.handleReloadCommand(sender, args);
+			HelperCommand.handleReloadCommand(lang, sender, args);
 			return true;
 		}
 
 		// if the control argument is join, let the race command handler take care of it
 		if (controlArgument.startsWith("join") || controlArgument.startsWith("j")) {
-			RaceCommand.handleJoinCommand(sender, args);
+			RaceCommand.handleJoinCommand(lang, sender, args);
 			return true;
 		}
 
 		// if the control argument is leave, let the race command handler take care of it
 		if (controlArgument.startsWith("leave") || controlArgument.startsWith("l")) {
-			RaceCommand.handleLeaveCommand(sender, args);
+			RaceCommand.handleLeaveCommand(lang, sender, args);
 			return true;
 		}
 
 		// if the control argument is forcestart, let the race command handler take care of it
 		if (controlArgument.startsWith("forcestart") || controlArgument.startsWith("fs")) {
-			RaceCommand.handleForceStartCommand(sender, args);
+			RaceCommand.handleForceStartCommand(lang, sender, args);
 			return true;
 		}
 
 		// Unknown command
-		showPluginHelp(sender);
+		showPluginHelp(lang, sender);
 		return true;
 	}
 
-	private void showPluginHelp(CommandSender sender) {
+	private void showPluginHelp(Lang lang, CommandSender sender) { // TODO better help generation
 		PluginDescriptionFile pluginDescription = MineKart.getInstance().getDescription();
 
-		MineKart.output(sender, "===================");
-		MineKart.output(sender, "MineKart by " + pluginDescription.getAuthors());
-		MineKart.output(sender, "Version " + pluginDescription.getVersion());
-		MineKart.output(sender, "===================");
-		MineKart.output(sender, "/mk course");
-		MineKart.output(sender, "/mk mount");
-		MineKart.output(sender, "/mk join <coursename>");
-		MineKart.output(sender, "/mk leave");
-		MineKart.output(sender, "/mk list");
+		StringBuilder message = new StringBuilder();
+		
+		message.append(seperator).append(NEW_LINE);
+		message.append(lang.getTranslation("command.help.header.authors", pluginDescription.getName(), pluginDescription.getAuthors())).append(NEW_LINE);
+		message.append(lang.getTranslation("command.help.header.version", pluginDescription.getVersion())).append(NEW_LINE);
+		message.append(seperator).append(NEW_LINE);
+		
+		message.append(lang.getTranslation("command.help.course")).append(NEW_LINE);
+		message.append(lang.getTranslation("command.help.mount")).append(NEW_LINE);
+		message.append(lang.getTranslation("command.help.join")).append(NEW_LINE);
+		message.append(lang.getTranslation("command.help.leave")).append(NEW_LINE);
+		message.append(lang.getTranslation("command.help.list")).append(NEW_LINE);
+		
+		for (String line : Splitter.on(NEW_LINE).split(message.toString())) {
+			LangUtils.sendMessage(sender, line);
+		}
 	}
 }

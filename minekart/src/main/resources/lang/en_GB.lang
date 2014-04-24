@@ -1,0 +1,71 @@
+message.format=&2[%1$s]&r %2$s
+
+# Generic Command messages
+command.help.header.seperator==
+command.help.header.authors=%1$s by %2$s
+command.help.header.version=Version %1$s
+command.help.course=/mk course
+command.help.join=/mk mount
+command.help.leave=/mk join <coursename>
+command.help.list=/mk list
+
+command.error.console=This command cannot be executed from the console
+command.error.permission=You do not have the required permission &l%1$s&r
+command.error.usage=Invalid command usage...
+command.error.notfound=Could not find a course with the name &l%1$s&r.
+command.error.list=Use the command &l/mk list&r to see all racecourse's.
+
+# Course Command Messages
+command.course.usage=- /mk course <coursename> <command>
+command.course.usage.commands=command: create, delete, enable, disable
+
+command.create.usage=- /mk course <coursename> create <type>
+command.create.error.exists=A course with the name %1$s already exists...
+
+command.delete.usage=- /mk course <coursename> delete
+
+command.state.usage=- /mk course <coursename> <enable|disable>
+command.state.success=The course &l%1$s&r has been %2$s&r.
+command.state.enabled=&aEnabled
+command.state.disabled=&cDisabled
+
+command.show.usage=- /mk course <course> show[warptype]
+command.show.unknown=Warp type &l%1$s&r is not known to MineKart
+command.show.success=Warps of type &l%1$s&r are now being shown
+
+# Create Command Messages
+command.add.usage=- /mk add[warpname] <coursename>
+command.set.usage=- /mk set[warpname] <coursename>
+
+command.delete.success=Warp of type &l%1$s&r removed.
+command.delete.fail=Failed to remove warp of type &l%1$s&r
+
+command.mount.usage=- /mk mount <setting> <coursename> <value>
+command.mount.usage.settings=settings: type, speed
+command.mount.error.unknown=Unknown mount type &l%1$s&r.
+command.mount.error.living=You can only set mounts to be living entities.
+command.mount.success=The mount type for &l%1$s&r has been set to &l%2$s&r
+
+# Helper Command Messages
+command.list.nocourses=No racecourses exist.
+command.list.header=The following racecourses exist...
+command.list.entry= - %1$s
+
+command.reload.success=%1$s has been reloaded successfully
+
+command.info.usage=- /mk info <coursename>
+
+# Race Command Messages
+command.join.usage=- /mk join <coursename>
+command.join.inrace=You are already in a race, please leave your current race before joining a new one.
+
+command.start.usage=- /mk forcestart <coursename>
+
+command.leave.norace=You are not in a race. To join a race use &l/mk join <coursename>&r.
+command.leave.success=You have left the race.
+
+# Stats Command Messages
+command.times.usage=- /mk times <coursename> [best]
+command.times.personal=Your personal times for &l%1$s&r are...
+command.times.best=The top times for &l%1$s&r are...
+command.times.entry=[%1$s] &e%2$s%r
