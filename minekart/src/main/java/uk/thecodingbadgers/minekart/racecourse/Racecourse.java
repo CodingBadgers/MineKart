@@ -43,6 +43,7 @@ import com.sk89q.worldedit.regions.Region;
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
+import uk.thecodingbadgers.minekart.mount.MountType;
 import uk.thecodingbadgers.minekart.mount.MountTypeData;
 import uk.thecodingbadgers.minekart.powerup.PowerupEntity;
 import uk.thecodingbadgers.minekart.race.Race;
@@ -73,7 +74,7 @@ public abstract class Racecourse {
 	
 	protected File fileConfiguration = null;
 	protected Race race = null;
-	protected EntityType mountType = EntityType.HORSE;
+	protected MountType mountType = MountType.HORSE;
 	protected boolean enabled = true;
 	protected List<PowerupEntity> powerupItems = null;
 	protected List<String> powerupBlacklist = null;
@@ -127,6 +128,7 @@ public abstract class Racecourse {
 
 		this.name = name;
 		this.readyblock = Material.IRON_BLOCK;
+        this.mountType = MountType.HORSE;
 		this.mountTypeData = MineKart.getInstance().getMountDataRegistry().getMountData(mountType);
 
 		this.fileConfiguration = new File(MineKart.getRacecourseFolder() + File.separator + this.name + "." + this.type + ".yml");
@@ -153,8 +155,8 @@ public abstract class Racecourse {
 	/**
 	 * Delete this racecourse
 	 */
-	public void delete() {
-		this.fileConfiguration.delete();
+	public boolean delete() {
+		return this.fileConfiguration.delete();
 	}
 
 	/**
@@ -197,7 +199,7 @@ public abstract class Racecourse {
 
 		// Mount settings
 		final String loadedMount = file.getString("mount.type", "EntityHorse");
-		this.mountType = loadedMount.equalsIgnoreCase("none") ? EntityType.UNKNOWN : EntityType.fromName(loadedMount);
+		this.mountType = loadedMount.equalsIgnoreCase("none") ? MountType.HORSE : MountType.fromEntityId(loadedMount);
 		this.mountTypeData = MineKart.getInstance().getMountDataRegistry().getMountData(mountType);
 		ConfigurationSection section = file.getConfigurationSection("mount.data");
 
@@ -265,7 +267,7 @@ public abstract class Racecourse {
 		saveRegion(file, "racecourse.bounds", this.bounds);
 
 		// Mount settings
-		file.set("mount.type", this.mountType == EntityType.UNKNOWN ? "none" : this.mountType.getName());
+		file.set("mount.type", this.mountType == MountType.HORSE ? "none" : this.mountType.getBukkitMapping().getName());
 
 		ConfigurationSection data = file.getConfigurationSection("mount.data");
 		if (data == null) {
@@ -320,6 +322,7 @@ public abstract class Racecourse {
 		try {
 			file.save(this.fileConfiguration);
 		} catch (Exception ex) {
+            ex.printStackTrace();
 		}
 	}
 
@@ -670,7 +673,7 @@ public abstract class Racecourse {
 	 * @return The EntityType that this course uses as a mount (Unknown means
 	 *         none)
 	 */
-	public EntityType getMountType() {
+	public MountType getMountType() {
 		return this.mountType;
 	}
 
@@ -679,7 +682,7 @@ public abstract class Racecourse {
 	 * 
 	 * @param mountType The EntityType that this course should use as a mount
 	 */
-	public void setMountType(EntityType mountType) {
+	public void setMountType(MountType mountType) {
 		this.mountType = mountType;
 		this.save();
 	}

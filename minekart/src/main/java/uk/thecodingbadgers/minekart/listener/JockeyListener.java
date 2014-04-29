@@ -42,6 +42,7 @@ import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.jockey.Mount;
 import uk.thecodingbadgers.minekart.lobby.LobbySign;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
+import uk.thecodingbadgers.minekart.mount.MountType;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
@@ -173,7 +174,7 @@ public class JockeyListener implements Listener {
 	/**
 	 * Perform actions for players that are in a racecourse lobby
 	 * 
-	 * @param player the player that triggered this event
+	 * @param jockey the player that triggered this event
 	 * @param event the player interact event, containing information on this
 	 *            event
 	 */
@@ -190,7 +191,7 @@ public class JockeyListener implements Listener {
 	/**
 	 * Perform actions for players that are currently in a race
 	 * 
-	 * @param player the player that triggered this event
+	 * @param jockey the player that triggered this event
 	 * @param event the player interact event, containing information on this
 	 *            event
 	 */
@@ -258,7 +259,7 @@ public class JockeyListener implements Listener {
 	 * @param type The mount type
 	 * @return The sound to be played
 	 */
-	private Sound getWhipSound(EntityType type) {
+	private Sound getWhipSound(MountType type) {
 
 		switch (type) {
 			case CHICKEN:

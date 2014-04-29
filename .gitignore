@@ -5,12 +5,14 @@
 *.war
 *.ear
 
+# IDE Settings Files
+*.iml
+.idea
+
 .classpath
 .project
 .settings
 target
-
-/src/main/java/uk/thecodingbadgers/minekart/gui
 
 /gource.mp4
 /gource.ppm

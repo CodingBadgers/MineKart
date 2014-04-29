@@ -37,10 +37,7 @@ import uk.thecodingbadgers.minekart.jockey.JockeyDataManager;
 import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.listener.BlockListener;
 import uk.thecodingbadgers.minekart.listener.JockeyListener;
-import uk.thecodingbadgers.minekart.mount.AgeableMountData;
-import uk.thecodingbadgers.minekart.mount.HorseMountData;
-import uk.thecodingbadgers.minekart.mount.MountDataRegistry;
-import uk.thecodingbadgers.minekart.mount.SizeMountData;
+import uk.thecodingbadgers.minekart.mount.*;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.powerup.PowerupDrop;
 import uk.thecodingbadgers.minekart.powerup.PowerupPotion;
@@ -136,16 +133,17 @@ public final class MineKart extends JavaPlugin {
 		this.racecourseTypeRegistry.registerRacecourseType("checkpoint", RacecourseCheckpoint.class);
 
 		// Register mount data types
-		this.mountDataRegistry.registerCustomMountData(EntityType.HORSE, HorseMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.SLIME, SizeMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.MAGMA_CUBE, SizeMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.COW, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.CHICKEN, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.SHEEP, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.OCELOT, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.PIG, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.ZOMBIE, AgeableMountData.class);
-		this.mountDataRegistry.registerCustomMountData(EntityType.WOLF, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(MountType.HORSE, HorseMountData.class);
+		this.mountDataRegistry.registerCustomMountData(MountType.SLIME, SizeMountData.class);
+		this.mountDataRegistry.registerCustomMountData(MountType.MAGMA_CUBE, SizeMountData.class);
+		this.mountDataRegistry.registerCustomMountData(MountType.COW, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(MountType.CHICKEN, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(MountType.SHEEP, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(MountType.OCELOT, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(MountType.PIG, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(MountType.ZOMBIE, AgeableMountData.class);
+		this.mountDataRegistry.registerCustomMountData(MountType.WOLF, AgeableMountData.class);
+        this.mountDataRegistry.registerCustomMountData(null, FootMountData.class);
 
 		// Register damage effects
 		this.damageEffects.put("ignite", new DamageEffectIgnite());

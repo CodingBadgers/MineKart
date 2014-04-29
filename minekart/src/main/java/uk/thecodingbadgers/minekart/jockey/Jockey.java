@@ -31,6 +31,7 @@ import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.lang.Lang;
 import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.lang.Messageable;
+import uk.thecodingbadgers.minekart.mount.MountType;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.version.NmsHandler;
@@ -50,7 +51,7 @@ public class Jockey implements Messageable {
 	private Player player = null;
 
 	/** The type of mount the jockey will use */
-	private EntityType mountType = EntityType.UNKNOWN;
+	private MountType mountType = MountType.FOOT;
 
 	/** The color which represents this jockey */
 	private Color jockeyColor = Color.RED;
@@ -91,7 +92,7 @@ public class Jockey implements Messageable {
 	 * @param mountType
 	 * @param race
 	 */
-	public Jockey(Player player, EntityType mountType, Location oldLocation, Race race) {
+	public Jockey(Player player, MountType mountType, Location oldLocation, Race race) {
 		this.player = player;
 		this.mountType = mountType;
 		this.race = race;
@@ -273,9 +274,9 @@ public class Jockey implements Messageable {
 	 * @param spawn
 	 */
 	private void createMount(String mountName, Location spawn, boolean enabled) {
-		if (this.mountType != EntityType.UNKNOWN) {
+		if (this.mountType.hasBukkitMapping()) {
 			// Make their mounts
-			this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType, mountName == null ? "Error" : mountName);
+			this.mount = CitizensAPI.getNPCRegistry().createNPC(this.mountType.getBukkitMapping(), mountName == null ? "Error" : mountName);
 			this.mount.setProtected(true);
 			this.mount.addTrait(NmsHandler.getNmsHandler().newMount(true));
 			this.mount.spawn(spawn);
@@ -393,7 +394,7 @@ public class Jockey implements Messageable {
 	 * @return The entity type that represents the mount being used or Unknown
 	 *         if no mount is uses.
 	 */
-	public EntityType getMountType() {
+	public MountType getMountType() {
 		return this.mountType;
 	}
 
