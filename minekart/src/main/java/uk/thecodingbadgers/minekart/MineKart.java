@@ -143,7 +143,7 @@ public final class MineKart extends JavaPlugin {
 		this.mountDataRegistry.registerCustomMountData(MountType.PIG, AgeableMountData.class);
 		this.mountDataRegistry.registerCustomMountData(MountType.ZOMBIE, AgeableMountData.class);
 		this.mountDataRegistry.registerCustomMountData(MountType.WOLF, AgeableMountData.class);
-        this.mountDataRegistry.registerCustomMountData(null, FootMountData.class);
+        this.mountDataRegistry.registerCustomMountData(MountType.FOOT, FootMountData.class);
 
 		// Register damage effects
 		this.damageEffects.put("ignite", new DamageEffectIgnite());
