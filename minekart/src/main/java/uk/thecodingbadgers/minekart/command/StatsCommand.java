@@ -22,31 +22,31 @@ public class StatsCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleTimesCommand(Lang lang, CommandSender sender, String[] args) {
+	public static void handleTimesCommand(CommandSender sender, String[] args) {
 		
 		if (!(sender instanceof Player)) {
-			LangUtils.sendMessage(sender, lang, "command.error.console");
+			LangUtils.sendMessage(sender, "command.error.console");
 			return;
 		}
 
 		final Player player = (Player) sender;
 		
 		if (!player.hasPermission("minekart.stats.times")) {
-			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.stats.times");
+			LangUtils.sendMessage(sender, "command.error.permission", "minekart.stats.times");
 			return;
 		}
 		
 		if (args.length < 2) {
-			LangUtils.sendMessage(sender, lang, "command.error.usage");
-			LangUtils.sendMessage(sender, lang, "command.times.usage");
+			LangUtils.sendMessage(sender, "command.error.usage");
+			LangUtils.sendMessage(sender, "command.times.usage");
 			return;
 		}
 		
 		final String name = args[1];
 		Racecourse course = MineKart.getInstance().getRacecourse(name);
 		if (course == null) {
-			LangUtils.sendMessage(sender, lang, "command.error.notfound");
-			LangUtils.sendMessage(sender, lang, "command.error.list");
+			LangUtils.sendMessage(sender, "command.error.notfound");
+			LangUtils.sendMessage(sender, "command.error.list");
 			return;
 		}
 		
@@ -59,9 +59,9 @@ public class StatsCommand {
 			
 			int toShow = Math.min(times.size(), 3);
 
-			LangUtils.sendMessage(sender, lang, "command.times.personal", course.getName());
+			LangUtils.sendMessage(sender, "command.times.personal", course.getName());
 			for (int index = 0; index < toShow; ++index) {
-				LangUtils.sendMessage(sender, lang, "command.times.entry", index, MineKart.formatTime(times.get(index)));
+				LangUtils.sendMessage(sender, "command.times.entry", index, MineKart.formatTime(times.get(index)));
 			}
 			return;
 		}
@@ -79,17 +79,17 @@ public class StatsCommand {
 			});
 			
 			int toShow = Math.min(times.size(), 3);
-			LangUtils.sendMessage(sender, lang, "command.times.personal", course.getName());
+			LangUtils.sendMessage(sender, "command.times.personal", course.getName());
 			for (int index = 0; index < toShow; ++index) {
 				TimeResult time = times.get(index);
-				LangUtils.sendMessage(sender, lang, "command.times.entry", index, MineKart.formatTime(time.time));
+				LangUtils.sendMessage(sender, "command.times.entry", index, MineKart.formatTime(time.time));
 			}
 			
 			return;
 		}
 		
-		LangUtils.sendMessage(sender, lang, "command.error.usage");
-		LangUtils.sendMessage(sender, lang, "command.times.usage");
+		LangUtils.sendMessage(sender, "command.error.usage");
+		LangUtils.sendMessage(sender, "command.times.usage");
 	}
 	
 }

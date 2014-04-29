@@ -555,29 +555,29 @@ public final class MineKart extends JavaPlugin {
 	public void createCourse(Player player, String name, String type) {
 
 		if (this.courses.containsKey(name.toLowerCase())) {
-			MineKart.output(player, "A racecourse with this name already exists.");
-			MineKart.output(player, "Creation of '" + name + "' failed.");
+            LangUtils.sendMessage(player, "course.create.error.exists");
+            LangUtils.sendMessage(player, "course.create.error", name);
 			return;
 		}
 
 		Racecourse newCourse = this.racecourseTypeRegistry.createRacecourse(type);
 
 		if (newCourse == null) {
-			MineKart.output(player, "This racecourse type is not yet supported.");
-			MineKart.output(player, "Creation of '" + name + "' failed.");
+            LangUtils.sendMessage(player, "course.create.error.notsupported", type);
+            LangUtils.sendMessage(player, "course.create.error", name);
 			return;
 		}
 
 		if (!newCourse.setup(player, name)) {
-			MineKart.output(player, "Failed to setup new arena.");
-			MineKart.output(player, "Creation of '" + name + "' failed.");
+            LangUtils.sendMessage(player, "course.create.error.fail", name);
+            LangUtils.sendMessage(player, "course.create.error", name);
 			return;
 		}
 
 		this.courses.put(name.toLowerCase(), newCourse);
 
-		MineKart.output(player, "Created the new " + type + " arena '" + name + "' sucessfully!");
-		MineKart.output(player, "Next you need to...");
+        LangUtils.sendMessage(player, "course.create.success", type, name);
+        LangUtils.sendMessage(player, "course.create.next");
 		newCourse.outputRequirements(player);
 
 	}
@@ -592,11 +592,11 @@ public final class MineKart extends JavaPlugin {
 
 		// remove it from memory
 		this.courses.remove(course);
-
 		// remove it from file
 		course.delete();
 
-		MineKart.output(sender, "The racecourse '" + course.getName() + "' has been deleted...");
+
+        LangUtils.sendMessage(sender, "course.delete.success", course.getName());
 		course = null;
 
 	}

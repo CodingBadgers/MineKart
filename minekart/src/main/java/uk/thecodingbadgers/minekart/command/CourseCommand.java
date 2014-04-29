@@ -16,40 +16,40 @@ public class CourseCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleCourseCommand(Lang lang, CommandSender sender, String[] args) {
+	public static void handleCourseCommand(CommandSender sender, String[] args) {
 
 		if (args.length <= 2) {
-			LangUtils.sendMessage(sender, lang, "command.error.usage");
-			LangUtils.sendMessage(sender, lang, "command.course.usage");
-			LangUtils.sendMessage(sender, lang, "command.course.usage.commands");
+			LangUtils.sendMessage(sender, "command.error.usage");
+			LangUtils.sendMessage(sender, "command.course.usage");
+			LangUtils.sendMessage(sender, "command.course.usage.commands");
 			return;
 		}
 
 		final String command = args[2];
 
 		if (command.equalsIgnoreCase("create")) {
-			handleCreateCommand(sender, lang, args);
+			handleCreateCommand(sender, args);
 			return;
 		}
 
 		if (command.equalsIgnoreCase("delete")) {
-			handleDeleteCommand(sender, lang, args);
+			handleDeleteCommand(sender, args);
 			return;
 		}
 
 		if (command.equalsIgnoreCase("enable") || command.equalsIgnoreCase("disable")) {
-			handleEnableCommand(sender, lang, args);
+			handleEnableCommand(sender, args);
 			return;
 		}
 
 		if (command.startsWith("show")) {
-			handleShowCommand(sender, lang, args);
+			handleShowCommand(sender, args);
 			return;
 		}
 
-		LangUtils.sendMessage(sender, lang, "command.error.usage");
-		LangUtils.sendMessage(sender, lang, "command.course.usage");
-		LangUtils.sendMessage(sender, lang, "command.course.usage.commands");
+		LangUtils.sendMessage(sender, "command.error.usage");
+		LangUtils.sendMessage(sender, "command.course.usage");
+		LangUtils.sendMessage(sender, "command.course.usage.commands");
 	}
 	
 	/**
@@ -58,17 +58,17 @@ public class CourseCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	private static void handleCreateCommand(CommandSender sender, Lang lang, String[] args) {
+	private static void handleCreateCommand(CommandSender sender, String[] args) {
 
 		if (!(sender instanceof Player)) {
-			LangUtils.sendMessage(sender, lang, "command.error.console");
+			LangUtils.sendMessage(sender, "command.error.console");
 			return;
 		}
 
 		final Player player = (Player) sender;
 
 		if (!player.hasPermission("minekart.course.create")) {
-			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.course.create");
+			LangUtils.sendMessage(sender, "command.error.permission", "minekart.course.create");
 			return;
 		}
 
@@ -78,8 +78,8 @@ public class CourseCommand {
 			final String name = args[1];
 			Racecourse course = MineKart.getInstance().getRacecourse(name);
 			if (course != null) {
-				LangUtils.sendMessage(sender, lang, "command.create.error.exists", name);
-				LangUtils.sendMessage(sender, lang, "command.error.list");
+				LangUtils.sendMessage(sender, "command.create.error.exists", name);
+				LangUtils.sendMessage(sender, "command.error.list");
 				return;
 			}
 
@@ -88,8 +88,8 @@ public class CourseCommand {
 			return;
 		}
 
-		LangUtils.sendMessage(sender, lang, "command.error.usage");
-		LangUtils.sendMessage(sender, lang, "command.create.usage");
+		LangUtils.sendMessage(sender, "command.error.usage");
+		LangUtils.sendMessage(sender, "command.create.usage");
 	}
 
 	/**
@@ -98,10 +98,10 @@ public class CourseCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	private static void handleDeleteCommand(CommandSender sender, Lang lang, String[] args) {
+	private static void handleDeleteCommand(CommandSender sender, String[] args) {
 
 		if (!sender.hasPermission("minekart.course.delete")) {
-			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.course.delete");
+			LangUtils.sendMessage(sender, "command.error.permission", "minekart.course.delete");
 			return;
 		}
 
@@ -110,8 +110,8 @@ public class CourseCommand {
 			final String coursename = args[1];
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
-				LangUtils.sendMessage(sender, lang, "command.error.list");
+				LangUtils.sendMessage(sender, "command.error.notfound", coursename);
+				LangUtils.sendMessage(sender, "command.error.list");
 				return;
 			}
 
@@ -120,8 +120,8 @@ public class CourseCommand {
 			return;
 		}
 
-		LangUtils.sendMessage(sender, lang, "command.error.usage");
-		LangUtils.sendMessage(sender, lang, "command.delete.usage");
+		LangUtils.sendMessage(sender, "command.error.usage");
+		LangUtils.sendMessage(sender, "command.delete.usage");
 
 	}
 
@@ -131,10 +131,10 @@ public class CourseCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	private static void handleEnableCommand(CommandSender sender, Lang lang, String[] args) {
+	private static void handleEnableCommand(CommandSender sender, String[] args) {
 
 		if (!sender.hasPermission("minekart.course.enable")) {
-			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.course.enable");
+			LangUtils.sendMessage(sender, "command.error.permission", "minekart.course.enable");
 			return;
 		}
 
@@ -143,8 +143,8 @@ public class CourseCommand {
 			final String coursename = args[1];
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
-				LangUtils.sendMessage(sender, lang, "command.error.list");
+				LangUtils.sendMessage(sender, "command.error.notfound", coursename);
+				LangUtils.sendMessage(sender, "command.error.list");
 				return;
 			}
 
@@ -154,18 +154,18 @@ public class CourseCommand {
 			} else if (args[2].equalsIgnoreCase("disable")) {
 				enabled = false;
 			} else {
-				LangUtils.sendMessage(sender, lang, "command.error.usage");
-				LangUtils.sendMessage(sender, lang, "command.state.usage");
+				LangUtils.sendMessage(sender, "command.error.usage");
+				LangUtils.sendMessage(sender, "command.state.usage");
 				return;
 			}
 
 			course.setEnabled(enabled);
-			LangUtils.sendMessage(sender, lang, "command.state.success", course.getName(), enabled ? lang.getTranslation("command.state.enabled") : lang.getTranslation("command.state.disabled"));
+			LangUtils.sendMessage(sender, "command.state.success", course.getName(), enabled ? LangUtils.getLang(sender).getTranslation("command.state.enabled") : LangUtils.getLang(sender).getTranslation("command.state.disabled"));
 			return;
 		}
 
-		LangUtils.sendMessage(sender, lang, "command.error.usage");
-		LangUtils.sendMessage(sender, lang, "command.state.usage");
+		LangUtils.sendMessage(sender, "command.error.usage");
+		LangUtils.sendMessage(sender, "command.state.usage");
 
 	}
 
@@ -175,19 +175,19 @@ public class CourseCommand {
 	 * @param sender
 	 * @param args
 	 */
-	private static void handleShowCommand(CommandSender sender, Lang lang, String[] args) {
+	private static void handleShowCommand(CommandSender sender, String[] args) {
 
 		if (args.length == 3) {
 
 			String warptype = args[2].substring("show".length());
 
 			if (!sender.hasPermission("minekart.course.show." + warptype)) {
-				LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.course.show." + warptype);
+				LangUtils.sendMessage(sender, "command.error.permission", "minekart.course.show." + warptype);
 				return;
 			}
 
 			if (!(sender instanceof Player)) {
-				LangUtils.sendMessage(sender, lang, "command.error.console");
+				LangUtils.sendMessage(sender, "command.error.console");
 				return;
 			}
 
@@ -196,21 +196,21 @@ public class CourseCommand {
 			final String coursename = args[1];
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
-				LangUtils.sendMessage(sender, lang, "command.error.list");
+				LangUtils.sendMessage(sender, "command.error.notfound", coursename);
+				LangUtils.sendMessage(sender, "command.error.list");
 				return;
 			}
 
 			if (course.showWarps(player, warptype)) {
-				LangUtils.sendMessage(sender, lang, "command.show.success", warptype);
+				LangUtils.sendMessage(sender, "command.show.success", warptype);
 			} else {
-				LangUtils.sendMessage(sender, lang, "command.show.unknown", warptype);
+				LangUtils.sendMessage(sender, "command.show.unknown", warptype);
 			}
 			return;
 		}
 
-		LangUtils.sendMessage(sender, lang, "command.error.usage");
-		LangUtils.sendMessage(sender, lang, "command.show.usage");
+		LangUtils.sendMessage(sender, "command.error.usage");
+		LangUtils.sendMessage(sender, "command.show.usage");
 	}
 
 

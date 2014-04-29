@@ -19,12 +19,14 @@ public class CommandHandler implements TabExecutor {
 	private static final char NEW_LINE = '\n';
 	private static String seperator;
 
-	static {
-		StringBuilder seperator = new StringBuilder();
-		for (int i = 0; i < ChatPaginator.AVERAGE_CHAT_PAGE_WIDTH; i++) {
-			seperator.append(LangUtils.getLang().getTranslation("command.help.header.sepeartor"));
+    public static final int SEPARATOR_WIDTH = ChatPaginator.AVERAGE_CHAT_PAGE_WIDTH;
+
+    static {
+		StringBuilder separator = new StringBuilder();
+		for (int i = 0; i < SEPARATOR_WIDTH; i++) {
+			separator.append(LangUtils.getLang().getTranslation("command.help.header.separator"));
 		}
-		CommandHandler.seperator = seperator.toString();
+		CommandHandler.seperator = separator.toString();
 	}
 	
 	@Override
@@ -39,11 +41,9 @@ public class CommandHandler implements TabExecutor {
 			return false;
 		}
 
-		Lang lang = LangUtils.getLang(); // TODO per user language
-		
 		// If no arguments are passed show the info and help
 		if (args.length == 0) {
-			showPluginHelp(lang, sender);
+			showPluginHelp(sender);
 			return true;
 		}
 
@@ -51,70 +51,70 @@ public class CommandHandler implements TabExecutor {
 
 		// if the control argument is create, let the create command handler take care of it
 		if (controlArgument.startsWith("course")) {
-			CourseCommand.handleCourseCommand(lang, sender, args);
+			CourseCommand.handleCourseCommand(sender, args);
 			return true;
 		}
 		
 		// if the control argument is create, let the create command handler take care of it
 		if (controlArgument.startsWith("times")) {
-			StatsCommand.handleTimesCommand(lang, sender, args);
+			StatsCommand.handleTimesCommand(sender, args);
 			return true;
 		}
 
 		// if the control argument is set or add, let the setwarp command handler take care of it
 		if (controlArgument.startsWith("set") || controlArgument.startsWith("add")) {
-			CreateCommand.handleSetWarpCommand(lang, sender, args);
+			CreateCommand.handleSetWarpCommand(sender, args);
 			return true;
 		}
 
 		// if the control argument is mount, let the setwarp command handler take care of it
 		if (controlArgument.startsWith("mount")) {
-			CreateCommand.handleMountCommand(lang, sender, args);
+			CreateCommand.handleMountCommand(sender, args);
 			return true;
 		}
 
 		// if the control argument is list, let the helper command handler take care of it
 		if (controlArgument.startsWith("list")) {
-			HelperCommand.handleListCommand(lang, sender, args);
+			HelperCommand.handleListCommand(sender, args);
 			return true;
 		}
 
 		// if the control argument is info, let the helper command handler take care of it
 		if (controlArgument.startsWith("info")) {
-			HelperCommand.handleInfoCommand(lang, sender, args);
+			HelperCommand.handleInfoCommand(sender, args);
 			return true;
 		}
 		
 		// if the control argument is info, let the helper command handler take care of it
 		if (controlArgument.startsWith("reload")) {
-			HelperCommand.handleReloadCommand(lang, sender, args);
+			HelperCommand.handleReloadCommand(sender, args);
 			return true;
 		}
 
 		// if the control argument is join, let the race command handler take care of it
 		if (controlArgument.startsWith("join") || controlArgument.startsWith("j")) {
-			RaceCommand.handleJoinCommand(lang, sender, args);
+			RaceCommand.handleJoinCommand(sender, args);
 			return true;
 		}
 
 		// if the control argument is leave, let the race command handler take care of it
 		if (controlArgument.startsWith("leave") || controlArgument.startsWith("l")) {
-			RaceCommand.handleLeaveCommand(lang, sender, args);
+			RaceCommand.handleLeaveCommand(sender, args);
 			return true;
 		}
 
 		// if the control argument is forcestart, let the race command handler take care of it
 		if (controlArgument.startsWith("forcestart") || controlArgument.startsWith("fs")) {
-			RaceCommand.handleForceStartCommand(lang, sender, args);
+			RaceCommand.handleForceStartCommand(sender, args);
 			return true;
 		}
 
 		// Unknown command
-		showPluginHelp(lang, sender);
 		return true;
 	}
 
-	private void showPluginHelp(Lang lang, CommandSender sender) { // TODO better help generation
+	private void showPluginHelp(CommandSender sender) { // TODO better help generation
+        Lang lang = LangUtils.getLang(sender);
 		PluginDescriptionFile pluginDescription = MineKart.getInstance().getDescription();
 
 		StringBuilder message = new StringBuilder();
@@ -131,7 +131,7 @@ public class CommandHandler implements TabExecutor {
 		message.append(lang.getTranslation("command.help.list")).append(NEW_LINE);
 		
 		for (String line : Splitter.on(NEW_LINE).split(message.toString())) {
-			LangUtils.sendMessage(sender, line);
+			sender.sendMessage(LangUtils.formatMessage(lang, message.toString()));
 		}
 	}
 }

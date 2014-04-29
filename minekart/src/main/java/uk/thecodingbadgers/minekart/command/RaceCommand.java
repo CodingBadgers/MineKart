@@ -18,14 +18,14 @@ public class RaceCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleJoinCommand(Lang lang, CommandSender sender, String[] args) {
+	public static void handleJoinCommand(CommandSender sender, String[] args) {
 
 		if (!(sender instanceof Player))
 			return;
 
 		Player player = (Player) sender;
 		if (!player.hasPermission("minekart.join")) {
-			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.join");
+			LangUtils.sendMessage(sender, "command.error.permission", "minekart.join");
 			return;
 		}
 
@@ -34,19 +34,19 @@ public class RaceCommand {
 			final String coursename = args[1];
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
-				LangUtils.sendMessage(sender, lang, "command.error.list");
+				LangUtils.sendMessage(sender, "command.error.notfound", coursename);
+				LangUtils.sendMessage(sender, "command.error.list");
 				return;
 			}
 			
 			if (!player.hasPermission("minekart.join." + course.getName().toLowerCase())) {
-				LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.join" + course.getName().toLowerCase());
+				LangUtils.sendMessage(sender, "command.error.permission", "minekart.join" + course.getName().toLowerCase());
 				return;
 			}
 
 
 			if (MineKart.getInstance().getJockey(player) != null) {
-				LangUtils.sendMessage(sender, lang, "command.join.inrace");
+				LangUtils.sendMessage(sender, "command.join.inrace");
 				return;
 			}
 
@@ -55,8 +55,8 @@ public class RaceCommand {
 			return;
 		}
 
-		LangUtils.sendMessage(sender, lang, "command.error.usage");
-		LangUtils.sendMessage(sender, lang, "command.join.usage");
+		LangUtils.sendMessage(sender, "command.error.usage");
+		LangUtils.sendMessage(sender, "command.join.usage");
 
 	}
 
@@ -66,10 +66,10 @@ public class RaceCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleForceStartCommand(Lang lang, CommandSender sender, String[] args) {
+	public static void handleForceStartCommand(CommandSender sender, String[] args) {
 
 		if (!sender.hasPermission("minekart.forcestart")) {
-			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.forcestart");
+			LangUtils.sendMessage(sender, "command.error.permission", "minekart.forcestart");
 			return;
 		}
 
@@ -78,8 +78,8 @@ public class RaceCommand {
 			final String coursename = args[1];
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
-				LangUtils.sendMessage(sender, lang, "command.error.list");
+				LangUtils.sendMessage(sender, "command.error.notfound", coursename);
+				LangUtils.sendMessage(sender, "command.error.list");
 				return;
 			}
 
@@ -87,8 +87,8 @@ public class RaceCommand {
 			return;
 		}
 
-		LangUtils.sendMessage(sender, lang, "command.error.usage");
-		LangUtils.sendMessage(sender, lang, "command.start.usage");
+		LangUtils.sendMessage(sender, "command.error.usage");
+		LangUtils.sendMessage(sender, "command.start.usage");
 
 	}
 
@@ -98,25 +98,25 @@ public class RaceCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleLeaveCommand(Lang lang, CommandSender sender, String[] args) {
+	public static void handleLeaveCommand(CommandSender sender, String[] args) {
 
 		if (!(sender instanceof Player))
 			return;
 
 		Player player = (Player) sender;
 		if (!player.hasPermission("minekart.join")) {
-			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.join");
+			LangUtils.sendMessage(sender, "command.error.permission", "minekart.join");
 			return;
 		}
 
 		Jockey jockey = MineKart.getInstance().getJockey(player);
 		if (jockey == null) {
-			LangUtils.sendMessage(sender, lang, "command.leave.norace");
+			LangUtils.sendMessage(sender, "command.leave.norace");
 			return;
 		}
 
 		jockey.getRace().removeJockey(jockey);
-		LangUtils.sendMessage(sender, lang, "command.leave.sucess");
+		LangUtils.sendMessage(sender, "command.leave.sucess");
 	}
 
 }

@@ -1,12 +1,11 @@
 package uk.thecodingbadgers.minekart.command;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import uk.thecodingbadgers.minekart.MineKart;
-import uk.thecodingbadgers.minekart.lang.Lang;
 import uk.thecodingbadgers.minekart.lang.LangUtils;
+import uk.thecodingbadgers.minekart.mount.MountType;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 
 public class CreateCommand {
@@ -17,17 +16,17 @@ public class CreateCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleSetWarpCommand(Lang lang, CommandSender sender, String[] args) {
+	public static void handleSetWarpCommand(CommandSender sender, String[] args) {
 
 		if (!(sender instanceof Player)) {
-			LangUtils.sendMessage(sender, lang, "command.error.console");
+			LangUtils.sendMessage(sender, "command.error.console");
 			return;
 		}
 
 		final Player player = (Player) sender;
 
 		if (!player.hasPermission("minekart.create.warp")) {
-			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.create.warp");
+			LangUtils.sendMessage(sender, "command.error.permission", "minekart.create.warp");
 			return;
 		}
 
@@ -39,8 +38,8 @@ public class CreateCommand {
 			final String coursename = args[1].toLowerCase();
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				LangUtils.sendMessage(sender, lang, "command.error.notfound");
-				LangUtils.sendMessage(sender, lang, "command.error.list");
+				LangUtils.sendMessage(sender, "command.error.notfound");
+				LangUtils.sendMessage(sender, "command.error.list");
 				return;
 			}
 
@@ -57,9 +56,9 @@ public class CreateCommand {
 
 		}
 
-		LangUtils.sendMessage(sender, lang, "command.error.usage");
-		LangUtils.sendMessage(sender, lang, "command.add.usage");
-		LangUtils.sendMessage(sender, lang, "command.set.usage");
+		LangUtils.sendMessage(sender, "command.error.usage");
+		LangUtils.sendMessage(sender, "command.add.usage");
+		LangUtils.sendMessage(sender, "command.set.usage");
 	}
 	
 	/**
@@ -68,7 +67,7 @@ public class CreateCommand {
 	 * @param sender The thing that used the command
 	 * @param args The command args
 	 */
-	public static void handleDeleteWarpCommand(CommandSender sender, Lang lang, String[] args) { // FIXME Command isn't referanced anywhere
+	public static void handleDeleteWarpCommand(CommandSender sender, String[] args) { // FIXME Command isn't referanced anywhere
 
 		if (!(sender instanceof Player))
 			return;
@@ -76,26 +75,26 @@ public class CreateCommand {
 		final Player player = (Player) sender;
 
 		if (!player.hasPermission("minekart.delete.warp")) {
-			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.delete.warp");
+			LangUtils.sendMessage(sender, "command.error.permission", "minekart.delete.warp");
 			return;
 		}
 		
 		final String coursename = args[1];
 		Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 		if (course == null) {
-			LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
-			LangUtils.sendMessage(sender, lang, "command.error.list");
+			LangUtils.sendMessage(sender, "command.error.notfound", coursename);
+			LangUtils.sendMessage(sender, "command.error.list");
 			return;
 		}
 		
 		final String warpName = args[0].substring("delete".length());
 		final int id = args.length == 3 ? Integer.parseInt(args[2]) : -1;
 		if (course.removeWarp(player, warpName, id)) {
-			LangUtils.sendMessage(sender, lang, "command.delete.fail", warpName);
+			LangUtils.sendMessage(sender, "command.delete.fail", warpName);
 			return;
 		}
 
-		LangUtils.sendMessage(sender, lang, "command.delete.success", warpName);
+		LangUtils.sendMessage(sender, "command.delete.success", warpName);
 	}
 
 	/**
@@ -105,10 +104,10 @@ public class CreateCommand {
 	 * @param args The command args
 	 */
 	@SuppressWarnings("deprecation")
-	public static void handleMountCommand(Lang lang, CommandSender sender, String[] args) {
+	public static void handleMountCommand(CommandSender sender, String[] args) {
 
 		if (!sender.hasPermission("minekart.mount")) {
-			LangUtils.sendMessage(sender, lang, "command.error.permission", "minekart.mount");
+			LangUtils.sendMessage(sender, "command.error.permission", "minekart.mount");
 			return;
 		}
 
@@ -117,8 +116,8 @@ public class CreateCommand {
 			final String coursename = args[2];
 			Racecourse course = MineKart.getInstance().getRacecourse(coursename);
 			if (course == null) {
-				LangUtils.sendMessage(sender, lang, "command.error.notfound", coursename);
-				LangUtils.sendMessage(sender, lang, "command.error.list");
+				LangUtils.sendMessage(sender, "command.error.notfound", coursename);
+				LangUtils.sendMessage(sender, "command.error.list");
 				return;
 			}
 
@@ -127,23 +126,23 @@ public class CreateCommand {
 
 			if (setting.equalsIgnoreCase("type")) {
 
-				EntityType mountType = EntityType.UNKNOWN;
+                MountType mountType = MountType.FOOT;
 
 				if (!value.equalsIgnoreCase("none")) {
 
-					mountType = EntityType.fromName(value);
+					mountType = MountType.fromEntityId(value);
 					if (mountType == null) {
-						LangUtils.sendMessage(sender, lang, "command.mount.unknown", value);
+						LangUtils.sendMessage(sender, "command.mount.unknown", value);
 						return;
 					}
 
-					if (!mountType.isAlive()) {
-						LangUtils.sendMessage(sender, lang, "command.mount.error.living");
+					/*if (!mountType.isAlive()) {
+						LangUtils.sendMessage(sender, "command.mount.error.living");
 						return;
-					}
+					}*/
 				}
 
-				LangUtils.sendMessage(sender, lang, "command.mount.success", course.getName(), value);
+				LangUtils.sendMessage(sender, "command.mount.success", course.getName(), value);
 				course.setMountType(mountType);
 				return;
 			} // TODO add speed setting
@@ -151,10 +150,9 @@ public class CreateCommand {
 			return;
 		}
 
-		MineKart.output(sender, "Invalid command usage...");
-		MineKart.output(sender, " - /mk mount <setting> <coursename> <value>");
-		MineKart.output(sender, "setting: type, speed");
-
+		LangUtils.sendMessage(sender, "command.error.usage");
+        LangUtils.sendMessage(sender, "command.mount.usage");
+        LangUtils.sendMessage(sender, "command.mount.usage.setting");
 	}
 
 }

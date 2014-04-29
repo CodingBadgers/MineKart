@@ -1,7 +1,7 @@
 message.format=&2[%1$s]&r %2$s
 
 # Generic Command messages
-command.help.header.seperator==
+command.help.header.separator==
 command.help.header.authors=%1$s by %2$s
 command.help.header.version=Version %1$s
 command.help.course=/mk course
@@ -69,3 +69,21 @@ command.times.usage=- /mk times <coursename> [best]
 command.times.personal=Your personal times for &l%1$s&r are...
 command.times.best=The top times for &l%1$s&r are...
 command.times.entry=[%1$s] &e%2$s%r
+
+# Course Management Messages
+course.create.success=Created the new &l%1$s&r course &l%2$s&r successfully!
+course.create.sucess.next=Next you need to...
+
+course.create.error=Creation of &l%1$s&r failed.
+course.create.error.exists=A racecourse with this name already exists.
+course.create.error.notsupported=The racecourse type &l%1$s&r is not yet supported
+course.create.error.fail=Failed to setup &l%1$s&r.
+course.create.error.worldedit=Please make a worldedit selection convering the bounds of the racecourse...
+course.create.error.region=An invalid selection was made using world edit. Please make a complete cuboid selection and try again.
+course.create.error.config=Failed to create config file for racecourse &l%1$s&r at the following location
+course.create.error.config.loc=&l%1$s&r
+
+course.delete.success=The course &l%1$s&r has been deleted...
+
+course.requirements.single=Add a &l%1$s&r spawn point [/mk set%1$s %2$s]
+course.requirements.multi=Add %3$s &l%1$s&r points [/mk add%1$s %2$s]

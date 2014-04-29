@@ -1,6 +1,6 @@
 package uk.thecodingbadgers.minekart.lang;
 
-public interface Messageable {
+public interface LangUser {
 
 	public void sendMessage(String message);
 	

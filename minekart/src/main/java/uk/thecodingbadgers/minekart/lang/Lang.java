@@ -61,7 +61,7 @@ public class Lang {
 		return String.format(langKeys.get(key), args);
 	}
 	
-	public void sendMessage(Messageable player, String key, Object... args) {
+	public void sendMessage(LangUser player, String key, Object... args) {
 		player.sendMessage(getTranslation(key, args));
 	}
 }

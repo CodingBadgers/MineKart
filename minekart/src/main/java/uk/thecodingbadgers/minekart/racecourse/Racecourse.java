@@ -25,7 +25,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -42,6 +41,7 @@ import com.sk89q.worldedit.regions.Region;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.mount.MountType;
 import uk.thecodingbadgers.minekart.mount.MountTypeData;
@@ -111,18 +111,18 @@ public abstract class Racecourse {
 	public boolean setup(Player player, String name) {
 
 		WorldEditPlugin worldEdit = MineKart.getInstance().getWorldEditPlugin();
-		Selection seleciton = worldEdit.getSelection(player);
-		if (seleciton == null) {
-			MineKart.output(player, "Please make a world edit selection covering the bounds of the racecourse...");
+		Selection selection = worldEdit.getSelection(player);
+		if (selection == null) {
+            LangUtils.sendMessage(player, "course.create.error.worldedit");
 			return false;
 		}
 
 		// Set the arena bounds from the selection
-		world = seleciton.getWorld();
+		world = selection.getWorld();
 		try {
-			bounds = seleciton.getRegionSelector().getRegion().clone();
+			bounds = selection.getRegionSelector().getRegion().clone();
 		} catch (IncompleteRegionException e) {
-			MineKart.output(player, "An invalid selection was made using world edit. Please make a complete cuboid selection and try again.");
+            LangUtils.sendMessage(player, "course.create.error.region");
 			return false;
 		}
 
@@ -135,13 +135,13 @@ public abstract class Racecourse {
 		if (!this.fileConfiguration.exists()) {
 			try {
 				if (!this.fileConfiguration.createNewFile()) {
-					MineKart.output(player, "Failed to create config file for racecourse '" + this.name + "' at the following location");
-					MineKart.output(player, this.fileConfiguration.getAbsolutePath());
+                    LangUtils.sendMessage(player, "course.create.error.config", this.name);
+                    LangUtils.sendMessage(player, "course.create.error.config.loc", this.fileConfiguration.getAbsolutePath());
 					return false;
 				}
 			} catch (Exception ex) {
-				MineKart.output(player, "Failed to create config file for racecourse '" + this.name + "' at the following location");
-				MineKart.output(player, this.fileConfiguration.getAbsolutePath());
+                LangUtils.sendMessage(player, "course.create.error.config", this.name);
+                LangUtils.sendMessage(player, "course.create.error.config.loc", this.fileConfiguration.getAbsolutePath());
 				return false;
 			}
 		}

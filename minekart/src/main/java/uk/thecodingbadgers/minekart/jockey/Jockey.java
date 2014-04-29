@@ -29,8 +29,8 @@ import com.sk89q.worldedit.bukkit.BukkitUtil;
 
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.lang.Lang;
+import uk.thecodingbadgers.minekart.lang.LangUser;
 import uk.thecodingbadgers.minekart.lang.LangUtils;
-import uk.thecodingbadgers.minekart.lang.Messageable;
 import uk.thecodingbadgers.minekart.mount.MountType;
 import uk.thecodingbadgers.minekart.powerup.Powerup;
 import uk.thecodingbadgers.minekart.race.Race;
@@ -45,7 +45,7 @@ import uk.thecodingbadgers.minekart.version.NmsHandler;
  * 
  */
 @SuppressWarnings("deprecation")
-public class Jockey implements Messageable {
+public class Jockey implements LangUser {
 
 	/** The player which represents this jockey */
 	private Player player = null;
