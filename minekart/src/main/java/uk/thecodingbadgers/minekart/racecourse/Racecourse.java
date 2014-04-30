@@ -50,6 +50,7 @@ import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceSinglePlayer;
 import uk.thecodingbadgers.minekart.race.RaceState;
 import uk.thecodingbadgers.minekart.util.FireworkFactory;
+import uk.thecodingbadgers.minekart.util.MinecraftTime;
 import uk.thecodingbadgers.minekart.version.NmsHandler;
 import uk.thecodingbadgers.minekart.world.BlockChangeDelagator;
 import uk.thecodingbadgers.minekart.world.BlockDelagatorFactory;
@@ -169,8 +170,9 @@ public abstract class Racecourse {
 	public boolean isInCourseBounds(Location location) {
 
 		// Is the location in the same world
-		if (!location.getWorld().equals(this.world))
-			return false;
+		if (!location.getWorld().equals(this.world)) {
+            return false;
+        }
 
 		// Create a world edit vector and test against the course bounds
 		com.sk89q.worldedit.Vector vec = new com.sk89q.worldedit.Vector(location.getX(), location.getY(), location.getZ());
@@ -406,7 +408,7 @@ public abstract class Racecourse {
 		// single points
 		for (Entry<String, Location> point : this.singlePoints.entrySet()) {
 			if (point.getValue() == null) {
-				MineKart.output(sender, " - Add a " + point.getKey() + " spawn point [/mk set" + point.getKey() + " <coursename>]");
+                LangUtils.sendMessage(sender, "course.requirements.single", point.getKey(), this.getName());
 				fullySetup = false;
 			}
 		}
@@ -414,7 +416,7 @@ public abstract class Racecourse {
 		// multi-points
 		for (Entry<String, List<Location>> point : this.multiPoints.entrySet()) {
 			if (point.getValue() == null || point.getValue().size() < this.minimums.get(point.getValue())) {
-				MineKart.output(sender, " - Add " + point.getKey() + "s (minimum of " + this.minimums.get(point.getValue()) + "  required) [/mk add" + point.getKey() + " <coursename>]");
+                LangUtils.sendMessage(sender, "course.requirements.multi", point.getKey(), this.getName(), this.minimums.get(point.getValue()) - point.getValue().size());
 				fullySetup = false;
 			}
 		}
@@ -429,29 +431,29 @@ public abstract class Racecourse {
 	 */
 	public void outputInformation(CommandSender sender) {
 
-		MineKart.output(sender, "Course Name: " + this.name);
-		MineKart.output(sender, "World: " + this.world.getName());
-		MineKart.output(sender, "Bounds: " + this.bounds.toString());
-		MineKart.output(sender, "-------------");
+        LangUtils.sendMessage(sender, "course.info.name", this.name);
+        LangUtils.sendMessage(sender, "course.info.world", this.world.getName());
+        LangUtils.sendMessage(sender, "course.info.bounds", this.bounds.toString());
+        LangUtils.sendMessage(sender, "course.info.separator", this.bounds.toString());
 
 		for (Entry<String, Location> point : this.singlePoints.entrySet()) {
 			if (point.getValue() != null) {
-				MineKart.output(sender, point.getKey() + ": " + point.getValue().toString());
+                LangUtils.sendMessage(sender, "course.info.point.single", point.getValue(), point.getValue().getBlockX(), point.getValue().getBlockY(), point.getValue().getBlockZ());
 			}
 		}
-		MineKart.output(sender, "-------------");
+        LangUtils.sendMessage(sender, "course.info.separator", this.bounds.toString());
 
 		for (Entry<String, List<Location>> point : this.multiPoints.entrySet()) {
 			if (point.getValue() != null && !point.getValue().isEmpty()) {
-				MineKart.output(sender, point.getKey());
+                LangUtils.sendMessage(sender, "course.info.point.multi", point.getValue());
 				int id = 0;
 				for (Location location : point.getValue()) {
-					MineKart.output(sender, " - [" + id + "] [" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + "]");
+                    LangUtils.sendMessage(sender, "course.info.point.multi.entry", id, location.getBlockX(), location.getBlockY(), location.getBlockZ());
 					id++;
 				}
 			}
 		}
-		MineKart.output(sender, "-------------");
+        LangUtils.sendMessage(sender, "course.info.separator", this.bounds.toString());
 
 	}
 
@@ -469,18 +471,20 @@ public abstract class Racecourse {
 		this.pointMappings.put(name, materials);
 
 		if (type.equalsIgnoreCase("set")) {
-			if (this.singlePoints.containsKey(name))
-				return;
+			if (this.singlePoints.containsKey(name)) {
+                return;
+            }
 
 			this.singlePoints.put(name, null);
 		} else if (type.equalsIgnoreCase("add")) {
-			if (this.multiPoints.containsKey(name))
-				return;
+			if (this.multiPoints.containsKey(name)) {
+                return;
+            }
 
 			this.minimums.put(name,  min);
 			this.multiPoints.put(name, new ArrayList<Location>());
 		} else {
-			MineKart.output(player, "Unknown warp type '" + type + "', please use 'set' or 'add'");
+            LangUtils.sendMessage(player, "course.warp.unknown");
 		}
 
 	}
@@ -494,13 +498,13 @@ public abstract class Racecourse {
 	public void setWarp(Player player, String warpname) {
 
 		if (!this.singlePoints.containsKey(warpname)) {
-			MineKart.output(player, "There is no single point warp with the name '" + warpname + "'.");
+            LangUtils.sendMessage(player, "course.warp.single.unknown", warpname);
 			return;
 		}
 
 		this.singlePoints.remove(warpname);
 		this.singlePoints.put(warpname, player.getLocation());
-		MineKart.output(player, "The point " + warpname + " has been set!");
+        LangUtils.sendMessage(player, "course.warp.single.set", warpname);
 	}
 
 	/**
@@ -512,7 +516,7 @@ public abstract class Racecourse {
 	public void addWarp(Player player, String warpname) {
 
 		if (!this.multiPoints.containsKey(warpname)) {
-			MineKart.output(player, "There is no multi-point warp with the name '" + warpname + "'.");
+            LangUtils.sendMessage(player, "course.warp.multi.unknown", warpname);
 			return;
 		}
 
@@ -520,8 +524,9 @@ public abstract class Racecourse {
 		this.multiPoints.remove(warpname);
 		locations.add(player.getLocation());
 		this.multiPoints.put(warpname, locations);
-		MineKart.output(player, "A new point has been added to " + warpname + "!");
-		MineKart.output(player, warpname + " now has " + locations.size() + " points.");
+
+        LangUtils.sendMessage(player, "course.warp.multi.add", this.getName());
+        LangUtils.sendMessage(player, "course.warp.multi.update", warpname, locations.size());
 	}
 
 	/**
@@ -590,8 +595,9 @@ public abstract class Racecourse {
 	 */
 	public boolean onJockeyMove(Jockey jockey, Race race) {
 
-		if (race.getState() != RaceState.InRace)
-			return false;
+		if (race.getState() != RaceState.InRace) {
+            return false;
+        }
 
 		if (!this.bounds.contains(jockey.getWorldEditLocation())) {
 			jockey.respawn();
@@ -648,13 +654,15 @@ public abstract class Racecourse {
 		}
 		
 		for (Entity entity : this.world.getEntities()) {
-			if (entity instanceof Player)
-				continue;
+			if (entity instanceof Player) {
+                continue;
+            }
 			
 			final Location location = entity.getLocation();
 			final Vector entityLocation = new Vector(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-			if (!this.bounds.contains(entityLocation))
-				continue;
+			if (!this.bounds.contains(entityLocation)) {
+                continue;
+            }
 			
 			if (CitizensAPI.getNPCRegistry().isNPC(entity)) {
 				NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
@@ -713,7 +721,7 @@ public abstract class Racecourse {
 	 * @param location The location of the powerup
 	 */
 	public void removePowerup(Location location) {
-		this.powerupItems.remove(location);
+		this.powerupItems.remove(location); // TODO check this actually works, doesn't seem like it will
 		location.getWorld().playSound(location, Sound.VILLAGER_YES, 1.0f, 1.0f);
 
 		final Location spawnLocation = new Location(location.getWorld(), location.getX(), location.getY(), location.getZ());
@@ -725,7 +733,7 @@ public abstract class Racecourse {
 				spawnPowerup(spawnLocation);
 			}
 
-		}, 5 * 20L);
+		}, MinecraftTime.fromSeconds(5));
 	}
 
 	/**
@@ -836,7 +844,7 @@ public abstract class Racecourse {
 			List<Location> warps = this.multiPoints.get(warpName);
 			id = id == -1 ? warps.size() - 1 : id;
 			if (id < 0 || id >= warps.size()) {
-				MineKart.output(player, "Could not remove " + warpName + " warp with id " + id);
+                LangUtils.sendMessage(player, "course.warp.delete.error", warpName, id);
 				return false;
 			}
 			warps.remove(id);			

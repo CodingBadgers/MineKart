@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.events.jockey.JockeyCheckpointReachedEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
 import uk.thecodingbadgers.minekart.world.BlockChangeDelagator;
@@ -152,6 +153,7 @@ public class RacecourseLap extends Racecourse {
 		try {
 			file.save(this.fileConfiguration);
 		} catch (Exception ex) {
+            ex.printStackTrace();
 		}
 
 	}
@@ -168,8 +170,8 @@ public class RacecourseLap extends Racecourse {
 		boolean fullySetup = super.outputRequirements(sender);
 
 		if (this.checkPoints.isEmpty()) {
-			MineKart.output(sender, " - Add checkpoints (minimum of 1 required) [/mk addcheckpoint <coursename>]");
-			fullySetup = false;
+            LangUtils.sendMessage(sender, "course.requirements.single", "checkpoint", this.getName(), 1);
+            fullySetup = false;
 		}
 
 		return fullySetup;
@@ -185,14 +187,13 @@ public class RacecourseLap extends Racecourse {
 
 		super.outputInformation(sender);
 
-		MineKart.output(sender, "Checkpoints:");
-		int checkpointIndex = 0;
-		for (Region point : this.checkPoints) {
-			MineKart.output(sender, "[" + checkpointIndex + "] " + point.toString());
-			checkpointIndex++;
-		}
-		MineKart.output(sender, "-------------");
-
+        LangUtils.sendMessage(sender, "course.info.point.multi", "Checkpoints");
+        for (int i = 0; i < this.checkPoints.size(); i++) {
+            Region checkpoint = this.checkPoints.get(i);
+            LangUtils.sendMessage(sender, "course.info.checkpoint.entry", i, checkpoint.getMinimumPoint().getBlockX(), checkpoint.getMinimumPoint().getBlockY(), checkpoint.getMinimumPoint().getBlockZ(),
+                                                                                checkpoint.getMaximumPoint().getBlockX(), checkpoint.getMaximumPoint().getBlockY(), checkpoint.getMaximumPoint().getBlockZ());
+        }
+        LangUtils.sendMessage(sender, "course.info.separator", this.bounds.toString());
 	}
 
 	/**
@@ -218,19 +219,19 @@ public class RacecourseLap extends Racecourse {
 			WorldEditPlugin worldEdit = MineKart.getInstance().getWorldEditPlugin();
 			Selection selection = worldEdit.getSelection(player);
 			if (selection == null) {
-				MineKart.output(player, "Please make a world edit selection of the region you wish to be a checkpoint...");
-				return;
+                LangUtils.sendMessage(player, "course.checkpoint.error.worldedit");
+                return;
 			}
 
 			try {
 				this.checkPoints.add(selection.getRegionSelector().getRegion().clone());
 			} catch (Exception ex) {
-				MineKart.output(player, "An invalid selection was made using world edit. Please make a complete cuboid selection and try again.");
-				return;
+                LangUtils.sendMessage(player, "course.create.error.region");
+                return;
 			}
 
-			MineKart.output(player, "Succesfully add a new checkpoint to the arena!");
-			outputRequirements(player);
+            LangUtils.sendMessage(player, "course.checkpoint.success");
+            outputRequirements(player);
 			save();
 			return;
 		}
@@ -293,9 +294,9 @@ public class RacecourseLap extends Racecourse {
 
 			if (targetCheckpointIndex < this.checkPoints.size() - 1) {
 				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);
-				MineKart.output(player, "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]      " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
+                LangUtils.sendMessage(jockey, "race.checkpoint", (targetCheckpointIndex + 1), this.checkPoints.size(), MineKart.formatTime(data.time));
 
-				player.playSound(location, Sound.ORB_PICKUP, 1.0f, 1.0f);
+                player.playSound(location, Sound.ORB_PICKUP, 1.0f, 1.0f);
 
 				float lapComplete = 1.0f / ((float) this.checkPoints.size() / (float) (targetCheckpointIndex + 1.0f));
 				player.setExp(lapComplete);
@@ -304,7 +305,7 @@ public class RacecourseLap extends Racecourse {
 				this.currentLap.remove(jockey);
 				this.currentLap.put(jockey, jockeyLap);
 
-				MineKart.output(player, "Lap Complete [" + jockeyLap + "/" + this.noofLaps + "]   " + ChatColor.GREEN + MineKart.formatTime(jockey.getRaceTime()));
+                LangUtils.sendMessage(jockey, "race.lap", jockeyLap, this.noofLaps, MineKart.formatTime(jockey.getRaceTime()));
 
 				player.setLevel(jockeyLap);
 				player.setExp(0.0f);

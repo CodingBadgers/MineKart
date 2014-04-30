@@ -12,6 +12,7 @@ import net.citizensnpcs.api.npc.NPC;
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.jockey.Mount;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.util.FireworkFactory;
 import uk.thecodingbadgers.minekart.version.NmsHandler;
 
@@ -33,7 +34,7 @@ public class DamageEffectFreeze extends DamageEffect {
 		
 		final ItemStack oldHelmet = player.getInventory().getHelmet();
 		player.getInventory().setHelmet(new ItemStack(Material.ICE));
-		MineKart.output(player, ChatColor.RED + "You have been frozen!");
+        LangUtils.sendMessage(player, "powerup.freeze.frozen");
 		FireworkFactory.SpawnFireworkExplosion(player.getEyeLocation(), FireworkEffect.Type.BALL, Color.BLUE);
 		
 		final int freezeLength = 1;

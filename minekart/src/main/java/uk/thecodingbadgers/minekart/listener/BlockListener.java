@@ -12,6 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
 import uk.thecodingbadgers.minekart.MineKart;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.lobby.LobbySign;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.lobby.TimesSign;
@@ -38,8 +39,13 @@ public class BlockListener implements Listener {
 		LobbySign sign = LobbySignManager.getSignByLocation(block);
 
 		if (sign != null && player.hasPermission("minekart.lobby.destroy")) {
+            if (!player.isSneaking()) {
+                event.setCancelled(true);
+                return;
+            }
+
 			LobbySignManager.removeSign(sign);
-			MineKart.output(player, "Successfully removed lobby sign");
+            LangUtils.sendMessage(player, "sign.remove");
 		}
 
 		Map<String, Racecourse> courses = MineKart.getInstance().getAllRacecourses();
@@ -122,7 +128,7 @@ public class BlockListener implements Listener {
                 event.setLine(i, lines[i]);
             }
 
-            MineKart.output(player, "You have created a lobby sign for " + course.getName());
+            LangUtils.sendMessage(player, "sign.create.lobby", course.getName());
             return;
 		}
         
@@ -143,7 +149,7 @@ public class BlockListener implements Listener {
                 event.setLine(i, lines[i]);
             }
 
-            MineKart.output(player, "You have created a lobby times sign for " + course.getName());
+            LangUtils.sendMessage(player, "sign.create.times", course.getName());
             return;
 		}
 

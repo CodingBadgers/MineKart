@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import uk.thecodingbadgers.minekart.MineKart;
 
 import com.google.common.collect.Maps;
+import uk.thecodingbadgers.minekart.lang.bukkit.BukkitWrapper;
+import uk.thecodingbadgers.minekart.lang.bukkit.ConsoleUser;
 
 public class LangUtils {
 

@@ -1,6 +1,9 @@
-package uk.thecodingbadgers.minekart.lang;
+package uk.thecodingbadgers.minekart.lang.bukkit;
 
 import org.bukkit.command.CommandSender;
+import uk.thecodingbadgers.minekart.lang.Lang;
+import uk.thecodingbadgers.minekart.lang.LangUser;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 
 /**
  * Created by James on 28/04/2014.

@@ -40,6 +40,7 @@ import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.events.jockey.JockeyPowerupPickupEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
 import uk.thecodingbadgers.minekart.jockey.Mount;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.lobby.LobbySign;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.mount.MountType;
@@ -66,8 +67,7 @@ public class JockeyListener implements Listener {
 		}
 
 		jockey.getRace().removeJockey(jockey);
-		MineKart.output(player, "You have left the race.");
-
+        LangUtils.sendMessage(player, "command.leave.success");
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class JockeyListener implements Listener {
 		}
 
 		jockey.getRace().removeJockey(jockey);
-		MineKart.output(player, "You have left the race.");
+        LangUtils.sendMessage(player, "command.leave.success");
 
 	}
 
@@ -148,7 +148,7 @@ public class JockeyListener implements Listener {
 	private void onPlayerInteractOutOfGame(Player player, PlayerInteractEvent event) {
 
 		if (!player.hasPermission("minekart.join")) {
-			MineKart.output(player, "You do not have the required permission 'minekart.join'");
+            LangUtils.sendMessage(player, "command.error.permission", "minekart.join");
 			return;
 		}
 
@@ -220,7 +220,7 @@ public class JockeyListener implements Listener {
 			player.updateInventory();
 
 			jockey.increaseSpeed(2, 4); // strength, time
-			jockey.getRace().outputToRace(jockey.getPlayer(), "hYah!");
+            LangUtils.sendMessage(player, "powerup.whip");
 			jockey.getPlayer().playSound(player.getLocation(), getWhipSound(jockey.getMountType()), 2.0f, 1.0f);
 			event.setCancelled(true);
 			return;
@@ -228,7 +228,7 @@ public class JockeyListener implements Listener {
 
 		if (item.getItemMeta().getDisplayName().equalsIgnoreCase("respawn")) {
 			jockey.respawn();
-			MineKart.output(jockey.getPlayer(), "You have been respawned...");
+            LangUtils.sendMessage(player, "powerup.respawned");
 			player.getInventory().setHeldItemSlot(0);
 			event.setCancelled(true);
 			return;
@@ -516,8 +516,8 @@ public class JockeyListener implements Listener {
 		if (invent.getHeldItemSlot() == Powerup.POWERUP_SLOT) {
 			jockey.setPowerup(null);
 			event.getItemDrop().remove();
-			MineKart.output(player, "You have dropped your powerup...");
-			return;
+            LangUtils.sendMessage(player, "powerup.drop");
+            return;
 		}
 		
 		final int RESPAWN_SLOT = 8;
@@ -571,7 +571,7 @@ public class JockeyListener implements Listener {
 			}
 		}
 
-		MineKart.output(player, "You can not use that command whilst in MineKart...");
+        LangUtils.sendMessage(player, "command.error.ingame");
 		event.setCancelled(true);
 	}
 

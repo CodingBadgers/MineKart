@@ -28,6 +28,7 @@ import uk.thecodingbadgers.minekart.events.race.RaceCountdownStartEvent;
 import uk.thecodingbadgers.minekart.events.race.RaceEndEvent;
 import uk.thecodingbadgers.minekart.events.race.RaceStartEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.lobby.LobbySignManager;
 import uk.thecodingbadgers.minekart.racecourse.Racecourse;
 import uk.thecodingbadgers.minekart.scoreboard.ScoreboardManager;
@@ -94,12 +95,12 @@ public abstract class Race {
 	public void addJockey(Player player) {
 
 		if (!this.course.isEnabled()) {
-			MineKart.output(player, "This race course is disabled.");
+            LangUtils.sendMessage(player, "race.join.error.disabled");
 			return;
 		}
 
 		if (this.state != RaceState.Waiting) {
-			MineKart.output(player, "You can't currently join this race.");
+            LangUtils.sendMessage(player, "race.join.error.inrace");
 			return;
 		}
 
@@ -108,7 +109,7 @@ public abstract class Race {
 		if (loc == null) {
 			// FIXME For some reason the plugin keeps forgetting about this spawn and then not be able to
 			// teleport players to the lobby. Protection against error for now, needs a proper fix
-			MineKart.output(player, "A internal error has occurred. please inform staff");
+            LangUtils.sendMessage(player, "race.join.error.internal");
 			MineKart.getInstance().getLogger().log(Level.INFO, "Lobby spawn is null");
 			return;
 		}
@@ -116,7 +117,7 @@ public abstract class Race {
 		Location oldLocation = player.getLocation();
 
 		player.teleport(loc);
-		MineKart.output(player, "You have joined the lobby for the racecourse '" + this.course.getName() + "'.");
+        LangUtils.sendMessage(player, "race.join.success");
 
 		Jockey newJockey = new Jockey(player, this.course.getMountType(), oldLocation, this);
 		this.jockeys.put(player.getName(), newJockey);
@@ -170,7 +171,7 @@ public abstract class Race {
 			return;
 		}
 
-		outputToRace("Race starting in " + countdown);
+		outputToRace("race.starting", countdown);
 		playSoundToRace(Sound.ORB_PICKUP, 1.0f, 1.0f);
 
 		Bukkit.getScheduler().scheduleSyncDelayedTask(MineKart.getInstance(), new Runnable() {
@@ -201,7 +202,7 @@ public abstract class Race {
 	 * Called when the race starts
 	 */
 	private void onRaceStart() {
-		outputToRace("and they're off!");
+		outputToRace("race.start");
 		this.winners = new ArrayList<Jockey>();
 		this.raceRankings.clear();
 
@@ -234,14 +235,13 @@ public abstract class Race {
 	/**
 	 * Output a message to all players in this race
 	 * 
-	 * @param message The message to output
+	 * @param key The language key to output
+     * @param args the arguments for when parsing the message
 	 */
-	public void outputToRace(String message) {
-
+	public void outputToRace(String key, Object... args) {
 		for (Jockey jockey : this.jockeys.values()) {
-			MineKart.output(jockey.getPlayer(), message);
+            LangUtils.sendMessage(jockey, key, args);
 		}
-
 	}
 
 	/**
@@ -249,13 +249,12 @@ public abstract class Race {
 	 * 
 	 * @param player The player saying the message
 	 * @param message The message to output
+     * @deprecated Race#outputToRace(String, Object...)
 	 */
 	public void outputToRace(Player player, String message) {
-
 		for (Jockey jockey : this.jockeys.values()) {
 			MineKart.output(jockey.getPlayer(), player, message);
 		}
-
 	}
 
 	/**
@@ -324,7 +323,7 @@ public abstract class Race {
 			return;
 		}
 
-		outputToRace("The race will end in " + time + " seconds...");
+		outputToRace("race.end", time);
 
 		final int nextRate = time <= 5 ? 1 : rate;
 		final int nextTime = time - nextRate;
@@ -407,9 +406,9 @@ public abstract class Race {
 
 			
 			if (mount != null) {
-				this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + mount.getName() + ChatColor.WHITE + " came " + RaceHelper.ordinalNo(position) + ".");
+				this.outputToRace("race.finish.mount", jockey.getPlayer().getName(), RaceHelper.ordinalNo(position), mount.getName());
 			} else {
-				this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " came " + RaceHelper.ordinalNo(position) + ".");
+				this.outputToRace("race.finish", jockey.getPlayer().getName(), RaceHelper.ordinalNo(position));
 			}
 
 			// all players have finished.
@@ -424,9 +423,9 @@ public abstract class Race {
 		}
 
 		if (mount != null) {
-			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " and their mount " + ChatColor.YELLOW + mount.getName() + ChatColor.WHITE + " are the Winners!");
+            this.outputToRace("race.win", jockey.getPlayer().getName(), mount.getName());
 		} else {
-			this.outputToRace(ChatColor.YELLOW + jockey.getPlayer().getName() + ChatColor.WHITE + " has won!");
+            this.outputToRace("race.win", jockey.getPlayer().getName());
 		}
 
 		FireworkFactory.LaunchFirework(jockey.getPlayer().getLocation(), Type.STAR, 2, Color.fromRGB(0xFFDD47));
@@ -453,10 +452,10 @@ public abstract class Race {
 		}
 
 		this.ready.add(jockey.getPlayer().getName());
-		this.outputToRace(jockey.getPlayer().getName() + " is now ready! (" + this.ready.size() + "/" + this.jockeys.size() + ")");
+		this.outputToRace("race.readyup", jockey.getPlayer().getName(), this.ready.size(), this.jockeys.size());
 
 		if (this.jockeys.size() < this.course.getMinimumPlayers()) {
-			this.outputToRace("You have to have a minimum of " + this.course.getMinimumPlayers() + " to start a game.");
+			this.outputToRace("race.minplayers", this.course.getMinimumPlayers());
 			return false;
 		}
 

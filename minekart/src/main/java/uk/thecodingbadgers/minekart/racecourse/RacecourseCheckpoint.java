@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -22,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.events.jockey.JockeyCheckpointReachedEvent;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 import uk.thecodingbadgers.minekart.race.Race;
 import uk.thecodingbadgers.minekart.race.RaceState;
 import uk.thecodingbadgers.minekart.world.BlockChangeDelagator;
@@ -134,6 +134,7 @@ public class RacecourseCheckpoint extends Racecourse {
 		try {
 			file.save(this.fileConfiguration);
 		} catch (Exception ex) {
+            ex.printStackTrace();
 		}
 
 	}
@@ -150,7 +151,7 @@ public class RacecourseCheckpoint extends Racecourse {
 		boolean fullySetup = super.outputRequirements(sender);
 
 		if (this.checkPoints.isEmpty()) {
-			MineKart.output(sender, " - Add checkpoints (minimum of 1 required) [/mk addcheckpoint <coursename>]");
+            LangUtils.sendMessage(sender, "course.requirements.single", "checkpoint", this.getName(), 1);
 			fullySetup = false;
 		}
 
@@ -167,13 +168,13 @@ public class RacecourseCheckpoint extends Racecourse {
 
 		super.outputInformation(sender);
 
-		MineKart.output(sender, "Checkpoints:");
-		int checkpointIndex = 0;
-		for (Region point : this.checkPoints) {
-			MineKart.output(sender, "[" + checkpointIndex + "] " + point.toString());
-			checkpointIndex++;
+        LangUtils.sendMessage(sender, "course.info.point.multi", "Checkpoints");
+		for (int i = 0; i < this.checkPoints.size(); i++) {
+            Region checkpoint = this.checkPoints.get(i);
+            LangUtils.sendMessage(sender, "course.info.checkpoint.entry", i, checkpoint.getMinimumPoint().getBlockX(), checkpoint.getMinimumPoint().getBlockY(), checkpoint.getMinimumPoint().getBlockZ(),
+                                                                                checkpoint.getMaximumPoint().getBlockX(), checkpoint.getMaximumPoint().getBlockY(), checkpoint.getMaximumPoint().getBlockZ());
 		}
-		MineKart.output(sender, "-------------");
+        LangUtils.sendMessage(sender, "course.info.separator", this.bounds.toString());
 
 	}
 
@@ -191,18 +192,18 @@ public class RacecourseCheckpoint extends Racecourse {
 			WorldEditPlugin worldEdit = MineKart.getInstance().getWorldEditPlugin();
 			Selection selection = worldEdit.getSelection(player);
 			if (selection == null) {
-				MineKart.output(player, "Please make a world edit selection of the region you wish to be a checkpoint...");
+                LangUtils.sendMessage(player, "course.checkpoint.error.worldedit");
 				return;
 			}
 
 			try {
 				this.checkPoints.add(selection.getRegionSelector().getRegion().clone());
 			} catch (Exception ex) {
-				MineKart.output(player, "An invalid selection was made using world edit. Please make a complete cuboid selection and try again.");
+                LangUtils.sendMessage(player, "course.create.error.region");
 				return;
 			}
 
-			MineKart.output(player, "Succesfully add a new checkpoint to the arena!");
+            LangUtils.sendMessage(player, "course.checkpoint.success");
 			outputRequirements(player);
 			save();
 			return;
@@ -271,7 +272,7 @@ public class RacecourseCheckpoint extends Racecourse {
 				Location location = player.getLocation();
 
 				this.targetCheckpoints.put(jockey, targetCheckpointIndex + 1);
-				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(data.time));
+                LangUtils.sendMessage(jockey, "race.checkpoint", (targetCheckpointIndex + 1), this.checkPoints.size(), MineKart.formatTime(data.time));
 
 				player.playSound(location, Sound.ORB_PICKUP, 1.0f, 1.0f);
 
@@ -279,7 +280,7 @@ public class RacecourseCheckpoint extends Racecourse {
 				player.setExp(lapComplete);
 
 			} else {
-				MineKart.output(jockey.getPlayer(), "Checkpoint [" + (targetCheckpointIndex + 1) + "/" + this.checkPoints.size() + "]    " + ChatColor.GREEN + MineKart.formatTime(data.time));
+                LangUtils.sendMessage(jockey, "race.checkpoint", (targetCheckpointIndex + 1), this.checkPoints.size(), MineKart.formatTime(data.time));
 				this.targetCheckpoints.remove(jockey);
 				race.setWinner(jockey);
 			}

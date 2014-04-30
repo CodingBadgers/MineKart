@@ -10,8 +10,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import uk.thecodingbadgers.minekart.MineKart;
 import uk.thecodingbadgers.minekart.jockey.Jockey;
+import uk.thecodingbadgers.minekart.lang.LangUtils;
 
 public abstract class Powerup {
 
@@ -79,7 +79,7 @@ public abstract class Powerup {
 		jockey.getPlayer().getInventory().setItem(POWERUP_SLOT, item);
 		jockey.setPowerup(this);
 
-		MineKart.output(jockey.getPlayer(), "You picked up " + this.name);
+        LangUtils.sendMessage(jockey, "powerup.pickup", this.name);
 	}
 
 	/**

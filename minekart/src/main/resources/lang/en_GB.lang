@@ -14,6 +14,7 @@ command.error.permission=You do not have the required permission &l%1$s&r
 command.error.usage=Invalid command usage...
 command.error.notfound=Could not find a course with the name &l%1$s&r.
 command.error.list=Use the command &l/mk list&r to see all racecourse's.
+command.error.ingame=You cannot use that command whilst in a race!
 
 # Course Command Messages
 command.course.usage=- /mk course <coursename> <command>
@@ -78,7 +79,7 @@ course.create.error=Creation of &l%1$s&r failed.
 course.create.error.exists=A racecourse with this name already exists.
 course.create.error.notsupported=The racecourse type &l%1$s&r is not yet supported
 course.create.error.fail=Failed to setup &l%1$s&r.
-course.create.error.worldedit=Please make a worldedit selection convering the bounds of the racecourse...
+course.create.error.worldedit=Please make a worldedit selection covering the bounds of the racecourse...
 course.create.error.region=An invalid selection was made using world edit. Please make a complete cuboid selection and try again.
 course.create.error.config=Failed to create config file for racecourse &l%1$s&r at the following location
 course.create.error.config.loc=&l%1$s&r
@@ -87,3 +88,58 @@ course.delete.success=The course &l%1$s&r has been deleted...
 
 course.requirements.single=Add a &l%1$s&r spawn point [/mk set%1$s %2$s]
 course.requirements.multi=Add %3$s &l%1$s&r points [/mk add%1$s %2$s]
+
+course.warp.multi.unknown=There is no multi-point warp with the name &l%1$s&r
+course.warp.multi.add=A new point has been added to &l%1$s&r!
+course.warp.multi.update=%1$s now has %1$s points.
+
+course.warp.single.unknown=There is no multi-point warp with the name &l%1$s&r
+course.warp.multi.set=The point %1$s has been set!
+
+course.warp.unknown=Unknown warp type %1$s, please use 'set' or 'add'.
+course.warp.delete.error=Could not remove %1$s warp with id %2$s
+
+course.checkpoint.error.worldedit=Please make a worldedit selection of the region you wish to become a checkpoint...
+course.checkpoint.success=Successfully added a new checkpoint to the arena!
+
+course.info.name=Course Name: %1$s
+course.info.world=World: %1$s
+course.info.bounds=Bounds: %1$s
+course.info.separator=-----------------
+course.info.point.single=%1$s: (%2$s, %3$s, %4$s)
+course.info.point.multi=%1$s:
+course.info.point.multi.entry=- [%1$s] [%2$s, %3$s, %4$s]
+course.info.checkpoint.entry=- [%1$s] [%2$s, %3$s, %4$s] [%5$s, %6$s, %7$s]
+
+# Lobby sign Messages
+sign.remove=Successfully removed lobby sign.
+sign.create.lobby=You have created a lobby sign for %1$s
+sign.create.times=You have created a lobby times sign for %1$s
+
+# Powerup Messages
+powerup.drop=You have dropped your powerup...
+powerup.whip=&lhYah!
+powerup.respawn=You have been respawned...
+powerup.pickup=You have picked up a %1$s
+powerup.freeze.frozen=&bYou have been frozen!
+
+# Race Messages
+race.join.error.disabled=This racecourse is currently disabled.
+race.join.error.inrace=You can't currently join this race.
+race.join.error.internal=A internal error has occurred, please inform staff.
+race.join.success=You have joined the lobby for the racecourse &l%1$s&r.
+
+race.checkpoint=Checkpoint [%1$s/%2$s] %3$s
+race.lap=Lap Complete [%1$s/%2$s] %3$s
+
+race.starting=Race starting in %1$s
+race.start=and they're off!
+race.end=The race will end in %1$s seconds...
+
+race.readyup=%1$s is now ready! (%2$s/%3$s)
+race.minplayers=You have to have a minimum of %1$s players to start a race.
+
+race.win=&e%1$s%r has won.
+race.win.mount=&e%1$s%r and their mount &e%2$s%r are the winners!.
+race.finish=&e%1$s%r came %2$s.
+race.finish.mount=&e%1$s%r and their mount &e%3$s%r came %2$s.
