@@ -55,7 +55,7 @@ public class LangUtils {
 
         MineKart.getInstance().getLogger().info("Loaded " + langs.size() + " language files.");
 		
-		defaultLang = langs.get("en_GB"); // TODO load from config
+		defaultLang = langs.get("en_UK"); // TODO load from config
 	}
 	
 	public static void sendMessage(LangUser sender, String key, Object... args) {

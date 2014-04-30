@@ -126,7 +126,7 @@ powerup.freeze.frozen=&bYou have been frozen!
 # Race Messages
 race.join.error.disabled=This racecourse is currently disabled.
 race.join.error.inrace=You can't currently join this race.
-race.join.error.internal=A internal error has occurred, please inform staff.
+race.join.error.internal=An internal error has occurred, please inform staff.
 race.join.success=You have joined the lobby for the racecourse &l%1$s&r.
 
 race.checkpoint=Checkpoint [%1$s/%2$s] %3$s
