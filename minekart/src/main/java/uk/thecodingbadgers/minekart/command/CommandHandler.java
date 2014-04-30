@@ -19,7 +19,7 @@ public class CommandHandler implements TabExecutor {
 	private static final char NEW_LINE = '\n';
 	private static String seperator;
 
-    public static final int SEPARATOR_WIDTH = ChatPaginator.AVERAGE_CHAT_PAGE_WIDTH;
+    public static final int SEPARATOR_WIDTH = 10;
 
     static {
 		StringBuilder separator = new StringBuilder();
@@ -131,7 +131,7 @@ public class CommandHandler implements TabExecutor {
 		message.append(lang.getTranslation("command.help.list")).append(NEW_LINE);
 		
 		for (String line : Splitter.on(NEW_LINE).split(message.toString())) {
-			sender.sendMessage(LangUtils.formatMessage(lang, message.toString()));
+			sender.sendMessage(LangUtils.formatMessage(lang, line));
 		}
 	}
 }

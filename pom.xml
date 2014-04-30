@@ -173,6 +173,14 @@
 				</includes>
 			</resource>
 			<resource>
+				<targetPath>./lang/</targetPath>
+				<filtering>true</filtering>
+				<directory>${basedir}/src/main/resources/lang</directory>
+				<includes>
+					<include>*.lang</include>
+				</includes>
+			</resource>
+			<resource>
 				<targetPath>./powerups/</targetPath>
 				<filtering>true</filtering>
 				<directory>${basedir}/src/main/resources/powerups</directory>

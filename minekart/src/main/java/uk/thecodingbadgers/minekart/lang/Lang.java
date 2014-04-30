@@ -10,15 +10,20 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.ChatColor;
 import uk.thecodingbadgers.minekart.MineKart;
 
 import com.google.common.collect.Maps;
 
 public class Lang {
 
-	private static final Logger LOG = MineKart.getInstance().getLogger();
+    private static final int GROUP_KEY = 1;
+    private static final int GROUP_MAPPING = 2;
+
+    private static final Logger LOG = MineKart.getInstance().getLogger();
 	private static final Pattern LANG_ENTRY = Pattern.compile("([^=]+)=(.+)");
-	private Map<String, String> langKeys = Maps.newHashMap();
+
+    private Map<String, String> langKeys = Maps.newHashMap();
 	
 	public Lang(File file) {
 		loadFile(file);
@@ -41,7 +46,7 @@ public class Lang {
 					continue;
 				}
 				
-				langKeys.put(matcher.group(0), matcher.group(1));
+				langKeys.put(matcher.group(GROUP_KEY), ChatColor.translateAlternateColorCodes('&', matcher.group(GROUP_MAPPING)));
 			}
 		
 		} catch (IOException ex) {
@@ -58,7 +63,13 @@ public class Lang {
 	}
 	
 	public String getTranslation(String key, Object... args) {
-		return String.format(langKeys.get(key), args);
+        String message = langKeys.get(key);
+
+        if (message == null) {
+            return key;
+        }
+
+		return String.format(message, args);
 	}
 	
 	public void sendMessage(LangUser player, String key, Object... args) {

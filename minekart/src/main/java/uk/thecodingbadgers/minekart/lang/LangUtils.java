@@ -37,16 +37,7 @@ public class LangUtils {
 	}
 
     public static Lang getLang(CommandSender sender) {
-        LangUser user = null;
-
-        if (sender instanceof Player) {
-            user = players.get(((Player) sender).getUniqueId());
-        } else if (sender instanceof ConsoleCommandSender) {
-            user = getConsoleSender();
-        } else {
-            user = new BukkitWrapper(sender);
-        }
-
+        LangUser user = getLangUser(sender);
         return user.getLanguage();
     }
 
@@ -61,6 +52,8 @@ public class LangUtils {
 		for (File file : files) {
 			langs.put(file.getName().substring(0, file.getName().length() - 5), new Lang(file));
 		}
+
+        MineKart.getInstance().getLogger().info("Loaded " + langs.size() + " language files.");
 		
 		defaultLang = langs.get("en_GB"); // TODO load from config
 	}
@@ -70,20 +63,31 @@ public class LangUtils {
 	}
 
 	public static void sendMessage(CommandSender sender, String key, Object...args) {
+        LangUser user = getLangUser(sender);
+		sendMessage(user, key, args);
+	}
+
+    private static LangUser getLangUser(CommandSender sender) {
         LangUser user = null;
 
         if (sender instanceof Player) {
-            user = players.get(((Player) sender).getUniqueId());
+            UUID uuid = ((Player) sender).getUniqueId(); // TODO remove on logout
+
+            if (players.containsKey(uuid)) {
+                user = players.get(uuid);
+            } else {
+                user = new BukkitWrapper(sender);
+                players.put(uuid, user);
+            }
         } else if (sender instanceof ConsoleCommandSender) {
             user = getConsoleSender();
         } else {
             user = new BukkitWrapper(sender);
         }
+        return user;
+    }
 
-		sendMessage(user, key, args);
-	}
-
-	@Deprecated 
+    @Deprecated
 	public static void sendMessage(Player sender, Lang lang, String key, Object... args) {
 		sendMessage(players.get(sender.getUniqueId()), key, args);
 	}
